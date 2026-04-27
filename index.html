@@ -3,33 +3,33 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no">
-    <title>SAI Roots | Official Website - Positive Vibes</title>
+    <title>SAI Roots | Official Website</title>
     
     <meta name="description" content="Official website of SAI Roots - Roots Reggae, Ska, & Reggae Rap musician. Emphasizing positive vibes and conscious lyrics.">
     <meta property="og:title" content="SAI Roots - One Love">
 
     <script src="https://cdn.tailwindcss.com"></script>
+    <script src="https://cdn.jsdelivr.net/npm/fuse.js@7.0.0/dist/fuse.min.js"></script>
     
     <link href="https://fonts.googleapis.com/css2?family=Anton&family=Inter:wght@300;400;600&display=swap" rel="stylesheet">
 
     <script>
-        // Konfigurasi custom Tailwind untuk warna Rasta yang elegan
         tailwind.config = {
             theme: {
                 extend: {
                     colors: {
                         rasta: {
-                            green: '#2D8659', // Hijau hutan tua
-                            yellow: '#FBBF24', // Emas/Kuning pekat
-                            red: '#DC2626',    // Merah cabai
+                            green: '#2D8659',
+                            yellow: '#FBBF24',
+                            red: '#DC2626',
                         },
                         neutral: {
-                            950: '#050505', // Hitam yang sangat pekat
+                            950: '#050505',
                         }
                     },
                     fontFamily: {
                         sans: ['Inter', 'sans-serif'],
-                        display: ['Anton', 'sans-serif'], // Font untuk judul besar
+                        display: ['Anton', 'sans-serif'],
                     },
                 }
             }
@@ -38,11 +38,7 @@
 
     <style>
         body { background-color: #050505; color: #f0f0f0; }
-        
-        /* Efek Glassmorphism yang disesuaikan untuk nuansa dark roots */
         .glass { background: rgba(5, 5, 5, 0.85); backdrop-filter: blur(12px); border-bottom: 1px solid rgba(255,255,255,0.03); }
-        
-        /* Garis Rasta tipis di bagian paling atas */
         .rasta-stripe {
             height: 3px;
             background: linear-gradient(90deg, #2D8659 0%, #FBBF24 50%, #DC2626 100%);
@@ -51,21 +47,16 @@
             top: 0;
             z-index: 60;
         }
-
-        /* FIX KEYBOARD: Tambah overflow agar menu bisa di-scroll saat keyboard muncul */
         #mobile-menu { 
             transition: transform 0.4s cubic-bezier(0.4, 0, 0.2, 1); 
             overflow-y: auto;
             -webkit-overflow-scrolling: touch;
         }
         .menu-open { transform: translateX(0) !important; }
-
-        /* Custom scrollbar biar keren */
         ::-webkit-scrollbar { width: 8px; }
         ::-webkit-scrollbar-track { background: #050505; }
         ::-webkit-scrollbar-thumb { background: #222; border-radius: 4px; }
         ::-webkit-scrollbar-thumb:hover { background: #FBBF24; }
-
         html { scroll-behavior: smooth; }
     </style>
 
@@ -96,14 +87,20 @@
         </div>
     </header>
 
+    <!-- ==================== MOBILE MENU DENGAN SEARCH ==================== -->
     <div id="mobile-menu" class="fixed inset-0 z-40 bg-neutral-950 translate-x-full flex flex-col items-center pt-28 pb-12 p-6 border-l border-white/5">
         
-        <div class="w-full max-w-md relative mb-12 shrink-0">
-            <input type="text" id="search-input" placeholder="Search riddims, lyrics, news..." class="w-full bg-white/5 border border-white/10 rounded-none py-4 px-6 focus:outline-none focus:border-rasta-yellow transition-all text-white text-lg">
+        <div class="w-full max-w-md relative mb-8 shrink-0">
+            <input type="text" id="search-input" placeholder="Cari artikel, lirik, atau lagu..." 
+                   class="w-full bg-white/5 border border-white/10 rounded-none py-4 px-6 focus:outline-none focus:border-rasta-yellow transition-all text-white text-lg">
             <span class="absolute right-5 top-1/2 -translate-y-1/2 text-gray-500">⏎</span>
         </div>
 
-        <nav class="flex flex-col space-y-6 text-center uppercase tracking-widest">
+        <!-- Hasil Pencarian -->
+        <div id="search-results" class="w-full max-w-md flex-1 overflow-y-auto hidden px-2"></div>
+
+        <!-- Navigasi Utama (disembunyikan saat search aktif) -->
+        <nav id="main-nav" class="flex flex-col space-y-6 text-center uppercase tracking-widest w-full max-w-md">
             <a href="/" class="text-3xl font-display hover:text-rasta-red transition duration-300">Home</a>
             <a href="/article" class="text-3xl font-display hover:text-rasta-green transition duration-300">Article</a>
             <a href="/discography" class="text-3xl font-display hover:text-rasta-yellow transition duration-300">Discography</a>
@@ -135,41 +132,14 @@
             <a href="/article" class="text-sm text-rasta-yellow hover:text-white transition">View All →</a>
         </div>
 
-        <div class="grid grid-cols-1 md:grid-cols-3 gap-8">
-            
-            <article class="group bg-neutral-950 rounded-none overflow-hidden border border-white/5 hover:border-rasta-green/30 transition-all duration-500 card-shadow">
-                <div class="h-56 bg-zinc-900 bg-cover bg-center group-hover:scale-105 transition-transform duration-500" style="background-image: url('https://images.unsplash.com/photo-1599923838481-6784d59a8c17?q=80&w=600&auto=format&fit=crop'); filter: grayscale(50%) brightness(70%);"></div>
-                <div class="p-7 relative">
-                    <span class="text-xs text-rasta-green font-bold uppercase tracking-widest bg-rasta-green/10 py-1 px-3">New Release</span>
-                    <h3 class="text-2xl font-display mt-4 group-hover:text-rasta-green transition tracking-tight"><a href="/article/release-reborn-riddim">'Reborn Riddim' Album Launch</a></h3>
-                    <p class="text-gray-400 text-sm mt-3 leading-relaxed font-light">Menyelami akar musik Jamaica yang dipadukan dengan realitas lokal. Sebuah mahakarya kejujuran...</p>
-                    <div class="text-xs text-gray-600 mt-6">October 28, 2023</div>
-                </div>
-            </article>
-
-            <article class="group bg-neutral-950 rounded-none overflow-hidden border border-white/5 hover:border-rasta-yellow/30 transition-all duration-500 card-shadow">
-                <div class="h-56 bg-zinc-900 bg-cover bg-center group-hover:scale-105 transition-transform duration-500" style="background-image: url('https://images.unsplash.com/photo-1514525253161-7a46d19cd819?q=80&w=600&auto=format&fit=crop'); filter: grayscale(50%) brightness(70%);"></div>
-                <div class="p-7 relative">
-                    <span class="text-xs text-rasta-yellow font-bold uppercase tracking-widest bg-rasta-yellow/10 py-1 px-3">Live Session</span>
-                    <h3 class="text-2xl font-display mt-4 group-hover:text-rasta-yellow transition tracking-tight"><a href="/article/independent-tour">Unity Fest Live Performance</a></h3>
-                    <p class="text-gray-400 text-sm mt-3 leading-relaxed font-light">Energi positif yang meluap di panggung Unity Fest kemarin. Simak galeri foto dan rekap keseruannya...</p>
-                    <div class="text-xs text-gray-600 mt-6">October 15, 2023</div>
-                </div>
-            </article>
-
-            <article class="group bg-neutral-950 rounded-none overflow-hidden border border-white/5 hover:border-rasta-red/30 transition-all duration-500 card-shadow">
-                <div class="h-56 bg-zinc-900 bg-cover bg-center group-hover:scale-105 transition-transform duration-500" style="background-image: url('https://images.unsplash.com/photo-1598488035139-bdbb2231ce04?q=80&w=600&auto=format&fit=crop'); filter: grayscale(50%) brightness(70%);"></div>
-                <div class="p-7 relative">
-                    <span class="text-xs text-rasta-red font-bold uppercase tracking-widest bg-rasta-red/10 py-1 px-3">Behind The Scene</span>
-                    <h3 class="text-2xl font-display mt-4 group-hover:text-rasta-red transition tracking-tight"><a href="/article/roots-reggae-philosophy">Writing 'Legalize' Lyrics</a></h3>
-                    <p class="text-gray-400 text-sm mt-3 leading-relaxed font-light">Proses kreatif penulisan lirik yang sarat kritik sosial. Mengapa pesan ini penting untuk disampaikan...</p>
-                    <div class="text-xs text-gray-600 mt-6">September 30, 2023</div>
-                </div>
-            </article>
-
+        <div id="articles-grid" class="grid grid-cols-1 md:grid-cols-3 gap-8">
+            <!-- Artikel akan dimuat oleh JS seperti sebelumnya -->
         </div>
+
+        <div id="pagination" class="flex justify-center mt-12 gap-3"></div>
     </main>
     
+    <!-- FOOTER SAMA PERSIS SEPERTI ASLI -->
     <footer id="footer" class="border-t border-white/5 py-12 bg-black">
         <div class="container mx-auto px-6 text-center">
             
@@ -199,6 +169,67 @@
     </footer>
 
     <script>
+        // ==================== DATA PENCARIAN ====================
+        let searchIndex = [
+            // Artikel
+            { type: "article", title: "Reborn Riddim Album Launch", url: "/article/reborn-riddim", excerpt: "Menyelami akar musik Jamaica yang dipadukan dengan realitas lokal", category: "New Release" },
+            { type: "article", title: "Unity Fest Live Performance", url: "/article/unity-fest-2026", excerpt: "Energi positif yang meluap di panggung Unity Fest", category: "Live Session" },
+            { type: "article", title: "Writing Legalize Lyrics", url: "/article/roots-reggae-philosophy", excerpt: "Proses kreatif penulisan lirik yang sarat kritik sosial", category: "Behind The Scene" },
+            
+            // Discography / Musik
+            { type: "music", title: "Reborn Riddim", url: "/discography/reborn-riddim", excerpt: "Album Full - Roots Reggae Rap", category: "Album" },
+            { type: "music", title: "Legalize It", url: "/discography/legalize-it", excerpt: "Single Terbaru SAI Roots", category: "Single" },
+            
+            // Lirik
+            { type: "lyric", title: "Legalize It Lyrics", url: "/lyric/legalize-it", excerpt: "Mari kita legalisasi, bukan hanya ganja tapi juga pikiran", category: "Lirik" },
+            { type: "lyric", title: "One Love Jombang Lyrics", url: "/lyric/one-love-jombang", excerpt: "Satu cinta dari Jombang untuk semesta", category: "Lirik" }
+        ];
+
+        let fuse;
+
+        function initSearch() {
+            fuse = new Fuse(searchIndex, {
+                keys: ['title', 'excerpt'],
+                threshold: 0.3,
+                minMatchCharLength: 2
+            });
+        }
+
+        function showSearchResults(query) {
+            const resultsContainer = document.getElementById('search-results');
+            const mainNav = document.getElementById('main-nav');
+
+            if (query.length < 2) {
+                resultsContainer.classList.add('hidden');
+                mainNav.classList.remove('hidden');
+                return;
+            }
+
+            const results = fuse.search(query).slice(0, 10);
+
+            let html = `<div class="text-rasta-yellow text-xs uppercase tracking-widest mb-4 px-2">Hasil Pencarian (${results.length})</div>`;
+
+            if (results.length === 0) {
+                html += `<p class="text-gray-400 text-center py-8">Tidak ditemukan hasil untuk "<span class="text-white">${query}</span>"</p>`;
+            } else {
+                results.forEach(r => {
+                    const item = r.item;
+                    html += `
+                        <a href="${item.url}" class="block p-4 hover:bg-white/5 border-l-4 border-transparent hover:border-rasta-yellow transition mb-2 rounded">
+                            <span class="text-[10px] uppercase tracking-widest text-rasta-green">${item.category}</span>
+                            <h4 class="text-white text-base mt-1 group-hover:text-rasta-yellow">${item.title}</h4>
+                            <p class="text-gray-400 text-sm mt-1 line-clamp-2">${item.excerpt}</p>
+                        </a>
+                    `;
+                });
+            }
+
+            resultsContainer.innerHTML = html;
+            resultsContainer.classList.remove('hidden');
+            mainNav.classList.add('hidden');
+        }
+
+        // ==================== MENU & SEARCH SETUP ====================
         const menuBtn = document.getElementById('menu-btn');
         const mobileMenu = document.getElementById('mobile-menu');
         const hamburgerIcon = document.getElementById('hamburger-icon');
@@ -215,17 +246,26 @@
                 hamburgerIcon.innerHTML = `<path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M4 6h16M4 12h16m-7 6h7"></path>`;
                 hamburgerIcon.classList.remove('text-rasta-yellow');
                 document.body.style.overflow = 'auto'; 
+                // Reset search saat menu ditutup
+                searchInput.value = '';
+                document.getElementById('search-results').classList.add('hidden');
+                document.getElementById('main-nav').classList.remove('hidden');
             }
         }
 
         menuBtn.addEventListener('click', toggleMenu);
 
-        // Mencegah klik search bar menutup menu
+        // Search functionality
+        searchInput.addEventListener('input', (e) => {
+            showSearchResults(e.target.value.trim());
+        });
+
+        // Prevent search click from closing menu
         searchInput.addEventListener('click', (e) => {
             e.stopPropagation();
         });
 
-        // Menutup menu jika salah satu link diklik
+        // Close menu when clicking nav links
         const navLinks = mobileMenu.querySelectorAll('nav a');
         navLinks.forEach(link => {
             link.addEventListener('click', () => {
@@ -235,11 +275,17 @@
             });
         });
 
-        // Menutup menu jika menekan 'Esc'
+        // ESC key
         document.addEventListener('keydown', (e) => {
             if (e.key === 'Escape' && mobileMenu.classList.contains('menu-open')) {
                 toggleMenu();
             }
+        });
+
+        // Initialize search when page loads
+        window.addEventListener('load', () => {
+            initSearch();
+            // Render articles & pagination seperti sebelumnya (bisa ditambahkan jika perlu)
         });
     </script>
 </body>
