@@ -2,100 +2,245 @@
 <html lang="id">
 <head>
     <meta charset="UTF-8">
-    <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>SAI Roots - Official Website</title>
+    <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no">
+    <title>SAI Roots | Official Website - Positive Vibes</title>
+    
+    <meta name="description" content="Official website of SAI Roots - Roots Reggae, Ska, & Reggae Rap musician. Emphasizing positive vibes and conscious lyrics.">
+    <meta property="og:title" content="SAI Roots - One Love">
 
-    <link rel="canonical" href="https://sairootsmusic.com/" />
-    <link rel="icon" type="image/x-icon" href="/favicon.ico">
-    <link rel="shortcut icon" type="image/x-icon" href="/favicon.ico">
-    <link rel="icon" type="image/png" sizes="32x32" href="/favicon-32x32.png">
-    <link rel="icon" type="image/png" sizes="16x16" href="/favicon-16x16.png">
-    <link rel="apple-touch-icon" sizes="180x180" href="/apple-touch-icon.png">
-    <link rel="icon" type="image/png" sizes="192x192" href="/android-chrome-192x192.png">
-    <link rel="icon" type="image/png" sizes="512x512" href="/android-chrome-512x512.png">
-    <link rel="manifest" href="/site.webmanifest">
+    <script src="https://cdn.tailwindcss.com"></script>
+    
+    <link href="https://fonts.googleapis.com/css2?family=Anton&family=Inter:wght@300;400;600&display=swap" rel="stylesheet">
 
-    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.0.0/css/all.min.css">
-    <link rel="stylesheet" href="style.css">
+    <script>
+        // Konfigurasi custom Tailwind untuk warna Rasta yang elegan
+        tailwind.config = {
+            theme: {
+                extend: {
+                    colors: {
+                        rasta: {
+                            green: '#2D8659', // Hijau hutan tua
+                            yellow: '#FBBF24', // Emas/Kuning pekat
+                            red: '#DC2626',    // Merah cabai
+                        },
+                        neutral: {
+                            950: '#050505', // Hitam yang sangat pekat
+                        }
+                    },
+                    fontFamily: {
+                        sans: ['Inter', 'sans-serif'],
+                        display: ['Anton', 'sans-serif'], // Font untuk judul besar
+                    },
+                }
+            }
+        }
+    </script>
+
+    <style>
+        body { background-color: #050505; color: #f0f0f0; }
+        
+        /* Efek Glassmorphism yang disesuaikan untuk nuansa dark roots */
+        .glass { background: rgba(5, 5, 5, 0.85); backdrop-filter: blur(12px); border-bottom: 1px solid rgba(255,255,255,0.03); }
+        
+        /* Garis Rasta tipis di bagian paling atas */
+        .rasta-stripe {
+            height: 3px;
+            background: linear-gradient(90deg, #2D8659 0%, #FBBF24 50%, #DC2626 100%);
+            width: 100%;
+            position: fixed;
+            top: 0;
+            z-index: 60;
+        }
+
+        /* FIX KEYBOARD: Tambah overflow agar menu bisa di-scroll saat keyboard muncul */
+        #mobile-menu { 
+            transition: transform 0.4s cubic-bezier(0.4, 0, 0.2, 1); 
+            overflow-y: auto;
+            -webkit-overflow-scrolling: touch;
+        }
+        .menu-open { transform: translateX(0) !important; }
+
+        /* Custom scrollbar biar keren */
+        ::-webkit-scrollbar { width: 8px; }
+        ::-webkit-scrollbar-track { background: #050505; }
+        ::-webkit-scrollbar-thumb { background: #222; border-radius: 4px; }
+        ::-webkit-scrollbar-thumb:hover { background: #FBBF24; }
+
+        html { scroll-behavior: smooth; }
+    </style>
+
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.5.1/css/all.min.css">
 </head>
-<body>
+<body class="overflow-x-hidden pt-1">
 
-    <header>
-        <div class="nav-container">
-            <div class="logo">
-                <img src="https://raw.githubusercontent.com/sairootsmusic/sairootsmusic.com/refs/heads/main/android-chrome-192x192.png" alt="SAI Roots Logo">
-                <span>SAI ROOTS</span>
+    <div class="rasta-stripe"></div>
+
+    <header class="fixed top-[3px] w-full z-50 glass">
+        <div class="container mx-auto px-6 py-4 flex justify-between items-center">
+            
+            <div class="text-3xl font-display uppercase tracking-wider">
+                <a href="/" class="flex items-center gap-3 hover:text-rasta-yellow transition-colors duration-300">
+                    <img src="https://raw.githubusercontent.com/sairootsmusic/sairootsmusic.com/refs/heads/main/android-chrome-192x192.png" 
+                         alt="Logo SAI Roots" 
+                         class="w-10 h-10 rounded-full object-cover border border-white/10">
+                    
+                    <span>SAI <span class="text-rasta-green">Roots</span></span>
+                </a>
             </div>
-            <div class="menu-toggle" id="mobile-menu">
-                <i class="fas fa-bars"></i>
-            </div>
+
+            <button id="menu-btn" class="focus:outline-none z-50 p-2 rounded-full hover:bg-white/5 transition">
+                <svg id="hamburger-icon" class="w-7 h-7 text-white" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                    <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M4 6h16M4 12h16m-7 6h7"></path>
+                </svg>
+            </button>      
         </div>
-
-        <nav class="nav-menu" id="nav-menu">
-            <div class="search-box">
-                <input type="text" id="global-search" placeholder="Cari artikel, lirik, musik...">
-                <button type="button" id="search-btn"><i class="fas fa-search"></i></button>
-            </div>
-            <ul>
-                <li><a href="index.html" class="active-link">HOME</a></li>
-                <li><a href="article.html">ARTICLE</a></li>
-                <li><a href="discography.html">DISCOGRAPHY</a></li>
-                <li><a href="lyric.html">LYRIC</a></li>
-                <li><a href="about.html">ABOUT</a></li>
-                <li><a href="contact.html">CONTACT</a></li>
-                <li><a href="privacy.html">PRIVACY POLICY</a></li>
-            </ul>
-        </nav>
     </header>
 
-    <main>
-        <section class="hero-section" id="featured-post">
-            <div class="loading">Memuat konten terbaru...</div>
+    <div id="mobile-menu" class="fixed inset-0 z-40 bg-neutral-950 translate-x-full flex flex-col items-center pt-28 pb-12 p-6 border-l border-white/5">
+        
+        <div class="w-full max-w-md relative mb-12 shrink-0">
+            <input type="text" id="search-input" placeholder="Search riddims, lyrics, news..." class="w-full bg-white/5 border border-white/10 rounded-none py-4 px-6 focus:outline-none focus:border-rasta-yellow transition-all text-white text-lg">
+            <span class="absolute right-5 top-1/2 -translate-y-1/2 text-gray-500">⏎</span>
+        </div>
+
+        <nav class="flex flex-col space-y-6 text-center uppercase tracking-widest">
+            <a href="/" class="text-3xl font-display hover:text-rasta-red transition duration-300">Home</a>
+            <a href="/article" class="text-3xl font-display hover:text-rasta-green transition duration-300">Article</a>
+            <a href="/discography" class="text-3xl font-display hover:text-rasta-yellow transition duration-300">Discography</a>
+            <a href="/lyric" class="text-3xl font-display hover:text-rasta-red transition duration-300">Lyric</a>
+            <a href="/about" class="hover:text-rasta-green transition duration-300 text-base font-sans mt-4">About</a>
+            <a href="/privacy" class="hover:text-rasta-yellow transition duration-300 text-base font-sans">Privacy Policy</a>
+            <a href="/contact" class="hover:text-rasta-red transition duration-300 text-base font-sans">Contact Us</a>
+        </nav>
+    </div>
+
+    <main class="pt-32 pb-20 container mx-auto px-6">
+        
+        <section class="mb-24 text-center md:text-left">
+            <h1 class="font-display text-6xl md:text-9xl mb-6 tracking-tight uppercase leading-none">
+                <span class="text-rasta-green">Roots</span><br>
+                <span class="text-rasta-yellow">Reggae</span><br>
+                <span class="text-rasta-red">Rap</span>
+            </h1>
+            <p class="text-gray-400 max-w-2xl text-lg md:text-xl font-light leading-relaxed mx-auto md:mx-0">Penyampai pesan damai dan perlawanan melalui nada. Eksplorasi karya terbaru SAI Roots, dari Jombang untuk Semesta.</p>
+            
+            <div class="mt-10 flex flex-col sm:flex-row gap-4 justify-center md:justify-start">
+                <a href="/discography" class="bg-rasta-red text-white font-semibold py-3 px-8 rounded-none hover:bg-red-700 transition uppercase tracking-wider text-sm">Listen Now</a>
+                <a href="#footer" class="bg-white/5 text-white font-semibold py-3 px-8 rounded-none hover:bg-white/10 transition uppercase tracking-wider text-sm border border-white/10">Stream On</a>
+            </div>
         </section>
 
-        <section class="preview-section">
-            <div class="section-header">
-                <h2>LATEST MUSIC</h2>
-                <a href="discography.html" class="view-all">Lihat Semua</a>
-            </div>
-            <div class="preview-grid" id="music-preview">
-                </div>
-        </section>
+        <div class="flex items-center justify-between mb-10 pb-2 border-b border-white/5">
+            <h2 class="text-2xl font-semibold uppercase tracking-wider">Latest <span class="text-rasta-green">Update</span> & Stories</h2>
+            <a href="/article" class="text-sm text-rasta-yellow hover:text-white transition">View All →</a>
+        </div>
 
-        <section class="preview-section">
-            <div class="section-header">
-                <h2>LATEST ARTICLES</h2>
-                <a href="article.html" class="view-all">Lihat Semua</a>
-            </div>
-            <div class="preview-grid" id="article-preview">
+        <div class="grid grid-cols-1 md:grid-cols-3 gap-8">
+            
+            <article class="group bg-neutral-950 rounded-none overflow-hidden border border-white/5 hover:border-rasta-green/30 transition-all duration-500 card-shadow">
+                <div class="h-56 bg-zinc-900 bg-cover bg-center group-hover:scale-105 transition-transform duration-500" style="background-image: url('https://images.unsplash.com/photo-1599923838481-6784d59a8c17?q=80&w=600&auto=format&fit=crop'); filter: grayscale(50%) brightness(70%);"></div>
+                <div class="p-7 relative">
+                    <span class="text-xs text-rasta-green font-bold uppercase tracking-widest bg-rasta-green/10 py-1 px-3">New Release</span>
+                    <h3 class="text-2xl font-display mt-4 group-hover:text-rasta-green transition tracking-tight"><a href="/article/release-reborn-riddim">'Reborn Riddim' Album Launch</a></h3>
+                    <p class="text-gray-400 text-sm mt-3 leading-relaxed font-light">Menyelami akar musik Jamaica yang dipadukan dengan realitas lokal. Sebuah mahakarya kejujuran...</p>
+                    <div class="text-xs text-gray-600 mt-6">October 28, 2023</div>
                 </div>
-        </section>
+            </article>
+
+            <article class="group bg-neutral-950 rounded-none overflow-hidden border border-white/5 hover:border-rasta-yellow/30 transition-all duration-500 card-shadow">
+                <div class="h-56 bg-zinc-900 bg-cover bg-center group-hover:scale-105 transition-transform duration-500" style="background-image: url('https://images.unsplash.com/photo-1514525253161-7a46d19cd819?q=80&w=600&auto=format&fit=crop'); filter: grayscale(50%) brightness(70%);"></div>
+                <div class="p-7 relative">
+                    <span class="text-xs text-rasta-yellow font-bold uppercase tracking-widest bg-rasta-yellow/10 py-1 px-3">Live Session</span>
+                    <h3 class="text-2xl font-display mt-4 group-hover:text-rasta-yellow transition tracking-tight"><a href="/article/independent-tour">Unity Fest Live Performance</a></h3>
+                    <p class="text-gray-400 text-sm mt-3 leading-relaxed font-light">Energi positif yang meluap di panggung Unity Fest kemarin. Simak galeri foto dan rekap keseruannya...</p>
+                    <div class="text-xs text-gray-600 mt-6">October 15, 2023</div>
+                </div>
+            </article>
+
+            <article class="group bg-neutral-950 rounded-none overflow-hidden border border-white/5 hover:border-rasta-red/30 transition-all duration-500 card-shadow">
+                <div class="h-56 bg-zinc-900 bg-cover bg-center group-hover:scale-105 transition-transform duration-500" style="background-image: url('https://images.unsplash.com/photo-1598488035139-bdbb2231ce04?q=80&w=600&auto=format&fit=crop'); filter: grayscale(50%) brightness(70%);"></div>
+                <div class="p-7 relative">
+                    <span class="text-xs text-rasta-red font-bold uppercase tracking-widest bg-rasta-red/10 py-1 px-3">Behind The Scene</span>
+                    <h3 class="text-2xl font-display mt-4 group-hover:text-rasta-red transition tracking-tight"><a href="/article/roots-reggae-philosophy">Writing 'Legalize' Lyrics</a></h3>
+                    <p class="text-gray-400 text-sm mt-3 leading-relaxed font-light">Proses kreatif penulisan lirik yang sarat kritik sosial. Mengapa pesan ini penting untuk disampaikan...</p>
+                    <div class="text-xs text-gray-600 mt-6">September 30, 2023</div>
+                </div>
+            </article>
+
+        </div>
     </main>
-
-    <footer>
-        <div class="footer-container">
-            <div class="footer-links streaming">
-                <a href="https://open.spotify.com/artist/0xOPCtZvhXVd9RTbU1aYTr" target="_blank" title="Spotify"><i class="fab fa-spotify"></i></a>
-                <a href="https://music.youtube.com/channel/UC2EfMkjDMG9LTWfc1llL4AQ" target="_blank" title="YouTube Music"><i class="fab fa-youtube"></i></a>
-                <a href="https://music.apple.com/id/artist/sai-roots/1892187423?l=id" target="_blank" title="Apple Music"><i class="fab fa-apple"></i></a>
-                <a href="https://m.soundcloud.com/sairoots" target="_blank" title="SoundCloud"><i class="fab fa-soundcloud"></i></a>
-                <a href="https://link.deezer.com/s/3366qh6efN8QoSqSPCEsB" target="_blank" title="Deezer"><i class="fab fa-deezer"></i></a>
-                <a href="https://music.amazon.com/artists/B0GTFWNC32/sai-roots" target="_blank" title="Amazon Music"><i class="fab fa-amazon"></i></a>
+    
+    <footer id="footer" class="border-t border-white/5 py-12 bg-black">
+        <div class="container mx-auto px-6 text-center">
+            
+            <p class="text-gray-600 text-[10px] tracking-[0.3em] uppercase mb-6">Stream Our Music</p>
+            
+            <div class="flex flex-wrap justify-center gap-7 mb-10 text-gray-400">
+                <a href="https://www.youtube.com/@sairoots" target="_blank" class="hover:text-[#ff0000] transition-all duration-300" title="YouTube Music"><i class="fab fa-youtube text-2xl"></i></a>
+                <a href="https://open.spotify.com/artist/0xOPCtZvhXVd9RTbU1aYTr" target="_blank" class="hover:text-[#1DB954] transition-all duration-300" title="Spotify"><i class="fab fa-spotify text-2xl"></i></a>
+                <a href="https://music.apple.com/id/artist/sai-roots/1892187423?l=id" target="_blank" class="hover:text-white transition-all duration-300" title="Apple Music"><i class="fab fa-apple text-2xl"></i></a>
+                <a href="https://m.soundcloud.com/sairoots" target="_blank" class="hover:text-[#ff5500] transition-all duration-300" title="SoundCloud"><i class="fab fa-soundcloud text-2xl"></i></a>
+                <a href="https://link.deezer.com/s/3366qh6efN8QoSqSPCEsB" target="_blank" class="hover:text-white transition-all duration-300" title="Deezer"><i class="fab fa-deezer text-2xl"></i></a>
+                <a href="https://music.amazon.com/artists/B0GTFWNC32/sai-roots" target="_blank" class="hover:text-[#00a8e1] transition-all duration-300" title="Amazon Music"><i class="fab fa-amazon text-2xl"></i></a>
             </div>
 
-            <div class="footer-links socials">
-                <a href="https://www.youtube.com/@sairoots" target="_blank" title="YouTube"><i class="fab fa-youtube"></i></a>
-                <a href="https://instagram.com/ahmadsupembri" target="_blank" title="Instagram"><i class="fab fa-instagram"></i></a>
-                <a href="https://tiktok.com/@ahmadsupembri" target="_blank" title="TikTok"><i class="fab fa-tiktok"></i></a>
-                <a href="https://facebook.com/ahmadsupembri" target="_blank" title="Facebook"><i class="fab fa-facebook"></i></a>
+            <div class="flex justify-center space-x-8 mb-10 text-gray-500">
+                <a href="https://instagram.com/ahmadsupembri" target="_blank" class="hover:text-white transition-all duration-300"><i class="fab fa-instagram text-xl"></i></a>
+                <a href="https://tiktok.com/@ahmadsupembri" target="_blank" class="hover:text-white transition-all duration-300"><i class="fab fa-tiktok text-xl"></i></a>
+                <a href="https://facebook.com/ahmadsupembri" target="_blank" class="hover:text-[#1877F2] transition-all duration-300"><i class="fab fa-facebook-f text-xl"></i></a>
             </div>
 
-            <div class="footer-bottom">
-                <p>&copy; 2026 SAI Roots Music. All Rights Reserved.</p>
+            <div class="border-t border-white/5 pt-8">
+                <p class="text-gray-600 text-[11px] tracking-[0.2em] uppercase">© 2026 <span class="text-white font-medium">SAI Roots Music</span>. All Rights Reserved.</p>
+                <p class="text-gray-800 text-[9px] mt-2 tracking-[0.4em] uppercase italic">Roots • Reggae • Rap</p>
             </div>
+            
         </div>
     </footer>
 
-    <script src="main.js"></script>
+    <script>
+        const menuBtn = document.getElementById('menu-btn');
+        const mobileMenu = document.getElementById('mobile-menu');
+        const hamburgerIcon = document.getElementById('hamburger-icon');
+        const searchInput = document.getElementById('search-input');
+
+        function toggleMenu() {
+            const isOpen = mobileMenu.classList.toggle('menu-open');
+            
+            if (isOpen) {
+                hamburgerIcon.innerHTML = `<path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M6 18L18 6M6 6l12 12"></path>`;
+                hamburgerIcon.classList.add('text-rasta-yellow'); 
+                document.body.style.overflow = 'hidden'; 
+            } else {
+                hamburgerIcon.innerHTML = `<path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M4 6h16M4 12h16m-7 6h7"></path>`;
+                hamburgerIcon.classList.remove('text-rasta-yellow');
+                document.body.style.overflow = 'auto'; 
+            }
+        }
+
+        menuBtn.addEventListener('click', toggleMenu);
+
+        // Mencegah klik search bar menutup menu
+        searchInput.addEventListener('click', (e) => {
+            e.stopPropagation();
+        });
+
+        // Menutup menu jika salah satu link diklik
+        const navLinks = mobileMenu.querySelectorAll('nav a');
+        navLinks.forEach(link => {
+            link.addEventListener('click', () => {
+                if (mobileMenu.classList.contains('menu-open')) {
+                    toggleMenu();
+                }
+            });
+        });
+
+        // Menutup menu jika menekan 'Esc'
+        document.addEventListener('keydown', (e) => {
+            if (e.key === 'Escape' && mobileMenu.classList.contains('menu-open')) {
+                toggleMenu();
+            }
+        });
+    </script>
 </body>
 </html>
