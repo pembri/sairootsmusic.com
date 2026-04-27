@@ -1,0 +1,125 @@
+<!DOCTYPE html>
+<html lang="id">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>About - SAI Roots</title>
+
+    <link rel="canonical" href="https://sairootsmusic.com/" />
+    <link rel="icon" type="image/x-icon" href="/favicon.ico">
+    <link rel="shortcut icon" type="image/x-icon" href="/favicon.ico">
+    <link rel="icon" type="image/png" sizes="32x32" href="/favicon-32x32.png">
+    <link rel="icon" type="image/png" sizes="16x16" href="/favicon-16x16.png">
+    <link rel="apple-touch-icon" sizes="180x180" href="/apple-touch-icon.png">
+    <link rel="icon" type="image/png" sizes="192x192" href="/android-chrome-192x192.png">
+    <link rel="icon" type="image/png" sizes="512x512" href="/android-chrome-512x512.png">
+    <link rel="manifest" href="/site.webmanifest">
+
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.0.0/css/all.min.css">
+    <link rel="stylesheet" href="style.css">
+    
+    <style>
+        .about-container { max-width: 900px; margin: 0 auto; padding: 40px 20px; }
+        .about-hero { text-align: center; margin-bottom: 50px; }
+        .about-hero img { width: 200px; height: 200px; border-radius: 50%; margin: 0 auto 20px; border: 4px solid var(--reggae-green); object-fit: cover; }
+        .about-hero h1 { font-size: 2.5rem; color: var(--reggae-yellow); margin-bottom: 10px; }
+        .about-hero p { color: var(--reggae-red); font-weight: bold; font-size: 1.2rem; text-transform: uppercase; letter-spacing: 2px; }
+        
+        .about-content { line-height: 1.8; font-size: 1.1rem; color: #ddd; }
+        .about-content h2 { color: var(--reggae-green); margin: 30px 0 15px; border-bottom: 1px solid #333; padding-bottom: 10px; }
+        .about-content p { margin-bottom: 20px; }
+        
+        .stats-grid { display: grid; grid-template-columns: repeat(auto-fit, minmax(150px, 1fr)); gap: 20px; margin-top: 40px; text-align: center; }
+        .stat-item { background: var(--card-bg); padding: 20px; border-radius: 10px; border: 1px solid #222; }
+        .stat-item i { font-size: 2rem; color: var(--reggae-yellow); margin-bottom: 10px; }
+        .stat-item span { display: block; font-weight: bold; font-size: 1.2rem; }
+    </style>
+</head>
+<body>
+
+    <header>
+        <div class="nav-container">
+            <div class="logo">
+                <img src="https://raw.githubusercontent.com/sairootsmusic/sairootsmusic.com/refs/heads/main/android-chrome-192x192.png" alt="SAI Roots Logo">
+                <span>SAI ROOTS</span>
+            </div>
+            <div class="menu-toggle" id="mobile-menu"><i class="fas fa-bars"></i></div>
+        </div>
+        <nav class="nav-menu" id="nav-menu">
+            <div class="search-box">
+                <input type="text" id="global-search" placeholder="Cari...">
+                <button type="button" id="search-btn"><i class="fas fa-search"></i></button>
+            </div>
+            <ul>
+                <li><a href="index.html">HOME</a></li>
+                <li><a href="article.html">ARTICLE</a></li>
+                <li><a href="discography.html">DISCOGRAPHY</a></li>
+                <li><a href="lyric.html">LYRIC</a></li>
+                <li><a href="about.html" class="active-link">ABOUT</a></li>
+                <li><a href="contact.html">CONTACT</a></li>
+                <li><a href="privacy.html">PRIVACY POLICY</a></li>
+            </ul>
+        </nav>
+    </header>
+
+    <main class="about-container">
+        <section class="about-hero">
+            <img src="https://raw.githubusercontent.com/sairootsmusic/sairootsmusic.com/refs/heads/main/android-chrome-192x192.png" alt="SAI Roots Profile">
+            <h1>SAI ROOTS</h1>
+            <p>Independent Music Project</p>
+        </section>
+
+        <section class="about-content">
+            <h2>BIOGRAFI</h2>
+            <p>SAI Roots adalah sebuah proyek musik independen yang berbasis di Jombang, Jawa Timur, Indonesia. Mengusung genre Roots Reggae, Reggae Rap, dan Ska, proyek ini digerakkan sebagai wadah kreativitas untuk menyuarakan pesan-pesan positif melalui harmoni musik reggae modern.</p>
+            
+            <p>Fokus utama SAI Roots adalah menciptakan karya yang autentik, menggabungkan ritme tradisional reggae dengan sentuhan kontemporer yang relevan dengan pendengar saat ini. Melalui album perdana "Critical Fire", SAI Roots menegaskan eksistensinya di industri musik independen tanah air.</p>
+
+            <h2>VISI & MISI</h2>
+            <p>Membangun komunitas pendengar yang solid dan menyebarkan semangat musik tanpa batas. SAI Roots percaya bahwa musik adalah bahasa universal yang mampu menghubungkan setiap jiwa dalam kedamaian dan kebebasan berekspresi.</p>
+        </section>
+
+        <div class="stats-grid">
+            <div class="stat-item">
+                <i class="fas fa-music"></i>
+                <span>Discography</span>
+                <p>Released Albums</p>
+            </div>
+            <div class="stat-item">
+                <i class="fas fa-globe"></i>
+                <span>Origin</span>
+                <p>Jombang, East Java</p>
+            </div>
+            <div class="stat-item">
+                <i class="fas fa-users"></i>
+                <span>Independent</span>
+                <p>Artist Project</p>
+            </div>
+        </div>
+    </main>
+
+    <footer>
+        <div class="footer-container">
+            <div class="footer-links streaming">
+                <a href="https://open.spotify.com/artist/0xOPCtZvhXVd9RTbU1aYTr" target="_blank" title="Spotify"><i class="fab fa-spotify"></i></a>
+                <a href="https://music.youtube.com/channel/UC2EfMkjDMG9LTWfc1llL4AQ" target="_blank" title="YouTube Music"><i class="fab fa-youtube"></i></a>
+                <a href="https://music.apple.com/id/artist/sai-roots/1892187423?l=id" target="_blank" title="Apple Music"><i class="fab fa-apple"></i></a>
+                <a href="https://m.soundcloud.com/sairoots" target="_blank" title="SoundCloud"><i class="fab fa-soundcloud"></i></a>
+                <a href="https://link.deezer.com/s/3366qh6efN8QoSqSPCEsB" target="_blank" title="Deezer"><i class="fab fa-deezer"></i></a>
+                <a href="https://music.amazon.com/artists/B0GTFWNC32/sai-roots" target="_blank" title="Amazon Music"><i class="fab fa-amazon"></i></a>
+            </div>
+            <div class="footer-links socials">
+                <a href="https://www.youtube.com/@sairoots" target="_blank" title="YouTube"><i class="fab fa-youtube"></i></a>
+                <a href="https://instagram.com/ahmadsupembri" target="_blank" title="Instagram"><i class="fab fa-instagram"></i></a>
+                <a href="https://tiktok.com/@ahmadsupembri" target="_blank" title="TikTok"><i class="fab fa-tiktok"></i></a>
+                <a href="https://facebook.com/ahmadsupembri" target="_blank" title="Facebook"><i class="fab fa-facebook"></i></a>
+            </div>
+            <div class="footer-bottom">
+                <p>© 2026 SAI Roots Music. All Rights Reserved.</p>
+            </div>
+        </div>
+    </footer>
+
+    <script src="main.js"></script>
+</body>
+</html>
