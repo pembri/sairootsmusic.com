@@ -15,13 +15,6 @@ const sairootsDB = {
     ],
     "lyrics": [
         {
-            "id": "propaganda",
-            "title": "Propaganda",
-            "category": "Roots",
-            "image": "/asset_gambar/propaganda.jpg",
-            "excerpt": "Potongan lirik asli dari lagu Propaganda..."
-        },
-        {
             "id": "babylon-burn",
             "title": "Babylon Burn",
             "category": "Ska",
