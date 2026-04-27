@@ -1,15 +1,15 @@
 // === PUSAT DATA SAI ROOTS ===
-// File ini akan di-update otomatis oleh admin_post.html
+// File ini di-update otomatis oleh Master Control CMS
 
 const sairootsDB = {
     "articles": [
         {
             "id": "sai-roots",
-            "title": "Sai Roots ",
+            "title": "Sai Roots",
             "category": "orofil",
-            "image": "/asset_gambar/sai-roots-1774957383-picsay.jpg",
-            "excerpt": "",
             "color": "green",
+            "image": "/asset_gambar/sai-roots-sm-picsay.jpg",
+            "excerpt": "",
             "date": "April 2026"
         },
         {
@@ -28,7 +28,8 @@ const sairootsDB = {
 
 // === DATA PENCARIAN GLOBAL (FUSE.JS) ===
 const searchData = [
-    ...sairootsDB.articles.map(a => ({ type: "Article", title: a.title, url: `/article/${a.id}`, excerpt: a.excerpt, category: a.category })),
-    ...sairootsDB.lyrics.map(l => ({ type: "Lyric", title: `${l.title} (Lyrics)`, url: `/lyric/${l.id}`, excerpt: l.excerpt, category: l.category })),
-    ...sairootsDB.discography.map(d => ({ type: "Discography", title: d.title, url: `/discography/${d.id}`, excerpt: d.excerpt, category: d.category }))
+    ...sairootsDB.articles.map(function(a) { return { type: 'Article', title: a.title, url: '/article/' + a.id, excerpt: a.excerpt, category: a.category }; }),
+    ...sairootsDB.lyrics.map(function(l) { return { type: 'Lyric', title: l.title + ' (Lyrics)', url: '/lyric/' + l.id, excerpt: l.excerpt, category: l.category }; }),
+    ...sairootsDB.discography.map(function(d) { return { type: 'Discography', title: d.title, url: '/discography/' + d.id, excerpt: d.excerpt, category: d.category }; })
 ];
+// === END OF DATABASE ===
