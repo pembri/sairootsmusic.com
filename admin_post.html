@@ -3,8 +3,7 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Admin Dashboard - SAI Roots</title>
-
+    <title>Admin Panel - SAI Roots</title>
     <link rel="canonical" href="https://sairootsmusic.com/" />
     <link rel="icon" type="image/x-icon" href="/favicon.ico">
     <link rel="shortcut icon" type="image/x-icon" href="/favicon.ico">
@@ -18,90 +17,78 @@
     <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.0.0/css/all.min.css">
     <link href="https://cdn.quilljs.com/1.3.6/quill.snow.css" rel="stylesheet">
     <link rel="stylesheet" href="style.css">
-
     <style>
-        .admin-main { max-width: 900px; margin: 0 auto; padding: 20px; }
+        .admin-main { max-width: 1000px; margin: 0 auto; padding: 20px; }
         .admin-card { background: var(--card-bg); padding: 25px; border-radius: 15px; border: 1px solid #333; margin-bottom: 30px; }
-        .form-group { margin-bottom: 20px; }
-        label { display: block; margin-bottom: 8px; color: var(--reggae-yellow); font-weight: bold; }
-        input, select { width: 100%; padding: 12px; background: #1a1a1a; border: 1px solid #333; color: white; border-radius: 8px; outline: none; }
+        .form-group { margin-bottom: 15px; }
+        label { color: var(--reggae-yellow); font-weight: bold; display: block; margin-bottom: 5px; }
+        input, select, textarea { width: 100%; padding: 10px; background: #111; border: 1px solid #444; color: white; border-radius: 5px; }
+        #editor-container { height: 300px; background: white; color: black; border-radius: 0 0 5px 5px; }
         
-        /* Editor Style */
-        #editor-container { height: 350px; background: white; color: black; border-radius: 0 0 8px 8px; }
-        .ql-toolbar { background: #ddd; border-radius: 8px 8px 0 0; }
+        .btn-action { padding: 12px; border: none; border-radius: 5px; font-weight: bold; cursor: pointer; transition: 0.3s; width: 100%; margin-top: 10px; }
+        .btn-publish { background: var(--reggae-red); color: white; }
+        .btn-edit { background: var(--reggae-green); color: white; margin-top: 20px; }
         
-        .btn-publish { background: var(--reggae-red); color: white; border: none; padding: 15px; width: 100%; border-radius: 8px; font-weight: bold; font-size: 1.1rem; cursor: pointer; transition: 0.3s; display: flex; align-items: center; justify-content: center; gap: 10px; margin-top: 20px; }
-        .btn-publish:hover { background: var(--reggae-green); transform: scale(1.02); }
-        .btn-publish:disabled { background: #555; cursor: not-allowed; }
-
-        .status-msg { margin-top: 15px; padding: 15px; border-radius: 8px; display: none; text-align: center; font-weight: bold; }
-        .success { background: var(--reggae-green); color: white; }
-        .error { background: var(--reggae-red); color: white; }
+        /* List Management */
+        .post-list-item { background: #1a1a1a; padding: 15px; border-radius: 8px; margin-bottom: 10px; display: flex; justify-content: space-between; align-items: center; border-left: 5px solid var(--reggae-yellow); }
+        .post-actions button { background: none; border: none; color: white; cursor: pointer; margin-left: 10px; font-size: 1.1rem; }
+        .btn-del-icon { color: var(--reggae-red) !important; }
+        .btn-edit-icon { color: var(--reggae-green) !important; }
     </style>
 </head>
 <body>
-
     <header>
         <div class="nav-container">
-            <div class="logo">
-                <img src="https://raw.githubusercontent.com/sairootsmusic/sairootsmusic.com/refs/heads/main/android-chrome-192x192.png" alt="SAI Roots Logo">
-                <span>SAI ROOTS ADMIN</span>
-            </div>
+            <div class="logo"><span>SAI ROOTS ADMIN</span></div>
             <div class="menu-toggle" id="mobile-menu"><i class="fas fa-bars"></i></div>
         </div>
         <nav class="nav-menu" id="nav-menu">
             <ul>
-                <li><a href="index.html">LIHAT WEBSITE</a></li>
-                <li><a href="article.html">ARTICLE</a></li>
-                <li><a href="discography.html">DISCOGRAPHY</a></li>
-                <li><a href="lyric.html">LYRIC</a></li>
+                <li><a href="index.html">WEBSITE</a></li>
+                <li><a href="#" onclick="location.reload()">REFRESH DATA</a></li>
             </ul>
         </nav>
     </header>
 
     <main class="admin-main">
         <div class="admin-card">
-            <h2 style="color: var(--reggae-green); margin-bottom: 20px;"><i class="fas fa-cloud-upload-alt"></i> Upload New Content</h2>
-            
+            <h2 id="form-title" style="color:var(--reggae-green)">Post Baru</h2>
+            <input type="hidden" id="edit-id">
             <div class="form-group">
                 <label>Tipe Konten</label>
                 <select id="post-type">
-                    <option value="articles">Artikel / Berita</option>
-                    <option value="music">Discography (Lagu/Album)</option>
-                    <option value="lyrics">Lirik Lagu</option>
+                    <option value="articles">Article</option>
+                    <option value="music">Music / Discography</option>
+                    <option value="lyrics">Lyrics</option>
                 </select>
             </div>
-
             <div class="form-group">
                 <label>Judul</label>
-                <input type="text" id="post-title" placeholder="Masukkan judul...">
+                <input type="text" id="post-title" placeholder="Judul konten...">
             </div>
-
             <div class="form-group">
-                <label id="label-file-cover">Upload Cover / Gambar Artikel</label>
-                <input type="file" id="file-cover" accept="image/*">
+                <label>File Path Gambar (Contoh: img/album1.jpg)</label>
+                <input type="text" id="post-image" placeholder="img/nama-file.jpg">
             </div>
-
-            <div class="form-group" id="music-upload-group" style="display:none;">
-                <label>Upload File MP3 (Khusus Discography)</label>
-                <input type="file" id="file-audio" accept="audio/mpeg">
+            <div class="form-group" id="audio-group" style="display:none;">
+                <label>File Path MP3 (Contoh: mp3/lagu.mp3)</label>
+                <input type="text" id="post-audio" placeholder="mp3/nama-file.mp3">
             </div>
-
             <div class="form-group">
-                <label>Isi Konten / Deskripsi / Lirik</label>
+                <label>Isi Konten</label>
                 <div id="editor-container"></div>
             </div>
-
             <div class="form-group">
-                <label>GitHub Personal Access Token</label>
-                <input type="password" id="gh-token" placeholder="Tempel token PAT lo di sini">
+                <label>GitHub Token (PAT)</label>
+                <input type="password" id="gh-token" placeholder="GitHub Personal Access Token">
             </div>
+            <button class="btn-action btn-publish" id="publish-btn">PUBLISH KE GITHUB</button>
+            <div id="status-msg" style="margin-top:10px; text-align:center; display:none; padding:10px; border-radius:5px;"></div>
+        </div>
 
-            <button type="button" class="btn-publish" id="publish-btn">
-                <i class="fas fa-paper-plane"></i> PUBLISH KE GITHUB
-            </button>
-            
-            <div id="status-msg" class="status-msg"></div>
+        <div class="admin-card">
+            <h2 style="color:var(--reggae-yellow)">Kelola Konten</h2>
+            <div id="manage-list">Memuat data...</div>
         </div>
     </main>
 
@@ -126,17 +113,11 @@
     </footer>
 
     <script src="https://cdn.quilljs.com/1.3.6/quill.js"></script>
-    <script src="main.js"></script>
     <script src="admin.js"></script>
     <script>
-        var quill = new Quill('#editor-container', {
-            theme: 'snow',
-            modules: { toolbar: [[{'header': [1, 2, false]}], ['bold', 'italic'], ['image', 'link'], [{'list': 'ordered'}, {'list': 'bullet'}]] }
-        });
-
+        var quill = new Quill('#editor-container', { theme: 'snow' });
         document.getElementById('post-type').addEventListener('change', function() {
-            const musicGroup = document.getElementById('music-upload-group');
-            musicGroup.style.display = (this.value === 'music') ? 'block' : 'none';
+            document.getElementById('audio-group').style.display = (this.value === 'music') ? 'block' : 'none';
         });
     </script>
 </body>
