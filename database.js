@@ -4,6 +4,15 @@
 const sairootsDB = {
     "articles": [
         {
+            "id": "sai-roots",
+            "title": "Sai Roots ",
+            "category": "orofil",
+            "image": "/asset_gambar/sai-roots-6ffa4b5b14104e7fbb3f823773e99ff4.png",
+            "excerpt": "",
+            "color": "green",
+            "date": "28 April 2026"
+        },
+        {
             "id": "critical-fire-release",
             "title": "Debut Album 'Critical Fire' Rilis Rapat",
             "category": "Update",
