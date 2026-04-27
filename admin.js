@@ -1,4 +1,3 @@
-// VARIABEL REPOSITORY (WAJIB BENER)
 const owner = "pembri"; 
 const repo = "sairootsmusic.com";
 const dbPath = "data.json";
@@ -7,35 +6,28 @@ let currentData = null;
 let currentSha = null;
 
 document.addEventListener('DOMContentLoaded', () => {
-    console.log("Admin JS Ready for owner: " + owner);
+    console.log("Admin JS Terhubung ke Repo pembri");
     loadData();
 
-    const publishBtn = document.getElementById('publish-btn');
-    if (publishBtn) {
-        publishBtn.addEventListener('click', handlePublish);
-    }
+    const btn = document.getElementById('publish-btn');
+    if (btn) { btn.addEventListener('click', handlePublish); }
 });
 
-// 1. Ambil data dari GitHub saat halaman dibuka
 async function loadData() {
     const listDiv = document.getElementById('manage-list');
     try {
-        // Tambahkan timestamp biar nggak kena cache browser
         const res = await fetch(`https://api.github.com/repos/${owner}/${repo}/contents/${dbPath}?t=${Date.now()}`);
-        
-        if (!res.ok) throw new Error("File data.json tidak ditemukan di repo pembri/sairootsmusic.com");
+        if (!res.ok) throw new Error("File data.json tidak ditemukan!");
         
         const file = await res.json();
         currentSha = file.sha;
         currentData = JSON.parse(atob(file.content));
         renderList();
     } catch (e) {
-        console.error(e);
-        listDiv.innerHTML = `<p style="color:var(--reggae-red)">Error: ${e.message}. <br>Pastikan file data.json sudah ada di root repository lo.</p>`;
+        listDiv.innerHTML = `<p style="color:red">Gagal Load: ${e.message}</p>`;
     }
 }
 
-// 2. Tampilkan daftar konten untuk Edit/Hapus
 function renderList() {
     const listDiv = document.getElementById('manage-list');
     listDiv.innerHTML = "";
@@ -49,8 +41,8 @@ function renderList() {
                 row.innerHTML = `
                     <div><strong>[${type.toUpperCase()}]</strong> ${item.title || item.song_title}</div>
                     <div class="post-actions">
-                        <button onclick="editItem('${type}', '${item.id}')" class="btn-edit-icon" title="Edit"><i class="fas fa-edit"></i></button>
-                        <button onclick="deleteItem('${type}', '${item.id}')" class="btn-del-icon" title="Hapus"><i class="fas fa-trash"></i></button>
+                        <button onclick="editItem('${type}', '${item.id}')" style="color:#00ff00"><i class="fas fa-edit"></i></button>
+                        <button onclick="deleteItem('${type}', '${item.id}')" style="color:#ff0000"><i class="fas fa-trash"></i></button>
                     </div>
                 `;
                 listDiv.appendChild(row);
@@ -59,17 +51,15 @@ function renderList() {
     });
 }
 
-// 3. Fungsi Utama Publish/Update
 async function handlePublish() {
     const token = document.getElementById('gh-token').value;
     const id = document.getElementById('edit-id').value;
     const type = document.getElementById('post-type').value;
     const title = document.getElementById('post-title').value;
 
-    if (!token) return alert("TOKEN GITHUB WAJIB DIISI!");
-    if (!title) return alert("JUDUL WAJIB DIISI!");
+    if (!token || !title) return alert("Token & Judul Wajib Isi!");
 
-    showStatus("Sedang menyambungkan ke repository pembri...", "success");
+    showStatus("Sedang mengirim data...", "success");
 
     const newItem = {
         id: id || Date.now().toString(),
@@ -87,80 +77,67 @@ async function handlePublish() {
         newItem.file = document.getElementById('post-audio').value;
         newItem.description = quill.root.innerHTML;
         newItem.year = new Date().getFullYear().toString();
-        newItem.type = "Single"; // Default
     } else if (type === 'lyrics') {
         newItem.song_title = title;
         newItem.text = quill.root.innerHTML;
     }
 
     if (id) {
-        const index = currentData[type].findIndex(i => i.id === id);
-        if (index !== -1) currentData[type][index] = newItem;
+        const idx = currentData[type].findIndex(i => i.id === id);
+        if (idx !== -1) currentData[type][idx] = newItem;
     } else {
         currentData[type].unshift(newItem);
     }
 
-    await sendToGithub(id ? `Update ${type}: ${title}` : `Add ${type}: ${title}`, token);
+    await sendUpdate(id ? "Update Post" : "Add Post", token);
 }
 
-// 4. Fungsi Kirim Data ke API GitHub
-async function sendToGithub(commitMsg, token) {
+async function sendUpdate(msg, token) {
     try {
         const res = await fetch(`https://api.github.com/repos/${owner}/${repo}/contents/${dbPath}`, {
             method: "PUT",
-            headers: { 
-                "Authorization": `token ${token}`,
-                "Content-Type": "application/json" 
-            },
+            headers: { "Authorization": `token ${token}`, "Content-Type": "application/json" },
             body: JSON.stringify({
-                message: commitMsg,
+                message: msg,
                 content: btoa(unescape(encodeURIComponent(JSON.stringify(currentData, null, 2)))),
                 sha: currentSha
             })
         });
 
         if (res.ok) {
-            alert("MANTAP! Data berhasil diupdate di repo pembri.");
-            location.reload(); 
+            alert("SUKSES!");
+            location.reload();
         } else {
-            const errData = await res.json();
-            throw new Error(errData.message);
+            const err = await res.json();
+            alert("GAGAL: " + err.message);
         }
     } catch (e) {
-        alert("GAGAL: " + e.message);
-        showStatus("Gagal: " + e.message, "error");
+        alert("ERROR: " + e.message);
     }
 }
 
-// Ekspos fungsi ke Window agar bisa dipanggil dari onclick HTML
+// Fungsi Window agar bisa diakses HTML
 window.editItem = function(type, id) {
     const item = currentData[type].find(i => i.id === id);
-    if (!item) return;
-
-    document.getElementById('form-title').innerText = "Mode Edit: " + (item.title || item.song_title);
     document.getElementById('edit-id').value = id;
     document.getElementById('post-type').value = type;
     document.getElementById('post-title').value = item.title || item.song_title;
     document.getElementById('post-image').value = item.image || item.cover || "";
     document.getElementById('post-audio').value = item.file || "";
     quill.root.innerHTML = item.content || item.description || item.text || "";
-    
     document.getElementById('audio-group').style.display = (type === 'music') ? 'block' : 'none';
-    window.scrollTo({top: 0, behavior: 'smooth'});
+    window.scrollTo(0,0);
 };
 
 window.deleteItem = async function(type, id) {
-    if (!confirm("Yakin mau hapus konten ini dari repo pembri?")) return;
+    if (!confirm("Hapus ini?")) return;
     const token = document.getElementById('gh-token').value;
-    if (!token) return alert("Isi Token GitHub dulu buat hapus!");
-
+    if (!token) return alert("Butuh Token!");
     currentData[type] = currentData[type].filter(i => i.id !== id);
-    await sendToGithub("Delete Post", token);
+    await sendUpdate("Delete Post", token);
 };
 
 function showStatus(msg, cls) {
-    const status = document.getElementById('status-msg');
-    status.style.display = "block";
-    status.innerText = msg;
-    status.className = "status-msg " + cls;
+    const s = document.getElementById('status-msg');
+    s.style.display = "block"; s.innerText = msg; s.className = "status-msg " + cls;
 }
