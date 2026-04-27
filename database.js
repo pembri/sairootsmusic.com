@@ -13,15 +13,7 @@ const sairootsDB = {
             "date": "31 Maret 2026"
         }
     ],
-    "lyrics": [
-        {
-            "id": "babylon-burn",
-            "title": "Babylon Burn",
-            "category": "Ska",
-            "image": "/asset_gambar/babylon-burn.jpg",
-            "excerpt": "Potongan lirik asli dari lagu Babylon Burn..."
-        }
-    ],
+    "lyrics": [],
     "discography": []
 };
 
