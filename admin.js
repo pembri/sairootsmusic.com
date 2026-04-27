@@ -1,109 +1,115 @@
-document.addEventListener('DOMContentLoaded', () => {
-    const publishBtn = document.getElementById('publish-btn');
-    const statusMsg = document.getElementById('status-msg');
+const owner = "sairootsmusic";
+const repo = "sairootsmusic.com";
+const dbPath = "data.json";
+let currentData = null;
+let currentSha = null;
 
-    publishBtn.addEventListener('click', async () => {
-        const type = document.getElementById('post-type').value;
-        const title = document.getElementById('post-title').value;
-        const token = document.getElementById('gh-token').value;
-        const content = quill.root.innerHTML;
-        const fileCover = document.getElementById('file-cover').files[0];
-        const fileAudio = document.getElementById('file-audio').files[0];
+document.addEventListener('DOMContentLoaded', loadData);
 
-        if (!title || !token) return alert("Isi judul dan token!");
+async function loadData() {
+    try {
+        const res = await fetch(`https://api.github.com/repos/${owner}/${repo}/contents/${dbPath}`);
+        const file = await res.json();
+        currentSha = file.sha;
+        currentData = JSON.parse(atob(file.content));
+        renderList();
+    } catch (e) { console.error("Gagal load data", e); }
+}
 
-        publishBtn.disabled = true;
-        showStatus("Memproses... Jangan tutup halaman ini.", "success");
+function renderList() {
+    const listDiv = document.getElementById('manage-list');
+    listDiv.innerHTML = "";
+    ["articles", "music", "lyrics"].forEach(type => {
+        currentData[type].forEach(item => {
+            const row = document.createElement('div');
+            row.className = "post-list-item";
+            row.innerHTML = `
+                <div><strong>[${type.toUpperCase()}]</strong> ${item.title || item.song_title}</div>
+                <div class="post-actions">
+                    <button onclick="editItem('${type}', '${item.id}')" class="btn-edit-icon"><i class="fas fa-edit"></i></button>
+                    <button onclick="deleteItem('${type}', '${item.id}')" class="btn-del-icon"><i class="fas fa-trash"></i></button>
+                </div>
+            `;
+            listDiv.appendChild(row);
+        });
+    });
+}
 
-        try {
-            const owner = "sairootsmusic";
-            const repo = "sairootsmusic.com";
-            let coverPath = "img/default-thumb.jpg";
-            let audioPath = "";
+// FUNGSI EDIT
+function editItem(type, id) {
+    const item = currentData[type].find(i => i.id === id);
+    document.getElementById('form-title').innerText = "Edit Mode";
+    document.getElementById('edit-id').value = id;
+    document.getElementById('post-type').value = type;
+    document.getElementById('post-title').value = item.title || item.song_title;
+    document.getElementById('post-image').value = item.image || item.cover || "";
+    document.getElementById('post-audio').value = item.file || "";
+    quill.root.innerHTML = item.content || item.description || item.text || "";
+    window.scrollTo(0,0);
+}
 
-            // 1. Upload Gambar
-            if (fileCover) {
-                coverPath = `img/${Date.now()}-${fileCover.name.replace(/\s/g, '-')}`;
-                await uploadToGithub(owner, repo, coverPath, fileCover, token);
-            }
+// FUNGSI HAPUS
+async function deleteItem(type, id) {
+    if (!confirm("Yakin mau hapus?")) return;
+    const token = document.getElementById('gh-token').value;
+    if (!token) return alert("Masukkan Token GitHub!");
 
-            // 2. Upload Audio (Jika Musik)
-            if (type === 'music' && fileAudio) {
-                audioPath = `mp3/${Date.now()}-${fileAudio.name.replace(/\s/g, '-')}`;
-                await uploadToGithub(owner, repo, audioPath, fileAudio, token);
-            }
+    currentData[type] = currentData[type].filter(i => i.id !== id);
+    await updateGithub("Hapus Konten", token);
+}
 
-            // 3. Update data.json
-            const getFile = await fetch(`https://api.github.com/repos/${owner}/${repo}/contents/data.json`, {
-                headers: { "Authorization": `token ${token}` }
-            });
-            const fileData = await getFile.json();
-            const db = JSON.parse(atob(fileData.content));
+// FUNGSI PUBLISH / UPDATE
+document.getElementById('publish-btn').addEventListener('click', async () => {
+    const token = document.getElementById('gh-token').value;
+    const id = document.getElementById('edit-id').value;
+    const type = document.getElementById('post-type').value;
+    const title = document.getElementById('post-title').value;
+    if (!token || !title) return alert("Isi Token & Judul!");
 
-            const newItem = {
-                id: Date.now().toString(),
-                title: title,
-                date: new Date().toLocaleDateString('id-ID', {day:'numeric', month:'long', year:'numeric'})
-            };
+    const newItem = {
+        id: id || Date.now().toString(),
+        date: new Date().toLocaleDateString('id-ID', {day:'numeric', month:'long', year:'numeric'})
+    };
 
-            if (type === 'articles') {
-                newItem.image = coverPath;
-                newItem.content = content;
-                newItem.excerpt = quill.getText().substring(0, 100) + "...";
-            } else if (type === 'music') {
-                newItem.cover = coverPath;
-                newItem.file = audioPath;
-                newItem.description = content;
-                newItem.year = new Date().getFullYear().toString();
-            } else if (type === 'lyrics') {
-                newItem.song_title = title;
-                newItem.text = content;
-            }
+    if (type === 'articles') {
+        newItem.title = title; newItem.image = document.getElementById('post-image').value;
+        newItem.content = quill.root.innerHTML;
+    } else if (type === 'music') {
+        newItem.title = title; newItem.cover = document.getElementById('post-image').value;
+        newItem.file = document.getElementById('post-audio').value; newItem.description = quill.root.innerHTML;
+    } else {
+        newItem.song_title = title; newItem.text = quill.root.innerHTML;
+    }
 
-            db[type].unshift(newItem);
+    if (id) { // Mode Edit
+        const index = currentData[type].findIndex(i => i.id === id);
+        currentData[type][index] = newItem;
+    } else { // Mode Baru
+        currentData[type].unshift(newItem);
+    }
 
-            const updateRes = await fetch(`https://api.github.com/repos/${owner}/${repo}/contents/data.json`, {
-                method: "PUT",
-                headers: { "Authorization": `token ${token}`, "Content-Type": "application/json" },
-                body: JSON.stringify({
-                    message: `New post: ${title}`,
-                    content: btoa(unescape(encodeURIComponent(JSON.stringify(db, null, 2)))),
-                    sha: fileData.sha
-                })
-            });
+    await updateGithub(id ? "Update Konten" : "Add Baru", token);
+});
 
-            if (updateRes.ok) {
-                showStatus("MANTAP! Konten & File Berhasil Terbit.", "success");
-                document.getElementById('post-title').value = "";
-                quill.setContents([]);
-            }
+async function updateGithub(msg, token) {
+    const status = document.getElementById('status-msg');
+    status.style.display = "block"; status.innerText = "Sedang sinkron ke GitHub...";
+    status.className = "success";
 
-        } catch (err) {
-            showStatus("Gagal: " + err.message, "error");
-        } finally {
-            publishBtn.disabled = false;
-        }
+    const res = await fetch(`https://api.github.com/repos/${owner}/${repo}/contents/${dbPath}`, {
+        method: "PUT",
+        headers: { "Authorization": `token ${token}`, "Content-Type": "application/json" },
+        body: JSON.stringify({
+            message: msg,
+            content: btoa(unescape(encodeURIComponent(JSON.stringify(currentData, null, 2)))),
+            sha: currentSha
+        })
     });
 
-    async function uploadToGithub(owner, repo, path, file, token) {
-        return new Promise((resolve, reject) => {
-            const reader = new FileReader();
-            reader.readAsDataURL(file);
-            reader.onload = async () => {
-                const base64 = reader.result.split(',')[1];
-                const res = await fetch(`https://api.github.com/repos/${owner}/${repo}/contents/${path}`, {
-                    method: "PUT",
-                    headers: { "Authorization": `token ${token}`, "Content-Type": "application/json" },
-                    body: JSON.stringify({ message: `Upload file: ${path}`, content: base64 })
-                });
-                if (res.ok) resolve(); else reject(new Error("Gagal upload file"));
-            };
-        });
+    if (res.ok) {
+        alert("Berhasil!");
+        location.reload();
+    } else {
+        alert("Gagal update. Cek token!");
     }
-
-    function showStatus(msg, cls) {
-        statusMsg.innerText = msg;
-        statusMsg.className = "status-msg " + cls;
-        statusMsg.style.display = "block";
-    }
-});
+}
