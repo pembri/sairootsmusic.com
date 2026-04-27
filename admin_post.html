@@ -1,0 +1,705 @@
+<!DOCTYPE html>
+<html lang="id">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>SAI Roots CMS | Admin Panel</title>
+    
+    <script src="https://cdn.tailwindcss.com"></script>
+    <link href="https://cdn.quilljs.com/1.3.6/quill.snow.css" rel="stylesheet">
+    <script src="https://cdn.quilljs.com/1.3.6/quill.js"></script>
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.5.1/css/all.min.css">
+    
+    <script>
+        tailwind.config = {
+            theme: {
+                extend: { 
+                    colors: { rasta: { green: '#2D8659', yellow: '#FBBF24', red: '#DC2626' }, neutral: { 950: '#050505' } }, 
+                    fontFamily: { sans: ['Inter', 'sans-serif'], display: ['Anton', 'sans-serif'] } 
+                }
+            }
+        }
+    </script>
+    <style>
+        body { background-color: #050505; color: #f0f0f0; }
+        .ql-toolbar.ql-snow { border-color: rgba(255,255,255,0.1); background-color: #111; }
+        .ql-container.ql-snow { border-color: rgba(255,255,255,0.1); background-color: #0a0a0a; color: white; min-height: 300px; font-family: 'Inter', sans-serif; }
+        .ql-snow .ql-stroke { stroke: #ccc; }
+        .ql-snow .ql-fill { fill: #ccc; }
+        .ql-snow .ql-picker { color: #ccc; }
+        .tab-main-active { border-bottom: 2px solid #2D8659; color: #2D8659; }
+        .tab-sub-active { border-bottom: 2px solid #FBBF24; color: #FBBF24; }
+        /* Scrollbar styling */
+        ::-webkit-scrollbar { width: 8px; }
+        ::-webkit-scrollbar-track { background: #050505; }
+        ::-webkit-scrollbar-thumb { background: #333; border-radius: 4px; }
+        ::-webkit-scrollbar-thumb:hover { background: #FBBF24; }
+    </style>
+</head>
+<body class="font-sans antialiased selection:bg-rasta-yellow selection:text-black">
+
+    <div id="login-screen" class="fixed inset-0 z-50 bg-neutral-950 flex flex-col items-center justify-center p-6">
+        <div class="bg-neutral-900 border border-white/10 p-8 md:p-12 rounded-lg shadow-2xl w-full max-w-md text-center">
+            <img src="https://raw.githubusercontent.com/sairootsmusic/sairootsmusic.com/refs/heads/main/android-chrome-192x192.png" alt="Logo" class="w-20 h-20 mx-auto rounded-full border-2 border-white/10 mb-6">
+            <h1 class="text-4xl font-display uppercase tracking-widest mb-2 text-white">SAI Roots <span class="text-rasta-green">CMS</span></h1>
+            <p class="text-gray-500 text-sm mb-8">Authorised Personnel Only</p>
+            
+            <div class="text-left mb-6">
+                <label class="block text-xs text-gray-400 uppercase tracking-widest mb-2">GitHub Token (PAT)</label>
+                <input type="password" id="github-pat" class="w-full bg-black border border-white/10 px-4 py-3 text-white focus:outline-none focus:border-rasta-green transition text-center" placeholder="ghp_xxxxxxxxxxxxxxxxxxxx">
+            </div>
+            
+            <button onclick="login()" class="w-full bg-white/10 hover:bg-rasta-green hover:text-white transition py-4 font-bold uppercase tracking-widest text-sm rounded">Masuk Sistem</button>
+        </div>
+    </div>
+
+    <div id="dashboard-screen" class="hidden container mx-auto p-4 md:p-8 max-w-6xl">
+        <div class="flex justify-between items-center mb-8 bg-neutral-900 border border-white/10 p-4 rounded-lg">
+            <h1 class="text-2xl font-display uppercase tracking-widest text-white">Dashboard <span class="text-rasta-yellow">Manager</span></h1>
+            <button onclick="logout()" class="text-xs text-gray-500 hover:text-rasta-red uppercase tracking-widest font-bold"><i class="fas fa-sign-out-alt mr-2"></i>Logout</button>
+        </div>
+
+        <div id="global-status" class="hidden mb-6 p-4 border text-center text-sm font-bold uppercase tracking-widest rounded"></div>
+
+        <div class="flex border-b border-white/10 mb-8 uppercase text-sm font-bold tracking-widest">
+            <button onclick="switchMainTab('create')" id="tab-main-create" class="tab-main-active flex-1 py-4 hover:bg-white/5 transition"><i class="fas fa-plus mr-2"></i>Buat / Posting</button>
+            <button onclick="switchMainTab('manage')" id="tab-main-manage" class="flex-1 py-4 text-gray-500 hover:bg-white/5 transition"><i class="fas fa-database mr-2"></i>Kelola Data (Edit/Hapus)</button>
+        </div>
+
+        <div id="section-create" class="bg-neutral-900 border border-white/10 p-6 md:p-8 rounded-lg shadow-xl">
+            
+            <div class="flex gap-4 border-b border-white/5 mb-8 uppercase text-xs font-bold tracking-widest">
+                <button onclick="switchSubTab('article')" id="tab-sub-article" class="tab-sub-active pb-3 px-2 hover:text-white transition">Artikel</button>
+                <button onclick="switchSubTab('lyric')" id="tab-sub-lyric" class="text-gray-500 pb-3 px-2 hover:text-white transition">Lirik</button>
+                <button onclick="switchSubTab('music')" id="tab-sub-music" class="text-gray-500 pb-3 px-2 hover:text-white transition">Musik (MP3)</button>
+            </div>
+
+            <div class="space-y-6">
+                <div id="edit-alert" class="hidden bg-rasta-yellow/20 border border-rasta-yellow/50 text-rasta-yellow p-4 text-sm font-bold uppercase tracking-widest rounded flex justify-between items-center">
+                    <span><i class="fas fa-edit mr-2"></i> Mode Edit Sedang Aktif</span>
+                    <button onclick="cancelEdit()" class="px-3 py-1 bg-black/50 hover:bg-black text-xs rounded border border-rasta-yellow/30">Batal Edit</button>
+                </div>
+
+                <div>
+                    <label class="block text-xs text-gray-400 uppercase tracking-widest mb-2">Judul (Title)</label>
+                    <input type="text" id="input-title" class="w-full bg-black border border-white/10 px-4 py-3 text-white focus:outline-none focus:border-rasta-yellow" placeholder="Masukkan judul...">
+                </div>
+
+                <div class="flex flex-col md:flex-row gap-6">
+                    <div class="flex-1">
+                        <label class="block text-xs text-gray-400 uppercase tracking-widest mb-2">Kategori / Genre</label>
+                        <input type="text" id="input-category" class="w-full bg-black border border-white/10 px-4 py-3 text-white focus:outline-none focus:border-rasta-yellow" placeholder="Cth: Roots, New Release, dll">
+                    </div>
+                    <div class="flex-1" id="color-wrapper">
+                        <label class="block text-xs text-gray-400 uppercase tracking-widest mb-2">Warna Tema (Khusus Artikel)</label>
+                        <select id="input-color" class="w-full bg-black border border-white/10 px-4 py-3 text-white focus:outline-none focus:border-rasta-yellow">
+                            <option value="green">Hijau (Rasta Green)</option>
+                            <option value="yellow">Kuning (Rasta Yellow)</option>
+                            <option value="red">Merah (Rasta Red)</option>
+                        </select>
+                    </div>
+                </div>
+
+                <div>
+                    <label class="block text-xs text-gray-400 uppercase tracking-widest mb-2">Deskripsi Singkat (Excerpt)</label>
+                    <textarea id="input-excerpt" class="w-full bg-black border border-white/10 px-4 py-3 text-white focus:outline-none focus:border-rasta-yellow h-24 resize-none" placeholder="Deskripsi pendek untuk tampilan list..."></textarea>
+                </div>
+
+                <div class="grid grid-cols-1 md:grid-cols-2 gap-6 p-4 border border-white/5 bg-black rounded">
+                    <div>
+                        <label class="block text-xs text-gray-400 uppercase tracking-widest mb-2"><i class="fas fa-image mr-2"></i>Upload Cover/Gambar</label>
+                        <input type="file" id="input-image" accept="image/*" class="text-sm text-gray-500 file:mr-4 file:py-2 file:px-4 file:border-0 file:text-xs file:font-bold file:uppercase file:bg-white/10 file:text-white hover:file:bg-white/20">
+                        <p id="edit-img-note" class="hidden text-[10px] text-gray-500 mt-2">*Kosongkan jika tidak ingin mengubah gambar lama.</p>
+                    </div>
+                    
+                    <div id="music-upload-section" class="hidden border-t md:border-t-0 md:border-l border-white/5 pt-4 md:pt-0 md:pl-6">
+                        <label class="block text-xs text-rasta-yellow uppercase tracking-widest mb-2"><i class="fas fa-music mr-2"></i>Upload File MP3</label>
+                        <input type="file" id="input-audio" accept="audio/mp3" class="text-sm text-gray-500 file:mr-4 file:py-2 file:px-4 file:border-0 file:text-xs file:font-bold file:uppercase file:bg-rasta-yellow/20 file:text-rasta-yellow hover:file:bg-rasta-yellow/30">
+                        <p id="edit-audio-note" class="hidden text-[10px] text-gray-500 mt-2">*Kosongkan jika tidak ingin mengubah MP3 lama.</p>
+                    </div>
+                </div>
+
+                <div id="editor-section">
+                    <label class="block text-xs text-gray-400 uppercase tracking-widest mb-2">Isi Konten HTML (Artikel / Lirik)</label>
+                    <div id="quill-editor"></div>
+                </div>
+
+                <button onclick="publishData()" id="btn-publish" class="w-full py-4 bg-rasta-green hover:bg-green-700 text-white font-display uppercase tracking-widest text-xl transition mt-6 rounded">
+                    <i class="fas fa-rocket mr-2"></i> Publish Konten
+                </button>
+            </div>
+        </div>
+
+        <div id="section-manage" class="hidden space-y-8">
+            <button onclick="loadDatabaseManage()" class="bg-white/10 hover:bg-white/20 text-white px-4 py-2 rounded text-xs font-bold uppercase tracking-widest mb-4"><i class="fas fa-sync-alt mr-2"></i>Refresh Data</button>
+
+            <div class="bg-neutral-900 border border-white/10 rounded-lg overflow-hidden">
+                <div class="bg-black/50 p-4 border-b border-white/10"><h3 class="text-rasta-green font-display uppercase tracking-widest text-xl">Daftar Artikel</h3></div>
+                <div class="p-4" id="list-articles"><p class="text-gray-500 text-sm italic">Memuat data...</p></div>
+            </div>
+
+            <div class="bg-neutral-900 border border-white/10 rounded-lg overflow-hidden">
+                <div class="bg-black/50 p-4 border-b border-white/10"><h3 class="text-rasta-red font-display uppercase tracking-widest text-xl">Daftar Lirik</h3></div>
+                <div class="p-4" id="list-lyrics"><p class="text-gray-500 text-sm italic">Memuat data...</p></div>
+            </div>
+
+            <div class="bg-neutral-900 border border-white/10 rounded-lg overflow-hidden">
+                <div class="bg-black/50 p-4 border-b border-white/10"><h3 class="text-rasta-yellow font-display uppercase tracking-widest text-xl">Daftar Musik (MP3)</h3></div>
+                <div class="p-4" id="list-music"><p class="text-gray-500 text-sm italic">Memuat data...</p></div>
+            </div>
+        </div>
+    </div>
+
+    <script>
+        const REPO = 'pembri/sairootsmusic.com';
+        let quill;
+        let currentMainTab = 'create';
+        let currentSubTab = 'article';
+        
+        // Mode Edit Variables
+        let isEditMode = false;
+        let editId = null;
+        let editOriginalData = null;
+        
+        // Cache DB untuk Manage
+        let cachedDB = null;
+
+        window.onload = function() {
+            quill = new Quill('#quill-editor', {
+                theme: 'snow',
+                modules: { toolbar: [ ['bold', 'italic', 'underline', 'strike'], ['blockquote'], [{ 'header': [1, 2, 3, false] }], [{ 'list': 'ordered'}, { 'list': 'bullet' }], [{ 'align': [] }], ['link'] ] }
+            });
+
+            if(localStorage.getItem('github_pat')) {
+                document.getElementById('github-pat').value = localStorage.getItem('github_pat');
+                login();
+            }
+        };
+
+        // --- SISTEM LOGIN ---
+        function login() {
+            const token = document.getElementById('github-pat').value;
+            if(token.trim().length < 10) { alert('Token tidak valid!'); return; }
+            localStorage.setItem('github_pat', token);
+            document.getElementById('login-screen').classList.add('hidden');
+            document.getElementById('dashboard-screen').classList.remove('hidden');
+            loadDatabaseManage(); // Tarik data saat berhasil masuk
+        }
+
+        function logout() {
+            localStorage.removeItem('github_pat');
+            location.reload();
+        }
+
+        // --- SISTEM TABS ---
+        function switchMainTab(tab) {
+            currentMainTab = tab;
+            document.getElementById('tab-main-create').className = `flex-1 py-4 transition ${tab === 'create' ? 'tab-main-active' : 'text-gray-500 hover:bg-white/5'}`;
+            document.getElementById('tab-main-manage').className = `flex-1 py-4 transition ${tab === 'manage' ? 'tab-main-active' : 'text-gray-500 hover:bg-white/5'}`;
+            
+            document.getElementById('section-create').classList.toggle('hidden', tab !== 'create');
+            document.getElementById('section-manage').classList.toggle('hidden', tab !== 'manage');
+
+            if(tab === 'manage') loadDatabaseManage();
+        }
+
+        function switchSubTab(tab) {
+            if(isEditMode) return; // Kunci tab kalau lagi mode edit
+            currentSubTab = tab;
+            ['article', 'lyric', 'music'].forEach(t => {
+                document.getElementById('tab-sub-' + t).className = `pb-3 px-2 transition ${t === tab ? 'tab-sub-active' : 'text-gray-500 hover:text-white'}`;
+            });
+
+            if(tab === 'music') {
+                document.getElementById('editor-section').classList.add('hidden');
+                document.getElementById('music-upload-section').classList.remove('hidden');
+                document.getElementById('color-wrapper').classList.add('hidden');
+            } else {
+                document.getElementById('editor-section').classList.remove('hidden');
+                document.getElementById('music-upload-section').classList.add('hidden');
+                document.getElementById('color-wrapper').classList.toggle('hidden', tab !== 'article');
+            }
+        }
+
+        function showStatus(msg, type) {
+            const el = document.getElementById('global-status');
+            el.classList.remove('hidden', 'bg-rasta-green/20', 'text-rasta-green', 'border-rasta-green', 'bg-rasta-red/20', 'text-rasta-red', 'border-rasta-red', 'bg-rasta-yellow/20', 'text-rasta-yellow', 'border-rasta-yellow');
+            if(type === 'success') el.classList.add('bg-rasta-green/20', 'text-rasta-green', 'border-rasta-green');
+            else if(type === 'error') el.classList.add('bg-rasta-red/20', 'text-rasta-red', 'border-rasta-red');
+            else el.classList.add('bg-rasta-yellow/20', 'text-rasta-yellow', 'border-rasta-yellow');
+            el.innerText = msg;
+            
+            // Auto hide success msg
+            if(type === 'success') setTimeout(() => el.classList.add('hidden'), 5000);
+        }
+
+        // --- FUNGSI API GITHUB ---
+        async function fetchGitHub(path, method = 'GET', body = null, sha = null) {
+            const token = localStorage.getItem('github_pat');
+            const headers = { 'Authorization': `Bearer ${token}`, 'Accept': 'application/vnd.github.v3+json' };
+            const opts = { method, headers };
+            if(body) {
+                if(sha) body.sha = sha;
+                opts.body = JSON.stringify(body);
+            }
+            const res = await fetch(`https://api.github.com/repos/${REPO}/contents/${path}`, opts);
+            if(!res.ok && res.status !== 404) throw new Error(await res.text());
+            return res.status === 404 ? null : await res.json();
+        }
+
+        async function uploadFile(path, base64Content, message) {
+            const existing = await fetchGitHub(path);
+            const body = { message: message, content: base64Content };
+            await fetchGitHub(path, 'PUT', body, existing ? existing.sha : null);
+            return `/${path}`;
+        }
+
+        async function deleteFile(path, message) {
+            const existing = await fetchGitHub(path);
+            if(!existing) return; // File ga ada
+            const token = localStorage.getItem('github_pat');
+            await fetch(`https://api.github.com/repos/${REPO}/contents/${path}`, {
+                method: 'DELETE',
+                headers: { 'Authorization': `Bearer ${token}`, 'Accept': 'application/vnd.github.v3+json' },
+                body: JSON.stringify({ message: message, sha: existing.sha })
+            });
+        }
+
+        function fileToBase64(file) {
+            return new Promise((resolve, reject) => {
+                const reader = new FileReader();
+                reader.onload = () => resolve(reader.result.split(',')[1]);
+                reader.onerror = error => reject(error);
+                reader.readAsDataURL(file);
+            });
+        }
+        function strToBase64(str) { return btoa(unescape(encodeURIComponent(str))); }
+        function base64ToStr(b64) { return decodeURIComponent(escape(atob(b64))); }
+
+        // --- LOGIKA MENGAMBIL & MENAMPILKAN DATABASE UNTUK DIKELOLA ---
+        async function loadDatabaseManage() {
+            try {
+                const dbRes = await fetchGitHub('database.js');
+                if(!dbRes) throw new Error("database.js tidak ditemukan!");
+                const dbContent = base64ToStr(dbRes.content);
+                const dbMatch = dbContent.match(/const sairootsDB = ([\s\S]*?);\s*\/\//);
+                cachedDB = eval('(' + dbMatch[1] + ')');
+
+                renderList('list-articles', cachedDB.articles, 'article');
+                renderList('list-lyrics', cachedDB.lyrics, 'lyric');
+                renderList('list-music', cachedDB.discography, 'music');
+            } catch (err) {
+                console.error(err);
+                alert('Gagal memuat database. Cek token.');
+            }
+        }
+
+        function renderList(containerId, items, type) {
+            const container = document.getElementById(containerId);
+            if(items.length === 0) { container.innerHTML = '<p class="text-gray-500 text-sm">Belum ada data.</p>'; return; }
+            
+            let html = '<div class="space-y-3">';
+            items.forEach(item => {
+                html += `
+                    <div class="flex items-center justify-between bg-black border border-white/5 p-3 rounded hover:border-white/20 transition">
+                        <div class="flex items-center gap-4">
+                            <img src="${item.image}" class="w-10 h-10 object-cover rounded grayscale brightness-75">
+                            <div>
+                                <h4 class="text-white font-bold text-sm leading-tight">${item.title}</h4>
+                                <span class="text-[10px] text-gray-500 uppercase tracking-widest">${item.category}</span>
+                            </div>
+                        </div>
+                        <div class="flex gap-2">
+                            <button onclick="startEdit('${type}', '${item.id}')" class="px-3 py-1 bg-white/10 hover:bg-rasta-yellow hover:text-black rounded text-xs font-bold transition"><i class="fas fa-edit"></i></button>
+                            <button onclick="executeDelete('${type}', '${item.id}', '${item.title}')" class="px-3 py-1 bg-white/10 hover:bg-rasta-red hover:text-white rounded text-xs font-bold transition"><i class="fas fa-trash"></i></button>
+                        </div>
+                    </div>
+                `;
+            });
+            html += '</div>';
+            container.innerHTML = html;
+        }
+
+        // --- LOGIKA HAPUS DATA (DELETE) ---
+        async function executeDelete(type, id, title) {
+            if(!confirm(`YAKIN MAU MENGHAPUS "${title}" PERMANEN?\nFile HTML dan data akan lenyap.`)) return;
+            
+            try {
+                showStatus(`Menghapus ${title}...`, "process");
+                
+                // 1. Ambil DB terbaru
+                const dbRes = await fetchGitHub('database.js');
+                let dbContent = base64ToStr(dbRes.content);
+                let dbMatch = dbContent.match(/const sairootsDB = ([\s\S]*?);\s*\/\//);
+                let dbObj = eval('(' + dbMatch[1] + ')');
+
+                // 2. Filter / Buang data dari array
+                if(type === 'article') dbObj.articles = dbObj.articles.filter(a => a.id !== id);
+                if(type === 'lyric') dbObj.lyrics = dbObj.lyrics.filter(a => a.id !== id);
+                if(type === 'music') dbObj.discography = dbObj.discography.filter(a => a.id !== id);
+
+                // 3. Simpan DB baru
+                let newDbString = `// === PUSAT DATA SAI ROOTS ===\n// File ini akan di-update otomatis oleh admin_post.html\n\nconst sairootsDB = ${JSON.stringify(dbObj, null, 4)};\n\n// === DATA PENCARIAN GLOBAL (FUSE.JS) ===\nconst searchData = [\n    ...sairootsDB.articles.map(a => ({ type: "Article", title: a.title, url: \`/article/\${a.id}\`, excerpt: a.excerpt, category: a.category })),\n    ...sairootsDB.lyrics.map(l => ({ type: "Lyric", title: \`\${l.title} (Lyrics)\`, url: \`/lyric/\${l.id}\`, excerpt: l.excerpt, category: l.category })),\n    ...sairootsDB.discography.map(d => ({ type: "Discography", title: d.title, url: \`/discography/\${d.id}\`, excerpt: d.excerpt, category: d.category }))\n];`;
+                await uploadFile('database.js', strToBase64(newDbString), `Deleted ${title} via CMS`);
+
+                // 4. Hapus File fisiknya di GitHub API
+                if(type === 'article') await deleteFile(`article/${id}/index.html`, `Delete article HTML ${title}`);
+                if(type === 'lyric') await deleteFile(`lyric/${id}/index.html`, `Delete lyric HTML ${title}`);
+                if(type === 'music') await deleteFile(`discography/${id}.mp3`, `Delete MP3 ${title}`);
+
+                showStatus(`Berhasil menghapus ${title}!`, "success");
+                loadDatabaseManage(); // Refresh list
+
+            } catch(e) {
+                console.error(e);
+                showStatus("Gagal menghapus: " + e.message, "error");
+            }
+        }
+
+        // --- LOGIKA EDIT DATA (READ TO UPDATE) ---
+        async function startEdit(type, id) {
+            isEditMode = true;
+            editId = id;
+            
+            // Cari data di cache
+            let arr = [];
+            if(type === 'article') arr = cachedDB.articles;
+            if(type === 'lyric') arr = cachedDB.lyrics;
+            if(type === 'music') arr = cachedDB.discography;
+            
+            editOriginalData = arr.find(item => item.id === id);
+            if(!editOriginalData) return alert('Data tidak ditemukan!');
+
+            // Pindah Tab Otomatis
+            switchMainTab('create');
+            switchSubTab(type);
+
+            // Isi Form
+            document.getElementById('edit-alert').classList.remove('hidden');
+            document.getElementById('input-title').value = editOriginalData.title;
+            document.getElementById('input-category').value = editOriginalData.category;
+            document.getElementById('input-excerpt').value = editOriginalData.excerpt;
+            
+            if(type === 'article') document.getElementById('input-color').value = editOriginalData.color;
+            
+            document.getElementById('edit-img-note').classList.remove('hidden');
+            document.getElementById('edit-audio-note').classList.remove('hidden');
+            document.getElementById('btn-publish').innerHTML = '<i class="fas fa-save mr-2"></i> Update Data';
+            document.getElementById('btn-publish').classList.replace('bg-rasta-green', 'bg-rasta-yellow');
+            document.getElementById('btn-publish').classList.replace('text-white', 'text-black');
+
+            // Ambil konten HTML lama dari file GitHub
+            if(type !== 'music') {
+                showStatus("Menarik konten dari server...", "process");
+                try {
+                    const htmlRes = await fetchGitHub(`${type}/${id}/index.html`);
+                    const rawHtml = base64ToStr(htmlRes.content);
+                    // Ekstrak yang ada di dalam class ql-editor
+                    const htmlMatch = rawHtml.match(/<div class="[^"]*ql-editor[^"]*">([\s\S]*?)<\/div>\s*<\/article>/);
+                    if(htmlMatch) quill.root.innerHTML = htmlMatch[1];
+                    else quill.root.innerHTML = "<p>Gagal mengekstrak isi konten HTML lama.</p>";
+                    showStatus("Siap diedit.", "success");
+                } catch(e) {
+                    quill.root.innerHTML = "<p>File HTML tidak ditemukan.</p>";
+                }
+            }
+        }
+
+        function cancelEdit() {
+            isEditMode = false;
+            editId = null;
+            editOriginalData = null;
+            document.getElementById('edit-alert').classList.add('hidden');
+            document.getElementById('input-title').value = '';
+            document.getElementById('input-category').value = '';
+            document.getElementById('input-excerpt').value = '';
+            quill.root.innerHTML = '';
+            document.getElementById('edit-img-note').classList.add('hidden');
+            document.getElementById('edit-audio-note').classList.add('hidden');
+            
+            const btn = document.getElementById('btn-publish');
+            btn.innerHTML = '<i class="fas fa-rocket mr-2"></i> Publish Konten';
+            btn.classList.replace('bg-rasta-yellow', 'bg-rasta-green');
+            btn.classList.replace('text-black', 'text-white');
+            showStatus("Batal edit.", "success");
+        }
+
+        // ==========================================================
+        // GENERATOR TEMPLATE MUTLAK (HEADER, SEARCH, FOOTER 100%)
+        // ==========================================================
+        function generateHTMLTemplate(title, type, contentHTML) {
+            return `<!DOCTYPE html>
+<html lang="id">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no">
+    <title>${title} | SAI Roots</title>
+    <meta name="description" content="Official website of SAI Roots - Roots Reggae, Ska, & Reggae Rap musician.">
+    <meta property="og:title" content="SAI Roots - One Love">
+    <script src="https://cdn.tailwindcss.com"><\/script>
+    <script src="https://cdn.jsdelivr.net/npm/fuse.js@7.0.0/dist/fuse.min.js"><\/script>
+    <link href="https://fonts.googleapis.com/css2?family=Anton&family=Inter:wght@300;400;600&display=swap" rel="stylesheet">
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.5.1/css/all.min.css">
+    <script>
+        tailwind.config = { theme: { extend: { colors: { rasta: { green: '#2D8659', yellow: '#FBBF24', red: '#DC2626' }, neutral: { 950: '#050505' } }, fontFamily: { sans: ['Inter', 'sans-serif'], display: ['Anton', 'sans-serif'] } } } }
+    <\/script>
+    <style>
+        body { background-color: #050505; color: #f0f0f0; }
+        .glass { background: rgba(5, 5, 5, 0.85); backdrop-filter: blur(12px); border-bottom: 1px solid rgba(255,255,255,0.03); }
+        .rasta-stripe { height: 3px; background: linear-gradient(90deg, #2D8659 0%, #FBBF24 50%, #DC2626 100%); width: 100%; position: fixed; top: 0; z-index: 60; }
+        #mobile-menu { transition: transform 0.4s cubic-bezier(0.4, 0, 0.2, 1); overflow-y: auto; }
+        .menu-open { transform: translateX(0) !important; }
+        .ql-editor { font-size: 1.125rem; line-height: 1.8; color: #d1d5db; }
+        .ql-editor h1, .ql-editor h2 { font-family: 'Anton', sans-serif; text-transform: uppercase; color: white; margin-top: 2rem; margin-bottom: 1rem; }
+        .ql-editor blockquote { border-left: 4px solid #FBBF24; padding-left: 1.5rem; font-style: italic; color: #9ca3af; }
+        .ql-editor a { color: #FBBF24; text-decoration: underline; }
+    </style>
+</head>
+<body class="overflow-x-hidden pt-1">
+    <div class="rasta-stripe"></div>
+    <header class="fixed top-[3px] w-full z-50 glass">
+        <div class="container mx-auto px-6 py-4 flex justify-between items-center">
+            <div class="text-3xl font-display uppercase tracking-wider">
+                <a href="/" class="flex items-center gap-3 hover:text-rasta-yellow transition-colors duration-300">
+                    <img src="https://raw.githubusercontent.com/sairootsmusic/sairootsmusic.com/refs/heads/main/android-chrome-192x192.png" alt="Logo SAI Roots" class="w-10 h-10 rounded-full object-cover border border-white/10">
+                    <span>SAI <span class="text-rasta-green">Roots</span></span>
+                </a>
+            </div>
+            <button id="menu-btn" class="focus:outline-none z-50 p-2 rounded-full hover:bg-white/5 transition">
+                <svg id="hamburger-icon" class="w-7 h-7 text-white" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M4 6h16M4 12h16m-7 6h7"></path></svg>
+            </button>      
+        </div>
+    </header>
+
+    <div id="mobile-menu" class="fixed inset-0 z-40 bg-neutral-950 translate-x-full flex flex-col items-center pt-28 pb-12 p-6 border-l border-white/5">
+        <div class="w-full max-w-md relative mb-8 shrink-0">
+            <input type="text" id="search-input" placeholder="Cari artikel, lirik, atau lagu..." class="w-full bg-white/5 border border-white/10 rounded-none py-4 px-6 focus:outline-none focus:border-rasta-yellow transition-all text-white text-lg">
+            <span class="absolute right-5 top-1/2 -translate-y-1/2 text-gray-500">⏎</span>
+        </div>
+        <div id="search-results" class="w-full max-w-md flex-1 overflow-y-auto hidden"></div>
+        <nav id="main-nav" class="flex flex-col space-y-6 text-center uppercase tracking-widest w-full max-w-md">
+            <a href="/" class="text-3xl font-display hover:text-rasta-green transition duration-300">Home</a>
+            <a href="/discography" class="text-3xl font-display hover:text-rasta-yellow transition duration-300">Discography</a>
+            <a href="/lyric" class="text-3xl font-display hover:text-rasta-red transition duration-300">Lyric</a>
+            <a href="/about" class="hover:text-rasta-green transition duration-300 text-base font-sans mt-4">About</a>
+            <a href="/privacy" class="hover:text-rasta-yellow transition duration-300 text-base font-sans">Privacy Policy</a>
+            <a href="/contact" class="hover:text-rasta-red transition duration-300 text-base font-sans">Contact Us</a>
+        </nav>
+    </div>
+
+    <main class="pt-32 pb-20 container mx-auto px-6 min-h-[70vh]">
+        ${contentHTML}
+    </main>
+
+    <footer id="footer" class="border-t border-white/5 py-12 bg-black">
+        <div class="container mx-auto px-6 text-center">
+            <p class="text-gray-600 text-[10px] tracking-[0.3em] uppercase mb-6">Stream Our Music</p>
+            <div class="flex flex-wrap justify-center gap-7 mb-10 text-gray-400">
+                <a href="https://www.youtube.com/@sairoots" target="_blank" class="hover:text-[#ff0000]"><i class="fab fa-youtube text-2xl"></i></a>
+                <a href="https://open.spotify.com/artist/0xOPCtZvhXVd9RTbU1aYTr" target="_blank" class="hover:text-[#1DB954]"><i class="fab fa-spotify text-2xl"></i></a>
+                <a href="https://music.apple.com/id/artist/sai-roots/1892187423?l=id" target="_blank" class="hover:text-white"><i class="fab fa-apple text-2xl"></i></a>
+                <a href="https://m.soundcloud.com/sairoots" target="_blank" class="hover:text-[#ff5500]"><i class="fab fa-soundcloud text-2xl"></i></a>
+                <a href="https://link.deezer.com/s/3366qh6efN8QoSqSPCEsB" target="_blank" class="hover:text-white"><i class="fab fa-deezer text-2xl"></i></a>
+                <a href="https://music.amazon.com/artists/B0GTFWNC32/sai-roots" target="_blank" class="hover:text-[#00a8e1]"><i class="fab fa-amazon text-2xl"></i></a>
+            </div>
+            <div class="flex justify-center space-x-8 mb-10 text-gray-500">
+                <a href="https://instagram.com/ahmadsupembri" target="_blank" class="hover:text-white"><i class="fab fa-instagram text-xl"></i></a>
+                <a href="https://tiktok.com/@ahmadsupembri" target="_blank" class="hover:text-white"><i class="fab fa-tiktok text-xl"></i></a>
+                <a href="https://facebook.com/ahmadsupembri" target="_blank" class="hover:text-[#1877F2]"><i class="fab fa-facebook-f text-xl"></i></a>
+            </div>
+            <div class="border-t border-white/5 pt-8">
+                <p class="text-gray-600 text-[11px] tracking-[0.2em] uppercase">© 2026 <span class="text-white font-medium">SAI Roots Music</span>. All Rights Reserved.</p>
+                <p class="text-gray-800 text-[9px] mt-2 tracking-[0.4em] uppercase italic">Roots • Reggae • Rap</p>
+            </div>
+        </div>
+    </footer>
+
+    <script src="/database.js"><\/script>
+    <script>
+        const menuBtn = document.getElementById('menu-btn');
+        const mobileMenu = document.getElementById('mobile-menu');
+        const hamburgerIcon = document.getElementById('hamburger-icon');
+        const searchInput = document.getElementById('search-input');
+
+        function toggleMenu() {
+            const isOpen = mobileMenu.classList.toggle('menu-open');
+            if (isOpen) {
+                hamburgerIcon.innerHTML = \\\`<path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M6 18L18 6M6 6l12 12"></path>\\\`;
+                hamburgerIcon.classList.add('text-rasta-yellow');
+                document.body.style.overflow = 'hidden';
+            } else {
+                hamburgerIcon.innerHTML = \\\`<path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M4 6h16M4 12h16m-7 6h7"></path>\\\`;
+                hamburgerIcon.classList.remove('text-rasta-yellow');
+                document.body.style.overflow = 'auto';
+                searchInput.value = '';
+                document.getElementById('search-results').classList.add('hidden');
+                document.getElementById('main-nav').classList.remove('hidden');
+            }
+        }
+        menuBtn.addEventListener('click', toggleMenu);
+        searchInput.addEventListener('click', e => e.stopPropagation());
+
+        try {
+            const fuse = new Fuse(searchData, { keys: ['title', 'excerpt', 'category', 'type'], threshold: 0.3 });
+            function showSearchResults(query) {
+                const container = document.getElementById('search-results');
+                const nav = document.getElementById('main-nav');
+                if (query.length < 2) { container.classList.add('hidden'); nav.classList.remove('hidden'); return; }
+                const results = fuse.search(query);
+                nav.classList.add('hidden'); container.classList.remove('hidden'); container.innerHTML = '';
+                if (results.length === 0) {
+                    container.innerHTML = \\\`<div class="text-center py-10"><p class="text-gray-400 text-lg">Tidak ada hasil untuk "<span class="text-white">\${query}</span>"</p><p class="text-gray-600 text-sm mt-2">Coba kata kunci lain.</p></div>\\\`; return;
+                }
+                let html = '<div class="flex flex-col space-y-3 w-full pb-6">';
+                results.forEach(result => {
+                    const item = result.item;
+                    let colorClass = 'text-gray-400 border-gray-400';
+                    if (item.type === 'Article') colorClass = 'text-rasta-green border-rasta-green';
+                    else if (item.type === 'Discography') colorClass = 'text-rasta-yellow border-rasta-yellow';
+                    else if (item.type === 'Lyric') colorClass = 'text-rasta-red border-rasta-red';
+                    html += \\\`<a href="\${item.url}" class="block bg-white/5 border border-white/10 p-4 hover:bg-white/10 hover:border-white/30 transition-all text-left"><div class="flex justify-between items-start mb-2"><span class="text-[10px] uppercase tracking-widest px-2 py-0.5 border \${colorClass}">\${item.type}</span><span class="text-xs text-gray-500">\${item.category}</span></div><h4 class="text-xl font-display text-white mb-1 tracking-wide">\${item.title}</h4><p class="text-sm text-gray-400 line-clamp-2 font-light">\${item.excerpt}</p></a>\\\`;
+                });
+                html += '</div>'; container.innerHTML = html;
+            }
+            searchInput.addEventListener('input', (e) => showSearchResults(e.target.value.trim()));
+        } catch (error) { console.warn("Menunggu database.js...", error); }
+    <\/script>
+</body>
+</html>`;
+        }
+
+        // ==========================================================
+        // PROSES PUBLISH / UPDATE KE GITHUB (CREATE & EDIT LOGIC)
+        // ==========================================================
+        async function publishData() {
+            const btn = document.getElementById('btn-publish');
+            try {
+                btn.innerHTML = '<i class="fas fa-spinner fa-spin mr-2"></i> Memproses...';
+                btn.disabled = true;
+                showStatus(isEditMode ? "Memulai proses UPDATE..." : "Menyiapkan file baru...", "process");
+
+                const title = document.getElementById('input-title').value;
+                const category = document.getElementById('input-category').value;
+                const excerpt = document.getElementById('input-excerpt').value;
+                const imgFile = document.getElementById('input-image').files[0];
+                
+                if(!title || !category) throw new Error("Judul dan Kategori wajib diisi!");
+
+                // Pakai ID lama jika Edit, ID baru jika Create
+                const cleanId = isEditMode ? editId : title.toLowerCase().replace(/[^a-z0-9]+/g, '-').replace(/(^-|-$)+/g, '');
+                
+                // Urus Gambar
+                let imgUrl = isEditMode ? editOriginalData.image : "/asset_gambar/default.jpg";
+                if(imgFile) {
+                    showStatus("Mengunggah gambar ke GitHub...", "process");
+                    const imgBase64 = await fileToBase64(imgFile);
+                    imgUrl = await uploadFile(`asset_gambar/${cleanId}-${imgFile.name}`, imgBase64, `Upload image for ${title}`);
+                }
+
+                // Ambil Database Terbaru
+                showStatus("Memperbarui database.js...", "process");
+                const dbRes = await fetchGitHub('database.js');
+                if(!dbRes) throw new Error("File database.js tidak ditemukan di repository.");
+                let dbContent = base64ToStr(dbRes.content);
+                let dbMatch = dbContent.match(/const sairootsDB = ([\s\S]*?);\s*\/\//);
+                let dbObj = eval('(' + dbMatch[1] + ')');
+
+                let newHtmlPath = "";
+                let masterHtml = "";
+
+                // Susun Data Baru
+                const newDataObj = { id: cleanId, title: title, category: category, image: imgUrl, excerpt: excerpt };
+
+                // LOGIKA BERDASARKAN TAB
+                if(currentSubTab === 'article') {
+                    const color = document.getElementById('input-color').value;
+                    const date = isEditMode ? editOriginalData.date : new Date().toLocaleDateString('id-ID', { day: 'numeric', month: 'long', year: 'numeric' });
+                    
+                    newDataObj.color = color;
+                    newDataObj.date = date;
+
+                    if(isEditMode) {
+                        const idx = dbObj.articles.findIndex(x => x.id === editId);
+                        if(idx !== -1) dbObj.articles[idx] = newDataObj;
+                    } else {
+                        dbObj.articles.unshift(newDataObj);
+                    }
+                    
+                    const postContent = `
+                        <article class="max-w-4xl mx-auto">
+                            <img src="${imgUrl}" class="w-full h-64 md:h-96 object-cover grayscale brightness-75 mb-8">
+                            <span class="text-xs text-rasta-${color} font-bold uppercase tracking-widest bg-rasta-${color}/10 py-1 px-3 mb-4 inline-block">${category}</span>
+                            <h1 class="font-display text-4xl md:text-6xl text-white mb-4 uppercase">${title}</h1>
+                            <div class="text-gray-400 text-sm mb-8">${date}</div>
+                            <div class="text-gray-300 leading-relaxed font-light ql-editor px-0">${quill.root.innerHTML}</div>
+                        </article>
+                    `;
+                    masterHtml = generateHTMLTemplate(title, 'article', postContent);
+                    newHtmlPath = `article/${cleanId}/index.html`;
+
+                } else if(currentSubTab === 'lyric') {
+                    if(isEditMode) {
+                        const idx = dbObj.lyrics.findIndex(x => x.id === editId);
+                        if(idx !== -1) dbObj.lyrics[idx] = newDataObj;
+                    } else {
+                        dbObj.lyrics.unshift(newDataObj);
+                    }
+                    
+                    const postContent = `
+                        <article class="max-w-2xl mx-auto text-center">
+                            <img src="${imgUrl}" class="w-48 h-48 mx-auto object-cover grayscale brightness-75 mb-8 rounded-full border border-white/10">
+                            <span class="text-xs text-rasta-red font-bold uppercase tracking-widest border border-rasta-red/20 py-0.5 px-2 mb-4 inline-block">${category}</span>
+                            <h1 class="font-display text-5xl md:text-7xl text-white mb-8 uppercase">${title}</h1>
+                            <div class="text-gray-300 leading-loose font-light text-lg ql-editor text-left px-0">${quill.root.innerHTML}</div>
+                        </article>
+                    `;
+                    masterHtml = generateHTMLTemplate(title, 'lyric', postContent);
+                    newHtmlPath = `lyric/${cleanId}/index.html`;
+
+                } else if(currentSubTab === 'music') {
+                    const audioFile = document.getElementById('input-audio').files[0];
+                    let audioUrl = isEditMode ? editOriginalData.audio : "";
+                    
+                    if(!audioFile && !isEditMode) throw new Error("File MP3 wajib diupload untuk musik baru!");
+                    
+                    if(audioFile) {
+                        showStatus("Mengunggah MP3 ke GitHub... (Tunggu sebentar)", "process");
+                        const audioBase64 = await fileToBase64(audioFile);
+                        audioUrl = await uploadFile(`discography/${cleanId}.mp3`, audioBase64, `Upload MP3 ${title}`);
+                    }
+                    newDataObj.audio = audioUrl;
+
+                    if(isEditMode) {
+                        const idx = dbObj.discography.findIndex(x => x.id === editId);
+                        if(idx !== -1) dbObj.discography[idx] = newDataObj;
+                    } else {
+                        dbObj.discography.unshift(newDataObj);
+                    }
+                }
+
+                // Tulis Ulang Database String
+                let newDbString = `// === PUSAT DATA SAI ROOTS ===\n// File ini akan di-update otomatis oleh admin_post.html\n\nconst sairootsDB = ${JSON.stringify(dbObj, null, 4)};\n\n// === DATA PENCARIAN GLOBAL (FUSE.JS) ===\nconst searchData = [\n    ...sairootsDB.articles.map(a => ({ type: "Article", title: a.title, url: \`/article/\${a.id}\`, excerpt: a.excerpt, category: a.category })),\n    ...sairootsDB.lyrics.map(l => ({ type: "Lyric", title: \`\${l.title} (Lyrics)\`, url: \`/lyric/\${l.id}\`, excerpt: l.excerpt, category: l.category })),\n    ...sairootsDB.discography.map(d => ({ type: "Discography", title: d.title, url: \`/discography/\${d.id}\`, excerpt: d.excerpt, category: d.category }))\n];`;
+                
+                showStatus("Menyimpan database...", "process");
+                await uploadFile('database.js', strToBase64(newDbString), `Update DB for ${title}`);
+
+                // Upload HTML kalau Artikel atau Lirik
+                if(newHtmlPath !== "") {
+                    showStatus("Menyimpan halaman HTML...", "process");
+                    await uploadFile(newHtmlPath, strToBase64(masterHtml), `Generate HTML for ${title}`);
+                }
+
+                showStatus(`BERHASIL! Konten "${title}" berhasil di-${isEditMode ? 'update' : 'publish'}.`, "success");
+                
+                setTimeout(() => { cancelEdit(); switchMainTab('manage'); }, 2000);
+
+            } catch (error) {
+                console.error(error);
+                showStatus("GAGAL: " + error.message, "error");
+                btn.innerHTML = isEditMode ? '<i class="fas fa-save mr-2"></i> Update Data' : '<i class="fas fa-rocket mr-2"></i> Publish Konten';
+                btn.disabled = false;
+            }
+        }
+    </script>
+</body>
+</html>
