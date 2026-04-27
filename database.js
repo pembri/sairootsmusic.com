@@ -1,16 +1,13 @@
-// === PUSAT DATA SAI ROOTS ===
-// File ini akan di-update otomatis oleh admin_post.html
-
 const sairootsDB = {
     "articles": [
         {
             "id": "sai-roots",
             "title": "Sai Roots ",
             "category": "orofil",
-            "image": "/asset_gambar/sai-roots-6ffa4b5b14104e7fbb3f823773e99ff4.png",
-            "excerpt": "",
             "color": "green",
-            "date": "28 April 2026"
+            "image": "/asset_gambar/sai-roots-1774957383-picsay.jpg",
+            "excerpt": "",
+            "date": "April 2026"
         },
         {
             "id": "critical-fire-release",
@@ -26,9 +23,10 @@ const sairootsDB = {
     "discography": []
 };
 
-// === DATA PENCARIAN GLOBAL (FUSE.JS) ===
+// === DATA PENCARIAN GLOBAL ===
 const searchData = [
-    ...sairootsDB.articles.map(a => ({ type: "Article", title: a.title, url: `/article/${a.id}`, excerpt: a.excerpt, category: a.category })),
-    ...sairootsDB.lyrics.map(l => ({ type: "Lyric", title: `${l.title} (Lyrics)`, url: `/lyric/${l.id}`, excerpt: l.excerpt, category: l.category })),
-    ...sairootsDB.discography.map(d => ({ type: "Discography", title: d.title, url: `/discography/${d.id}`, excerpt: d.excerpt, category: d.category }))
+    ...sairootsDB.articles.map(function(a) { return { type: 'Article', title: a.title, url: '/article/' + a.id, excerpt: a.excerpt }; }),
+    ...sairootsDB.lyrics.map(function(l) { return { type: 'Lyric', title: l.title + ' (Lyrics)', url: '/lyric/' + l.id, excerpt: l.excerpt }; }),
+    ...sairootsDB.discography.map(function(d) { return { type: 'Discography', title: d.title, url: '/discography/' + d.id, excerpt: d.excerpt }; })
 ];
+// === END DATA ===
