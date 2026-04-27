@@ -7,9 +7,9 @@ const sairootsDB = {
             "id": "critical-fire-release",
             "title": "Debut Album 'Critical Fire' Rilis Rapat",
             "category": "Update",
-            "color": "yellow",
-            "image": "/asset_gambar/critical-fire.jpg",
+            "image": "/asset_gambar/critical-fire-release-152733.jpg",
             "excerpt": "Album penuh pertama telah mendarat. Dengarkan pesan damai dan perlawanan dari akar rumput.",
+            "color": "yellow",
             "date": "31 Maret 2026"
         }
     ],
