@@ -578,22 +578,24 @@
                 btn.disabled = true;
                 showStatus(isEditMode ? "Memulai proses UPDATE..." : "Menyiapkan file baru...", "process");
 
-                const title = document.getElementById('input-title').value;
-                const category = document.getElementById('input-category').value;
-                const excerpt = document.getElementById('input-excerpt').value;
+                const title = document.getElementById('input-title').value.trim();
+                const category = document.getElementById('input-category').value.trim();
+                const excerpt = document.getElementById('input-excerpt').value.trim();
                 const imgFile = document.getElementById('input-image').files[0];
                 
                 if(!title || !category) throw new Error("Judul dan Kategori wajib diisi!");
 
-                // Pakai ID lama jika Edit, ID baru jika Create
                 const cleanId = isEditMode ? editId : title.toLowerCase().replace(/[^a-z0-9]+/g, '-').replace(/(^-|-$)+/g, '');
-                
+
                 // Urus Gambar
-                let imgUrl = isEditMode ? editOriginalData.image : "/asset_gambar/default.jpg";
+                let imgUrl = (isEditMode && editOriginalData && editOriginalData.image) 
+                             ? editOriginalData.image 
+                             : "/asset_gambar/default.jpg";
+
                 if(imgFile) {
                     showStatus("Mengunggah gambar ke GitHub...", "process");
                     const imgBase64 = await fileToBase64(imgFile);
-                    imgUrl = await uploadFile(`asset_gambar/${cleanId}-${imgFile.name}`, imgBase64, `Upload image for ${title}`);
+                    imgUrl = await uploadFile(`asset_gambar/\( {cleanId}- \){imgFile.name}`, imgBase64, `Upload image for ${title}`);
                 }
 
                 // Ambil Database Terbaru
@@ -608,12 +610,18 @@
                 let masterHtml = "";
 
                 // Susun Data Baru
-                const newDataObj = { id: cleanId, title: title, category: category, image: imgUrl, excerpt: excerpt };
+                const newDataObj = { 
+                    id: cleanId, 
+                    title: title, 
+                    category: category, 
+                    image: imgUrl, 
+                    excerpt: excerpt || "" 
+                };
 
                 // LOGIKA BERDASARKAN TAB
                 if(currentSubTab === 'article') {
                     const color = document.getElementById('input-color').value;
-                    const date = isEditMode ? editOriginalData.date : new Date().toLocaleDateString('id-ID', { day: 'numeric', month: 'long', year: 'numeric' });
+                    const date = isEditMode && editOriginalData ? editOriginalData.date : new Date().toLocaleDateString('id-ID', { day: 'numeric', month: 'long', year: 'numeric' });
                     
                     newDataObj.color = color;
                     newDataObj.date = date;
@@ -628,7 +636,7 @@
                     const postContent = `
                         <article class="max-w-4xl mx-auto">
                             <img src="${imgUrl}" class="w-full h-64 md:h-96 object-cover grayscale brightness-75 mb-8">
-                            <span class="text-xs text-rasta-${color} font-bold uppercase tracking-widest bg-rasta-${color}/10 py-1 px-3 mb-4 inline-block">${category}</span>
+                            <span class="text-xs text-rasta-\( {color} font-bold uppercase tracking-widest bg-rasta- \){color}/10 py-1 px-3 mb-4 inline-block">${category}</span>
                             <h1 class="font-display text-4xl md:text-6xl text-white mb-4 uppercase">${title}</h1>
                             <div class="text-gray-400 text-sm mb-8">${date}</div>
                             <div class="text-gray-300 leading-relaxed font-light ql-editor px-0">${quill.root.innerHTML}</div>
@@ -658,7 +666,7 @@
 
                 } else if(currentSubTab === 'music') {
                     const audioFile = document.getElementById('input-audio').files[0];
-                    let audioUrl = isEditMode ? editOriginalData.audio : "";
+                    let audioUrl = (isEditMode && editOriginalData && editOriginalData.audio) ? editOriginalData.audio : "";
                     
                     if(!audioFile && !isEditMode) throw new Error("File MP3 wajib diupload untuk musik baru!");
                     
@@ -677,9 +685,20 @@
                     }
                 }
 
-                // Tulis Ulang Database String
-                let newDbString = `// === PUSAT DATA SAI ROOTS ===\n// File ini akan di-update otomatis oleh admin_post.html\n\nconst sairootsDB = ${JSON.stringify(dbObj, null, 4)};\n\n// === DATA PENCARIAN GLOBAL (FUSE.JS) ===\nconst searchData = [\n    ...sairootsDB.articles.map(a => ({ type: "Article", title: a.title, url: \`/article/\${a.id}\`, excerpt: a.excerpt, category: a.category })),\n    ...sairootsDB.lyrics.map(l => ({ type: "Lyric", title: \`\${l.title} (Lyrics)\`, url: \`/lyric/\${l.id}\`, excerpt: l.excerpt, category: l.category })),\n    ...sairootsDB.discography.map(d => ({ type: "Discography", title: d.title, url: \`/discography/\${d.id}\`, excerpt: d.excerpt, category: d.category }))\n];`;
-                
+                // Tulis Ulang Database String - Format sesuai database.js lo
+                let newDbString = `// === PUSAT DATA SAI ROOTS ===
+// File ini akan di-update otomatis oleh admin_post.html
+
+const sairootsDB = ${JSON.stringify(dbObj, null, 4)};
+
+// === DATA PENCARIAN GLOBAL (FUSE.JS) ===
+// Mesin yang menggabungkan seluruh data di atas agar bisa dicari dari menu Hamburger
+const searchData = [
+    ...sairootsDB.articles.map(a => ({ type: "Article", title: a.title, url: \`/article/\${a.id}\`, excerpt: a.excerpt, category: a.category })),
+    ...sairootsDB.lyrics.map(l => ({ type: "Lyric", title: \`\${l.title} (Lyrics)\`, url: \`/lyric/\${l.id}\`, excerpt: l.excerpt, category: l.category })),
+    ...sairootsDB.discography.map(d => ({ type: "Discography", title: d.title, url: \`/discography/\${d.id}\`, excerpt: d.excerpt, category: d.category }))
+];`;
+
                 showStatus("Menyimpan database...", "process");
                 await uploadFile('database.js', strToBase64(newDbString), `Update DB for ${title}`);
 
@@ -689,13 +708,14 @@
                     await uploadFile(newHtmlPath, strToBase64(masterHtml), `Generate HTML for ${title}`);
                 }
 
-                showStatus(`BERHASIL! Konten "${title}" berhasil di-${isEditMode ? 'update' : 'publish'}.`, "success");
+                showStatus(`BERHASIL! Konten "\( {title}" berhasil di- \){isEditMode ? 'update' : 'publish'}.`, "success");
                 
                 setTimeout(() => { cancelEdit(); switchMainTab('manage'); }, 2000);
 
             } catch (error) {
                 console.error(error);
                 showStatus("GAGAL: " + error.message, "error");
+            } finally {
                 btn.innerHTML = isEditMode ? '<i class="fas fa-save mr-2"></i> Update Data' : '<i class="fas fa-rocket mr-2"></i> Publish Konten';
                 btn.disabled = false;
             }
