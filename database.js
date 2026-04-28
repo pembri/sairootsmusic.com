@@ -4,6 +4,15 @@
 const sairootsDB = {
     "articles": [
         {
+            "id": "lirik-blaze-it-up",
+            "title": "Lirik Blaze It Up",
+            "category": "Album - Critical Fire",
+            "image": "/asset_gambar/default.jpg",
+            "excerpt": "",
+            "color": "green",
+            "date": "28 April 2026"
+        },
+        {
             "id": "profil-sai-roots",
             "title": "Profil SAI Roots",
             "category": "Article",
