@@ -3,31 +3,32 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>SAI ROOTS | Pro Database Manager</title>
+    <title>SAI ROOTS | Database Manager Pro</title>
     <script src="https://cdn.tailwindcss.com"></script>
     <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.0.0/css/all.min.css">
     <style>
-        body { background-color: #050505; color: #e5e5e5; font-family: 'Inter', sans-serif; }
+        body { background-color: #050505; color: #e5e5e5; font-family: 'Inter', sans-serif; overflow-x: hidden; }
         .sai-card { background: #111; border: 1px solid #222; }
         .input-sai { background: #000; border: 1px solid #333; color: white; transition: 0.3s; }
         .input-sai:focus { border-color: #ef4444; outline: none; }
-        .tab-btn { color: #666; transition: 0.3s; border-bottom: 2px solid transparent; }
-        .tab-btn.active { color: #ef4444; border-bottom: 2px solid #ef4444; }
+        .tab-btn { color: #555; transition: 0.3s; border-bottom: 3px solid transparent; }
+        .tab-btn.active { color: #ef4444; border-bottom-color: #ef4444; }
         .modal-open { overflow: hidden; }
-        /* Custom scrollbar */
         ::-webkit-scrollbar { width: 5px; }
         ::-webkit-scrollbar-track { background: #000; }
         ::-webkit-scrollbar-thumb { background: #333; border-radius: 10px; }
+        .animate-pop { animation: zoom 0.3s ease-out; }
+        @keyframes zoom { from { transform: scale(0.95); opacity: 0; } to { transform: scale(1); opacity: 1; } }
     </style>
 </head>
 <body>
 
 <div id="loginOverlay" class="fixed inset-0 bg-black z-[100] flex items-center justify-center p-4">
-    <div class="sai-card p-8 max-w-md w-full text-center rounded-2xl shadow-2xl">
+    <div class="sai-card p-8 max-w-md w-full text-center rounded-3xl shadow-2xl">
         <h1 class="text-4xl font-black text-red-600 mb-2 tracking-tighter">SAI ROOTS</h1>
-        <p class="text-zinc-500 mb-8 text-sm uppercase tracking-widest">Database Access</p>
-        <input type="password" id="ghToken" placeholder="GitHub Classic Token" class="input-sai w-full p-4 rounded-xl text-center mb-4">
-        <button onclick="login()" class="w-full bg-red-600 hover:bg-red-700 text-white font-bold py-4 rounded-xl uppercase transition shadow-lg shadow-red-900/20">
+        <p class="text-zinc-500 mb-8 text-[10px] uppercase tracking-[0.3em]">Database Access</p>
+        <input type="password" id="ghToken" placeholder="GitHub Classic Token" class="input-sai w-full p-4 rounded-2xl text-center mb-4">
+        <button onclick="login()" class="w-full bg-red-600 hover:bg-red-700 text-white font-bold py-4 rounded-2xl uppercase transition shadow-lg shadow-red-900/20">
             Masuk & Ambil Data
         </button>
         <div id="loginStatus" class="mt-4 text-xs text-zinc-600"></div>
@@ -37,16 +38,16 @@
 <div id="adminPanel" class="hidden min-h-screen flex flex-col">
     <nav class="bg-black border-b border-zinc-800 p-4 sticky top-0 z-40">
         <div class="max-w-4xl mx-auto flex justify-between items-center">
-            <span class="text-xl font-bold text-red-600 tracking-tighter">SAI ROOTS <span class="text-white text-xs font-light ml-2 uppercase">Editor</span></span>
-            <button onclick="location.reload()" class="text-zinc-500 hover:text-red-500 transition"><i class="fas fa-power-off"></i></button>
+            <span class="text-xl font-bold text-red-600 tracking-tighter">SAI ROOTS <span class="text-white text-[10px] font-light ml-2 uppercase tracking-widest text-zinc-500">DB Admin</span></span>
+            <button onclick="location.reload()" class="text-zinc-600 hover:text-red-500 transition px-2"><i class="fas fa-power-off text-lg"></i></button>
         </div>
     </nav>
 
     <div class="max-w-4xl mx-auto w-full p-4 flex-grow">
         <div class="flex space-x-8 mb-6 border-b border-zinc-800 overflow-x-auto no-scrollbar">
-            <button onclick="switchTab('articles')" id="tab-articles" class="tab-btn pb-4 font-black active whitespace-nowrap">ARTICLES</button>
-            <button onclick="switchTab('lyrics')" id="tab-lyrics" class="tab-btn pb-4 font-black whitespace-nowrap">LYRICS</button>
-            <button onclick="switchTab('discography')" id="tab-discography" class="tab-btn pb-4 font-black whitespace-nowrap">DISCOGRAPHY</button>
+            <button onclick="switchTab('articles')" id="tab-articles" class="tab-btn pb-4 font-black active whitespace-nowrap tracking-tight">ARTICLES</button>
+            <button onclick="switchTab('lyrics')" id="tab-lyrics" class="tab-btn pb-4 font-black whitespace-nowrap tracking-tight">LYRICS</button>
+            <button onclick="switchTab('discography')" id="tab-discography" class="tab-btn pb-4 font-black whitespace-nowrap tracking-tight">DISCOGRAPHY</button>
         </div>
 
         <button onclick="prepareNew()" class="w-full mb-6 bg-zinc-900 border border-zinc-800 text-zinc-300 hover:bg-red-600 hover:text-white p-5 rounded-2xl font-bold transition flex items-center justify-center gap-3 group">
@@ -59,18 +60,18 @@
 </div>
 
 <div id="modalEditor" class="fixed inset-0 bg-black/90 backdrop-blur-md z-[60] hidden flex items-center justify-center p-4">
-    <div class="sai-card bg-[#111] border border-zinc-800 w-full max-w-lg rounded-3xl overflow-hidden shadow-2xl animate-in zoom-in duration-300">
+    <div class="sai-card bg-[#0e0e0e] border border-zinc-800 w-full max-w-lg rounded-3xl overflow-hidden shadow-2xl animate-pop">
         
-        <div class="p-5 border-b border-zinc-800 flex justify-between items-center bg-[#181818]">
-            <h3 id="modalTitle" class="font-black text-yellow-500 uppercase tracking-tighter">Editor</h3>
-            <button onclick="closeModal()" class="text-zinc-500 hover:text-white"><i class="fas fa-times text-xl"></i></button>
+        <div class="p-5 border-b border-zinc-800 flex justify-between items-center bg-[#151515]">
+            <h3 id="modalTitle" class="font-black text-yellow-500 uppercase tracking-tighter text-sm">Editor</h3>
+            <button onclick="closeModal()" class="text-zinc-500 hover:text-white transition"><i class="fas fa-times text-xl"></i></button>
         </div>
         
-        <div class="p-6 space-y-5 max-h-[70vh] overflow-y-auto">
+        <div class="p-6 space-y-5 max-h-[65vh] overflow-y-auto">
             <div class="grid grid-cols-1 gap-4">
                 <div>
                     <label class="text-[10px] text-zinc-500 uppercase font-bold tracking-widest">ID / Slug (Tanpa .html)</label>
-                    <input type="text" id="f_id" class="input-sai w-full p-3 rounded-xl mt-1" placeholder="contoh: judul-lagu-keren">
+                    <input type="text" id="f_id" class="input-sai w-full p-3 rounded-xl mt-1" placeholder="judul-lagu-slug">
                 </div>
                 <div>
                     <label class="text-[10px] text-zinc-500 uppercase font-bold tracking-widest">Judul Konten</label>
@@ -86,19 +87,19 @@
                 </div>
                 <div>
                     <label class="text-[10px] text-zinc-500 uppercase font-bold tracking-widest">Excerpt (Kutipan)</label>
-                    <textarea id="f_excerpt" class="input-sai w-full p-3 rounded-xl mt-1 h-24 resize-none"></textarea>
+                    <textarea id="f_excerpt" class="input-sai w-full p-3 rounded-xl mt-1 h-20 resize-none"></textarea>
                 </div>
                 <div id="audioGroup" class="hidden">
-                    <label class="text-[10px] text-zinc-500 uppercase font-bold tracking-widest text-blue-400">Audio Path (.mp3)</label>
-                    <input type="text" id="f_audio" class="input-sai w-full p-3 rounded-xl mt-1 border-blue-900/30">
+                    <label class="text-[10px] text-zinc-400 uppercase font-bold tracking-widest">Audio Path (.mp3)</label>
+                    <input type="text" id="f_audio" class="input-sai w-full p-3 rounded-xl mt-1 border-zinc-700">
                 </div>
             </div>
         </div>
 
-        <div class="p-5 bg-[#181818] border-t border-zinc-800 grid grid-cols-2 gap-4">
-            <button onclick="closeModal()" class="bg-zinc-800 hover:bg-zinc-700 text-white font-bold py-4 rounded-2xl transition">BATAL</button>
-            <button onclick="saveData()" class="bg-green-600 hover:bg-green-700 text-white font-bold py-4 rounded-2xl transition flex items-center justify-center gap-2">
-                <i class="fas fa-save"></i> SIMPAN
+        <div class="p-5 bg-[#151515] border-t border-zinc-800 grid grid-cols-2 gap-4">
+            <button onclick="closeModal()" class="bg-zinc-800 hover:bg-zinc-700 text-white font-bold py-4 rounded-2xl transition uppercase text-xs tracking-widest">Batal</button>
+            <button id="btnSave" onclick="saveData()" class="bg-green-600 hover:bg-green-700 text-white font-bold py-4 rounded-2xl transition flex items-center justify-center gap-2 uppercase text-xs tracking-widest">
+                <i class="fas fa-save"></i> Simpan
             </button>
         </div>
     </div>
@@ -112,13 +113,12 @@ let currentSha = '';
 let rawFileContent = '';
 let editingId = null;
 
-// LOGIN & FETCH
 async function login() {
     const token = document.getElementById('ghToken').value;
     const status = document.getElementById('loginStatus');
     if(!token) return;
 
-    status.innerHTML = '<i class="fas fa-spinner fa-spin mr-2"></i>Menghubungkan ke GitHub...';
+    status.innerHTML = '<i class="fas fa-circle-notch fa-spin mr-2"></i>Mengambil Data...';
     try {
         const res = await fetch(`https://api.github.com/repos/${CONFIG.owner}/${CONFIG.repo}/contents/${CONFIG.path}`, {
             headers: { 'Authorization': `token ${token}` }
@@ -132,24 +132,20 @@ async function login() {
             document.getElementById('adminPanel').classList.remove('hidden');
             renderList();
         } else {
-            status.innerText = "Gagal: Token salah atau file tidak ditemukan.";
+            status.innerText = "Error: Token Salah!";
         }
-    } catch (e) { status.innerText = "Error: Cek koneksi internet."; }
+    } catch (e) { status.innerText = "Error Koneksi!"; }
 }
 
-// PARSE FILE JS KE OBJEK
 function parseDB(content) {
     try {
         const start = content.indexOf('const sairootsDB = {');
         const end = content.indexOf('};', start) + 2;
         const jsonStr = content.substring(start, end).replace('const sairootsDB = ', '').replace(';', '');
         db = JSON.parse(jsonStr);
-    } catch (e) {
-        alert("Gagal memproses struktur database.js! Pastikan format file benar.");
-    }
+    } catch (e) { alert("Format Database.js tidak valid!"); }
 }
 
-// UI LOGIC
 function switchTab(tab) {
     currentTab = tab;
     document.querySelectorAll('.tab-btn').forEach(b => b.classList.remove('active'));
@@ -160,28 +156,21 @@ function switchTab(tab) {
 function renderList() {
     const container = document.getElementById('dataList');
     container.innerHTML = '';
-    
-    if (db[currentTab].length === 0) {
-        container.innerHTML = '<div class="text-center p-10 text-zinc-600 italic">Belum ada data di kategori ini.</div>';
-        return;
-    }
-
     db[currentTab].forEach(item => {
         const div = document.createElement('div');
-        div.className = "p-4 bg-zinc-900 border border-zinc-800 rounded-2xl hover:border-red-600/50 cursor-pointer transition flex justify-between items-center group";
+        div.className = "p-4 bg-[#111] border border-zinc-800 rounded-2xl hover:border-red-600 transition flex justify-between items-center group cursor-pointer";
         div.innerHTML = `
             <div class="overflow-hidden">
-                <div class="font-bold text-white group-hover:text-red-500 transition truncate">${item.title}</div>
-                <div class="text-[10px] text-zinc-500 tracking-widest uppercase mt-1">${item.id}</div>
+                <div class="font-bold text-white group-hover:text-red-500 transition truncate text-sm">${item.title}</div>
+                <div class="text-[9px] text-zinc-600 tracking-widest uppercase mt-1 italic">${item.id}</div>
             </div>
-            <i class="fas fa-edit text-zinc-700 group-hover:text-white transition"></i>
+            <i class="fas fa-chevron-right text-zinc-800 group-hover:text-red-600 transition"></i>
         `;
         div.onclick = () => loadToEditor(item);
         container.appendChild(div);
     });
 }
 
-// MODAL CONTROL
 function openModal() {
     document.getElementById('modalEditor').classList.remove('hidden');
     document.body.classList.add('modal-open');
@@ -201,13 +190,9 @@ function loadToEditor(item) {
     document.getElementById('f_image').value = item.image;
     document.getElementById('f_excerpt').value = item.excerpt || "";
     
-    const audioGrp = document.getElementById('audioGroup');
-    if(currentTab === 'discography') {
-        audioGrp.classList.remove('hidden');
-        document.getElementById('f_audio').value = item.audio || "";
-    } else {
-        audioGrp.classList.add('hidden');
-    }
+    document.getElementById('audioGroup').classList.toggle('hidden', currentTab !== 'discography');
+    if(currentTab === 'discography') document.getElementById('f_audio').value = item.audio || "";
+    
     openModal();
 }
 
@@ -220,22 +205,21 @@ function prepareNew() {
     document.getElementById('f_image').value = "/asset_gambar/default.jpg";
     document.getElementById('f_excerpt').value = "";
     
-    const audioGrp = document.getElementById('audioGroup');
-    if(currentTab === 'discography') {
-        audioGrp.classList.remove('hidden');
-        document.getElementById('f_audio').value = "";
-    } else {
-        audioGrp.classList.add('hidden');
-    }
+    document.getElementById('audioGroup').classList.toggle('hidden', currentTab !== 'discography');
+    if(currentTab === 'discography') document.getElementById('f_audio').value = "";
+    
     openModal();
 }
 
-// SAVE TO GITHUB
 async function saveData() {
     const token = document.getElementById('ghToken').value;
+    const btn = document.getElementById('btnSave');
     const idBaru = document.getElementById('f_id').value;
     
-    if(!idBaru) { alert("ID tidak boleh kosong!"); return; }
+    if(!idBaru) return alert("ID wajib diisi!");
+
+    btn.disabled = true;
+    btn.innerHTML = '<i class="fas fa-spinner fa-spin"></i> Menyimpan...';
 
     const itemData = {
         id: idBaru,
@@ -244,37 +228,28 @@ async function saveData() {
         image: document.getElementById('f_image').value,
         excerpt: document.getElementById('f_excerpt').value
     };
+    if(currentTab === 'discography') itemData.audio = document.getElementById('f_audio').value;
 
-    if(currentTab === 'discography') {
-        itemData.audio = document.getElementById('f_audio').value;
-    }
-
-    // Update Local Object
+    // Deep Copy & Update
+    let tempDb = JSON.parse(JSON.stringify(db)); 
     if(editingId === "NEW") {
-        db[currentTab].push(itemData);
+        tempDb[currentTab].push(itemData);
     } else {
-        const idx = db[currentTab].findIndex(i => i.id === editingId);
-        db[currentTab][idx] = itemData;
+        const idx = tempDb[currentTab].findIndex(i => i.id === editingId);
+        tempDb[currentTab][idx] = itemData;
     }
 
-    // Re-Assemble File Content
-    const dbString = `const sairootsDB = ${JSON.stringify(db, null, 4)};`;
+    const dbString = `const sairootsDB = ${JSON.stringify(tempDb, null, 4)};`;
     const startAnchor = "// === PUSAT DATA SAI ROOTS ===";
     const endAnchor = "// === DATA PENCARIAN GLOBAL (FUSE.JS) ===";
-    
-    const partsHead = rawFileContent.split(startAnchor);
     const partsTail = rawFileContent.split(endAnchor);
 
     const finalFileContent = `${startAnchor}\n// File ini akan di-update otomatis oleh admin_post.html\n\n${dbString}\n\n${endAnchor}${partsTail[1]}`;
 
-    // Push to GitHub
     try {
         const res = await fetch(`https://api.github.com/repos/${CONFIG.owner}/${CONFIG.repo}/contents/${CONFIG.path}`, {
             method: 'PUT',
-            headers: { 
-                'Authorization': `token ${token}`,
-                'Content-Type': 'application/json'
-            },
+            headers: { 'Authorization': `token ${token}`, 'Content-Type': 'application/json' },
             body: JSON.stringify({
                 message: `Update ${currentTab}: ${itemData.title}`,
                 content: btoa(unescape(encodeURIComponent(finalFileContent))),
@@ -283,16 +258,19 @@ async function saveData() {
         });
 
         if(res.ok) {
-            alert("GAS! Data berhasil disimpan di GitHub.");
-            location.reload();
-        } else {
-            alert("Gagal menyimpan. Cek Token atau SHA file.");
-        }
-    } catch (e) {
-        alert("Terjadi kesalahan jaringan.");
-    }
+            const result = await res.json();
+            currentSha = result.content.sha; // PENTING: Update SHA agar bisa save lagi
+            rawFileContent = finalFileContent;
+            db = tempDb;
+            renderList();
+            closeModal();
+            alert("Berhasil disimpan!");
+        } else { alert("Gagal Simpan! Cek Koneksi."); }
+    } catch (e) { alert("Error fatal!"); }
+    
+    btn.disabled = false;
+    btn.innerHTML = '<i class="fas fa-save"></i> Simpan';
 }
 </script>
-
 </body>
 </html>
