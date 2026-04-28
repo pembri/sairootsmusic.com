@@ -1,0 +1,222 @@
+<!DOCTYPE html>
+<html lang="id">
+<head>
+    <meta charset="UTF-8">
+    <title>SAI Roots | Database</title>
+    <script src="https://cdn.tailwindcss.com"></script>
+    <style>
+        body { background-color: #000; color: #fff; font-family: sans-serif; }
+        .input-field { background: #111; border: 1px solid #333; color: #fff; padding: 10px; width: 100%; border-radius: 5px; margin-bottom: 10px; }
+        .btn { padding: 10px 20px; border-radius: 5px; cursor: pointer; font-weight: bold; }
+        .btn-green { background: #008000; color: #fff; }
+        .btn-yellow { background: #ffcc00; color: #000; }
+    </style>
+</head>
+<body class="p-8">
+
+<div class="max-w-2xl mx-auto border border-zinc-800 p-6 rounded-lg">
+    <h2 class="text-2xl font-bold mb-6 text-red-600">SAI ROOTS DATABASE MANAGER</h2>
+
+    <div class="mb-6 p-4 bg-zinc-900 rounded">
+        <input type="password" id="ghToken" placeholder="GitHub Classic Token" class="input-field" value="">
+    </div>
+
+    <hr class="border-zinc-800 mb-6">
+
+    <div class="grid grid-cols-2 gap-4 mb-6">
+        <div>
+            <label class="block mb-2">Pilih Kategori:</label>
+            <select id="targetCategory" class="input-field" onchange="loadExistingIds()">
+                <option value="articles">Articles</option>
+                <option value="lyrics">Lyrics</option>
+                <option value="discography">Discography</option>
+            </select>
+        </div>
+        <div>
+            <label class="block mb-2">Pilih Data (Edit) / Tambah Baru:</label>
+            <select id="targetId" class="input-field" onchange="fillForm()">
+                <option value="NEW">-- TAMBAH BARU --</option>
+            </select>
+        </div>
+    </div>
+
+    <div id="editorForm">
+        <label>ID (Slug):</label>
+        <input type="text" id="fieldId" class="input-field" placeholder="contoh: lirik-baru-2026">
+        
+        <label>Title:</label>
+        <input type="text" id="fieldTitle" class="input-field">
+        
+        <label>Category (Label):</label>
+        <input type="text" id="fieldCategory" class="input-field" placeholder="Article / Single / Album">
+        
+        <label>Image Path:</label>
+        <input type="text" id="fieldImage" class="input-field" value="/asset_gambar/default.jpg">
+        
+        <label>Excerpt:</label>
+        <textarea id="fieldExcerpt" class="input-field"></textarea>
+
+        <div id="extraFields">
+            </div>
+
+        <button onclick="processData()" class="btn btn-green w-full mt-4">SIMPAN KE GITHUB</button>
+    </div>
+
+    <div id="status" class="mt-4 text-sm text-zinc-500"></div>
+</div>
+
+<script>
+const OWNER = 'pembri';
+const REPO = 'sairootsmusic.com';
+const PATH = 'database.js';
+let fullFileContent = "";
+let dbObject = {};
+let currentSha = "";
+
+// 1. Ambil data dari GitHub saat load
+async function fetchDatabase() {
+    const token = document.getElementById('ghToken').value;
+    if(!token) { alert("Masukkan Token dulu, Cok!"); return; }
+    
+    document.getElementById('status').innerText = "Mengambil data...";
+    
+    try {
+        const res = await fetch(`https://api.github.com/repos/${OWNER}/${REPO}/contents/${PATH}`, {
+            headers: { 'Authorization': `token ${token}` }
+        });
+        const data = await res.json();
+        currentSha = data.sha;
+        fullFileContent = atob(data.content);
+
+        // Ekstrak objek sairootsDB dari string file .js
+        const startIdx = fullFileContent.indexOf('const sairootsDB = {');
+        const endIdx = fullFileContent.indexOf('};', startIdx) + 2;
+        const jsonText = fullFileContent.substring(startIdx, endIdx)
+                            .replace('const sairootsDB = ', '')
+                            .replace(';', '');
+        
+        dbObject = JSON.parse(jsonText);
+        document.getElementById('status').innerText = "Database siap.";
+        loadExistingIds();
+    } catch (e) {
+        document.getElementById('status').innerText = "Gagal ambil data. Cek Token/Repo.";
+    }
+}
+
+// Munculkan list ID berdasarkan kategori yang dipilih
+function loadExistingIds() {
+    const cat = document.getElementById('targetCategory').value;
+    const select = document.getElementById('targetId');
+    select.innerHTML = '<option value="NEW">-- TAMBAH BARU --</option>';
+    
+    if(dbObject[cat]) {
+        dbObject[cat].forEach(item => {
+            const opt = document.createElement('option');
+            opt.value = item.id;
+            opt.innerText = item.title;
+            select.appendChild(opt);
+        });
+    }
+
+    // Toggle field Audio
+    const extra = document.getElementById('extraFields');
+    extra.innerHTML = (cat === 'discography') ? '<label>Audio Path:</label><input type="text" id="fieldAudio" class="input-field" placeholder="/discography/file.mp3">' : '';
+}
+
+// Isi form otomatis jika pilih ID lama
+function fillForm() {
+    const cat = document.getElementById('targetCategory').value;
+    const id = document.getElementById('targetId').value;
+    
+    if(id === "NEW") {
+        document.getElementById('fieldId').value = "";
+        document.getElementById('fieldTitle').value = "";
+        document.getElementById('fieldExcerpt').value = "";
+        if(document.getElementById('fieldAudio')) document.getElementById('fieldAudio').value = "";
+        return;
+    }
+
+    const data = dbObject[cat].find(i => i.id === id);
+    if(data) {
+        document.getElementById('fieldId').value = data.id;
+        document.getElementById('fieldTitle').value = data.title;
+        document.getElementById('fieldCategory').value = data.category;
+        document.getElementById('fieldImage').value = data.image;
+        document.getElementById('fieldExcerpt').value = data.excerpt || "";
+        if(data.audio && document.getElementById('fieldAudio')) {
+            document.getElementById('fieldAudio').value = data.audio;
+        }
+    }
+}
+
+// Proses Simpan (Tambah atau Edit)
+async function processData() {
+    const token = document.getElementById('ghToken').value;
+    const cat = document.getElementById('targetCategory').value;
+    const mode = document.getElementById('targetId').value;
+
+    const newData = {
+        id: document.getElementById('fieldId').value,
+        title: document.getElementById('fieldTitle').value,
+        category: document.getElementById('fieldCategory').value,
+        image: document.getElementById('fieldImage').value,
+        excerpt: document.getElementById('fieldExcerpt').value
+    };
+
+    if(cat === 'discography') {
+        newData.audio = document.getElementById('fieldAudio').value;
+    }
+
+    if(mode === "NEW") {
+        dbObject[cat].push(newData);
+    } else {
+        const index = dbObject[cat].findIndex(i => i.id === mode);
+        dbObject[cat][index] = newData;
+    }
+
+    // Rakit ulang file
+    const newDbString = `const sairootsDB = ${JSON.stringify(dbObject, null, 4)};`;
+    
+    // Potong file lama, ganti tengahnya saja
+    const startStr = "// === PUSAT DATA SAI ROOTS ===";
+    const endStr = "// === DATA PENCARIAN GLOBAL (FUSE.JS) ===";
+    
+    const head = fullFileContent.split(startStr)[0];
+    const tail = fullFileContent.split(endStr)[1];
+
+    const finalContent = `${startStr}\n// File ini akan di-update otomatis oleh admin_post.html\n\n${newDbString}\n\n${endStr}${tail}`;
+
+    // Push ke GitHub
+    document.getElementById('status').innerText = "Sedang mengirim ke GitHub...";
+    
+    try {
+        const res = await fetch(`https://api.github.com/repos/${OWNER}/${REPO}/contents/${PATH}`, {
+            method: 'PUT',
+            headers: {
+                'Authorization': `token ${token}`,
+                'Content-Type': 'application/json'
+            },
+            body: JSON.stringify({
+                message: `Update Database: ${newData.title}`,
+                content: btoa(unescape(encodeURIComponent(finalContent))),
+                sha: currentSha
+            })
+        });
+
+        if(res.ok) {
+            alert("BERHASIL! Database SAI Roots sudah diperbarui.");
+            location.reload(); // Refresh untuk ambil data terbaru
+        } else {
+            alert("Gagal update. Cek konsol.");
+        }
+    } catch (e) {
+        console.error(e);
+    }
+}
+
+// Inisialisasi saat token diisi
+document.getElementById('ghToken').addEventListener('change', fetchDatabase);
+</script>
+
+</body>
+</html>
