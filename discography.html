@@ -26,6 +26,7 @@
     
     <meta name="description" content="Official discography of SAI Roots - Roots Reggae, Ska, & Reggae Rap musician.">
     <meta property="og:title" content="Discography | SAI Roots">
+    <meta property="og:description" content="Official discography of SAI Roots - Roots Reggae, Ska, & Reggae Rap musician.">
     <meta property="og:site_name" content="SAI Roots Music">
 
     <script src="https://cdn.tailwindcss.com"></script>
@@ -210,9 +211,9 @@
                 <a href="https://music.amazon.com/artists/B0GTFWNC32/sai-roots" target="_blank" class="hover:text-[#00a8e1]"><i class="fab fa-amazon text-2xl"></i></a>
             </div>
             <div class="flex justify-center space-x-8 mb-10 text-gray-500">
-                <a href="https://instagram.com/ahmadsupembri" target="_blank" class="hover:text-white"><i class="fab fa-instagram text-xl"></i></a>
-                <a href="https://tiktok.com/@ahmadsupembri" target="_blank" class="hover:text-white"><i class="fab fa-tiktok text-xl"></i></a>
-                <a href="https://facebook.com/ahmadsupembri" target="_blank" class="hover:text-[#1877F2]"><i class="fab fa-facebook-f text-xl"></i></a>
+                <a href="https://instagram.com/sairoots" target="_blank" class="hover:text-white"><i class="fab fa-instagram text-xl"></i></a>
+                <a href="https://tiktok.com/@sairoots" target="_blank" class="hover:text-white"><i class="fab fa-tiktok text-xl"></i></a>
+                <a href="https://facebook.com/sairoots" target="_blank" class="hover:text-[#1877F2]"><i class="fab fa-facebook-f text-xl"></i></a>
             </div>
             <div class="border-t border-white/5 pt-8">
                 <p class="text-gray-600 text-[11px] tracking-[0.2em] uppercase">© 2026 <span class="text-white font-medium">SAI Roots Music</span>. All Rights Reserved.</p>
@@ -300,7 +301,7 @@
         };
 
         window.togglePlay = function(event) {
-            if(event) event.stopPropagation(); // Mencegah bubbling dari mini-player
+            if(event) event.stopPropagation();
             if (audio.paused) {
                 audio.play();
                 updatePlayState(true);
@@ -333,7 +334,21 @@
             updatePlayState(true);
             openFullscreenPlayer();
             
-            // Update URL Clean Mode (Tautan Shareable)
+            // ================= TITLE SWITCHER (DINAMIS GANTI JUDUL & SEO) =================
+            const newTitle = `${track.title} | SAI Roots`;
+            document.title = newTitle;
+            
+            const ogTitle = document.querySelector('meta[property="og:title"]');
+            if (ogTitle) ogTitle.setAttribute('content', newTitle);
+            
+            const metaDesc = document.querySelector('meta[name="description"]');
+            if (metaDesc) metaDesc.setAttribute('content', `Dengarkan lagu ${track.title} dari SAI Roots - ${track.category}`);
+            
+            const ogDesc = document.querySelector('meta[property="og:description"]');
+            if (ogDesc) ogDesc.setAttribute('content', `Dengarkan lagu ${track.title} dari SAI Roots - ${track.category}`);
+            // ==============================================================================
+
+            // Update URL Clean Mode
             const slug = createSlug(track.title);
             const newUrl = window.location.protocol + "//" + window.location.host + window.location.pathname + '?track=' + slug;
             window.history.pushState({path: newUrl}, '', newUrl);
@@ -382,7 +397,7 @@
                 url: window.location.href
             };
 
-            // Web Share API (Utama)
+            // Web Share API
             if (navigator.share) {
                 try {
                     await navigator.share(shareData);
@@ -390,7 +405,6 @@
                     console.log('Berbagi dibatalkan', err);
                 }
             } else {
-                // Fallback: Copy link
                 navigator.clipboard.writeText(window.location.href).then(() => {
                     const tooltip = document.getElementById('share-tooltip');
                     tooltip.classList.remove('opacity-0');
@@ -406,7 +420,6 @@
                 seekBar.value = percent;
                 fsSeekBar.value = percent;
                 
-                // Animasi gradient Rasta Green di progres bar fullscreen
                 fsSeekBar.style.background = `linear-gradient(to right, #2D8659 ${percent}%, rgba(255,255,255,0.2) ${percent}%)`;
                 
                 fsCurrentTime.innerText = formatTime(audio.currentTime);
@@ -529,10 +542,8 @@
                 const trackSlug = urlParams.get('track');
                 
                 if (trackSlug) {
-                    // Cari lagu yang cocok berdasarkan parameter
                     const index = sairootsDB.discography.findIndex(t => createSlug(t.title) === trackSlug);
                     if (index !== -1) {
-                        // Putar otomatis dengan jeda tipis agar animasi UI smooth
                         setTimeout(() => playTrack(index), 600);
                     }
                 }
