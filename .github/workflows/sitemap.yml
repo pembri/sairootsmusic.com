@@ -23,61 +23,73 @@ jobs:
         const baseUrl = 'https://sairootsmusic.com';
         const urls = [];
 
-        // 1. Ambil semua file HTML kecuali admin_pages & 404
+        // 1. SCAN FILE FISIK (FILTER KETAT)
         function walk(dir) {
-          let files = fs.readdirSync(dir);
+          const files = fs.readdirSync(dir);
           for (let f of files) {
             let fullPath = path.join(dir, f);
             if (fs.statSync(fullPath).isDirectory()) {
-              // Blokir folder admin dan git
-              if (f !== 'admin_pages' && f !== '.git' && f !== '.github' && f !== 'node_modules') {
+              // BLOKIR FOLDER ADMIN & SISTEM
+              if (!['admin_pages', '.git', '.github', 'node_modules', 'asset_gambar', 'discography'].includes(f)) {
                 walk(fullPath);
               }
-            } else if (f.endsWith('.html') && f !== '404.html') {
+            } else if (f.endsWith('.html')) {
+              // TENDANG 404
+              if (f === '404.html') continue;
+
               let cleanPath = fullPath.replace(/\\/g, '/');
-              // Buang .html dan /index
+              if (cleanPath.startsWith('./')) cleanPath = cleanPath.substring(2);
+              
+              // BANTAI .HTML DAN /INDEX
               let urlPath = cleanPath.replace(/\.html$/, '').replace(/\/index$/, '');
               if (urlPath === 'index') urlPath = ''; 
+              
               urls.push(\`\${baseUrl}/\${urlPath}\`.replace(/\/$/, ''));
             }
           }
         }
         walk('.');
 
-        // 2. Scan database.js untuk track lagu
+        // 2. SCAN TRACK DARI DATABASE.JS (LOGIKA JSON)
         try {
           if (fs.existsSync('database.js')) {
-            const db = fs.readFileSync('database.js', 'utf8');
-            // Mencari pola title di dalam file
-            const titleMatches = db.match(/title:\s*['\"](.+?)['\"]/g);
-            if (titleMatches) {
-              titleMatches.forEach(m => {
-                const title = m.match(/['\"](.+?)['\"]/)[1];
-                const slug = title.toLowerCase().replace(/[^a-z0-9]+/g, '-').replace(/(^-|-$)+/g, '');
-                urls.push(\`\${baseUrl}/discography?track=\${slug}\`);
-              });
+            const content = fs.readFileSync('database.js', 'utf8');
+            // Ambil hanya bagian discography agar tidak campur dengan lirik/artikel
+            const discoSection = content.match(/\"discography\":\s*\[([\s\S]*?)\]/);
+            
+            if (discoSection) {
+              const titles = discoSection[1].match(/\"title\":\s*\"(.+?)\"/g);
+              if (titles) {
+                titles.forEach(t => {
+                  const titleName = t.match(/\"title\":\s*\"(.+?)\"/)[1];
+                  const slug = titleName.toLowerCase().replace(/[^a-z0-9]+/g, '-').replace(/(^-|-$)+/g, '');
+                  urls.push(\`\${baseUrl}/discography?track=\${slug}\`);
+                });
+              }
             }
           }
         } catch (e) { console.log('Gagal scan track:', e.message); }
 
-        // 3. Bangun XML dengan format yang benar
+        // 3. RAKIT XML (UNIQUE)
         const sitemapEntries = [...new Set(urls)].map(url => {
-          const priority = url.includes('track=') ? '0.8' : (url === baseUrl ? '1.0' : '0.7');
+          const priority = url.includes('?track=') ? '0.8' : (url === baseUrl ? '1.0' : '0.7');
           return \`  <url>\\n    <loc>\${url}</loc>\\n    <priority>\${priority}</priority>\\n  </url>\`;
         }).join('\\n');
 
         const xml = \`<?xml version=\"1.0\" encoding=\"UTF-8\"?>\\n<urlset xmlns=\"http://www.sitemaps.org/schemas/sitemap/0.9\">\\n\${sitemapEntries}\\n</urlset>\`;
         
         fs.writeFileSync('sitemap.xml', xml);
-        console.log('Sitemap Berhasil Dibuat: Bersih dari admin & 404, Track lagu masuk!');
+        console.log('Sitemap Berhasil Dibuat!');
         "
 
     - name: Commit and push changes
       run: |
-        if [[ -n "$(git status --porcelain sitemap.xml)" ]]; then
-          git config --global user.name 'GitHub Action'
-          git config --global user.email 'action@github.com'
-          git add sitemap.xml
-          git commit -m "Fix Sitemap: Secure admin_pages, clean URLs, and auto-track sync"
+        git config --global user.name 'GitHub Action'
+        git config --global user.email 'action@github.com'
+        git add sitemap.xml
+        if git diff --staged --quiet; then
+          echo "No changes to commit"
+        else
+          git commit -m "Sitemap Auto-Update: Bersih, Tanpa Admin, Track Terdeteksi"
           git push
         fi
