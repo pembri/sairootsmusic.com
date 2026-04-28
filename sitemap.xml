@@ -1,123 +1,165 @@
 <?xml version="1.0" encoding="UTF-8"?>
 <urlset xmlns="http://www.sitemaps.org/schemas/sitemap/0.9">
-<url>
-<loc>https://sairootsmusic.com/</loc>
-<lastmod>2026-04-28T19:51:44+07:00</lastmod>
-</url>
-<url>
-<loc>https://sairootsmusic.com/404.html</loc>
-<lastmod>2026-04-28T20:06:51+07:00</lastmod>
-</url>
-<url>
-<loc>https://sairootsmusic.com/about.html</loc>
-<lastmod>2026-04-28T19:39:40+07:00</lastmod>
-</url>
-<url>
-<loc>https://sairootsmusic.com/contact.html</loc>
-<lastmod>2026-04-28T19:48:48+07:00</lastmod>
-</url>
-<url>
-<loc>https://sairootsmusic.com/discography.html</loc>
-<lastmod>2026-04-29T04:10:12+07:00</lastmod>
-</url>
-<url>
-<loc>https://sairootsmusic.com/lyric.html</loc>
-<lastmod>2026-04-28T19:52:30+07:00</lastmod>
-</url>
-<url>
-<loc>https://sairootsmusic.com/privacy.html</loc>
-<lastmod>2026-04-28T19:53:18+07:00</lastmod>
-</url>
-<url>
-<loc>https://sairootsmusic.com/admin_pages/admin_db.html</loc>
-<lastmod>2026-04-29T04:27:04+07:00</lastmod>
-</url>
-<url>
-<loc>https://sairootsmusic.com/admin_pages/admin_post.html</loc>
-<lastmod>2026-04-29T04:25:50+07:00</lastmod>
-</url>
-<url>
-<loc>https://sairootsmusic.com/article/babylon-burn/</loc>
-<lastmod>2026-04-28T21:51:00+07:00</lastmod>
-</url>
-<url>
-<loc>https://sairootsmusic.com/article/lirik-drama-klenik/</loc>
-<lastmod>2026-04-28T20:27:25+07:00</lastmod>
-</url>
-<url>
-<loc>https://sairootsmusic.com/article/profil-sai-roots/</loc>
-<lastmod>2026-04-28T20:45:56+07:00</lastmod>
-</url>
-<url>
-<loc>https://sairootsmusic.com/lyric/babylon-burn/</loc>
-<lastmod>2026-04-28T21:53:22+07:00</lastmod>
-</url>
-<url>
-<loc>https://sairootsmusic.com/lyric/lirik-bayang-singgasana/</loc>
-<lastmod>2026-04-28T21:15:28+07:00</lastmod>
-</url>
-<url>
-<loc>https://sairootsmusic.com/lyric/lirik-blaze-it-up/</loc>
-<lastmod>2026-04-28T21:19:39+07:00</lastmod>
-</url>
-<url>
-<loc>https://sairootsmusic.com/lyric/lirik-dari-jauh/</loc>
-<lastmod>2026-04-28T21:04:10+07:00</lastmod>
-</url>
-<url>
-<loc>https://sairootsmusic.com/lyric/lirik-drama-klenik/</loc>
-<lastmod>2026-04-28T20:44:00+07:00</lastmod>
-</url>
-<url>
-<loc>https://sairootsmusic.com/lyric/lirik-eksploitasi/</loc>
-<lastmod>2026-04-28T21:00:53+07:00</lastmod>
-</url>
-<url>
-<loc>https://sairootsmusic.com/lyric/lirik-evaluasi-lagi/</loc>
-<lastmod>2026-04-28T21:21:23+07:00</lastmod>
-</url>
-<url>
-<loc>https://sairootsmusic.com/lyric/lirik-genjer-hijau/</loc>
-<lastmod>2026-04-28T21:07:09+07:00</lastmod>
-</url>
-<url>
-<loc>https://sairootsmusic.com/lyric/lirik-irama-hidup/</loc>
-<lastmod>2026-04-28T21:22:50+07:00</lastmod>
-</url>
-<url>
-<loc>https://sairootsmusic.com/lyric/lirik-jamaican-sound/</loc>
-<lastmod>2026-04-28T21:24:49+07:00</lastmod>
-</url>
-<url>
-<loc>https://sairootsmusic.com/lyric/lirik-jurus-liar/</loc>
-<lastmod>2026-04-28T21:02:07+07:00</lastmod>
-</url>
-<url>
-<loc>https://sairootsmusic.com/lyric/lirik-kasih-mengalun/</loc>
-<lastmod>2026-04-28T21:05:10+07:00</lastmod>
-</url>
-<url>
-<loc>https://sairootsmusic.com/lyric/lirik-ormas-tipu-tipu/</loc>
-<lastmod>2026-04-28T21:26:21+07:00</lastmod>
-</url>
-<url>
-<loc>https://sairootsmusic.com/lyric/lirik-propaganda/</loc>
-<lastmod>2026-04-28T21:14:08+07:00</lastmod>
-</url>
-<url>
-<loc>https://sairootsmusic.com/lyric/lirik-roots-medication/</loc>
-<lastmod>2026-04-28T21:29:21+07:00</lastmod>
-</url>
-<url>
-<loc>https://sairootsmusic.com/lyric/lirik-senandung-manis/</loc>
-<lastmod>2026-04-28T20:55:58+07:00</lastmod>
-</url>
-<url>
-<loc>https://sairootsmusic.com/lyric/lirik-skank-patrol/</loc>
-<lastmod>2026-04-28T21:30:44+07:00</lastmod>
-</url>
-<url>
-<loc>https://sairootsmusic.com/lyric/lirik-timpang/</loc>
-<lastmod>2026-04-28T21:09:11+07:00</lastmod>
-</url>
+  <url>
+    <loc>https://sairootsmusic.com/</loc>
+    <lastmod>2026-04-28</lastmod>
+    <changefreq>weekly</changefreq>
+    <priority>0.8</priority>
+  </url>
+  <url>
+    <loc>https://sairootsmusic.com/about</loc>
+    <lastmod>2026-04-28</lastmod>
+    <changefreq>weekly</changefreq>
+    <priority>0.8</priority>
+  </url>
+  <url>
+    <loc>https://sairootsmusic.com/article/babylon-burn</loc>
+    <lastmod>2026-04-28</lastmod>
+    <changefreq>weekly</changefreq>
+    <priority>0.8</priority>
+  </url>
+  <url>
+    <loc>https://sairootsmusic.com/article/lirik-drama-klenik</loc>
+    <lastmod>2026-04-28</lastmod>
+    <changefreq>weekly</changefreq>
+    <priority>0.8</priority>
+  </url>
+  <url>
+    <loc>https://sairootsmusic.com/article/profil-sai-roots</loc>
+    <lastmod>2026-04-28</lastmod>
+    <changefreq>weekly</changefreq>
+    <priority>0.8</priority>
+  </url>
+  <url>
+    <loc>https://sairootsmusic.com/contact</loc>
+    <lastmod>2026-04-28</lastmod>
+    <changefreq>weekly</changefreq>
+    <priority>0.8</priority>
+  </url>
+  <url>
+    <loc>https://sairootsmusic.com/discography</loc>
+    <lastmod>2026-04-28</lastmod>
+    <changefreq>weekly</changefreq>
+    <priority>0.8</priority>
+  </url>
+  <url>
+    <loc>https://sairootsmusic.com/lyric</loc>
+    <lastmod>2026-04-28</lastmod>
+    <changefreq>weekly</changefreq>
+    <priority>0.8</priority>
+  </url>
+  <url>
+    <loc>https://sairootsmusic.com/lyric/babylon-burn</loc>
+    <lastmod>2026-04-28</lastmod>
+    <changefreq>weekly</changefreq>
+    <priority>0.8</priority>
+  </url>
+  <url>
+    <loc>https://sairootsmusic.com/lyric/lirik-bayang-singgasana</loc>
+    <lastmod>2026-04-28</lastmod>
+    <changefreq>weekly</changefreq>
+    <priority>0.8</priority>
+  </url>
+  <url>
+    <loc>https://sairootsmusic.com/lyric/lirik-blaze-it-up</loc>
+    <lastmod>2026-04-28</lastmod>
+    <changefreq>weekly</changefreq>
+    <priority>0.8</priority>
+  </url>
+  <url>
+    <loc>https://sairootsmusic.com/lyric/lirik-dari-jauh</loc>
+    <lastmod>2026-04-28</lastmod>
+    <changefreq>weekly</changefreq>
+    <priority>0.8</priority>
+  </url>
+  <url>
+    <loc>https://sairootsmusic.com/lyric/lirik-drama-klenik</loc>
+    <lastmod>2026-04-28</lastmod>
+    <changefreq>weekly</changefreq>
+    <priority>0.8</priority>
+  </url>
+  <url>
+    <loc>https://sairootsmusic.com/lyric/lirik-eksploitasi</loc>
+    <lastmod>2026-04-28</lastmod>
+    <changefreq>weekly</changefreq>
+    <priority>0.8</priority>
+  </url>
+  <url>
+    <loc>https://sairootsmusic.com/lyric/lirik-evaluasi-lagi</loc>
+    <lastmod>2026-04-28</lastmod>
+    <changefreq>weekly</changefreq>
+    <priority>0.8</priority>
+  </url>
+  <url>
+    <loc>https://sairootsmusic.com/lyric/lirik-genjer-hijau</loc>
+    <lastmod>2026-04-28</lastmod>
+    <changefreq>weekly</changefreq>
+    <priority>0.8</priority>
+  </url>
+  <url>
+    <loc>https://sairootsmusic.com/lyric/lirik-irama-hidup</loc>
+    <lastmod>2026-04-28</lastmod>
+    <changefreq>weekly</changefreq>
+    <priority>0.8</priority>
+  </url>
+  <url>
+    <loc>https://sairootsmusic.com/lyric/lirik-jamaican-sound</loc>
+    <lastmod>2026-04-28</lastmod>
+    <changefreq>weekly</changefreq>
+    <priority>0.8</priority>
+  </url>
+  <url>
+    <loc>https://sairootsmusic.com/lyric/lirik-jurus-liar</loc>
+    <lastmod>2026-04-28</lastmod>
+    <changefreq>weekly</changefreq>
+    <priority>0.8</priority>
+  </url>
+  <url>
+    <loc>https://sairootsmusic.com/lyric/lirik-kasih-mengalun</loc>
+    <lastmod>2026-04-28</lastmod>
+    <changefreq>weekly</changefreq>
+    <priority>0.8</priority>
+  </url>
+  <url>
+    <loc>https://sairootsmusic.com/lyric/lirik-ormas-tipu-tipu</loc>
+    <lastmod>2026-04-28</lastmod>
+    <changefreq>weekly</changefreq>
+    <priority>0.8</priority>
+  </url>
+  <url>
+    <loc>https://sairootsmusic.com/lyric/lirik-propaganda</loc>
+    <lastmod>2026-04-28</lastmod>
+    <changefreq>weekly</changefreq>
+    <priority>0.8</priority>
+  </url>
+  <url>
+    <loc>https://sairootsmusic.com/lyric/lirik-roots-medication</loc>
+    <lastmod>2026-04-28</lastmod>
+    <changefreq>weekly</changefreq>
+    <priority>0.8</priority>
+  </url>
+  <url>
+    <loc>https://sairootsmusic.com/lyric/lirik-senandung-manis</loc>
+    <lastmod>2026-04-28</lastmod>
+    <changefreq>weekly</changefreq>
+    <priority>0.8</priority>
+  </url>
+  <url>
+    <loc>https://sairootsmusic.com/lyric/lirik-skank-patrol</loc>
+    <lastmod>2026-04-28</lastmod>
+    <changefreq>weekly</changefreq>
+    <priority>0.8</priority>
+  </url>
+  <url>
+    <loc>https://sairootsmusic.com/lyric/lirik-timpang</loc>
+    <lastmod>2026-04-28</lastmod>
+    <changefreq>weekly</changefreq>
+    <priority>0.8</priority>
+  </url>
+  <url>
+    <loc>https://sairootsmusic.com/privacy</loc>
+    <lastmod>2026-04-28</lastmod>
+    <changefreq>weekly</changefreq>
+    <priority>0.8</priority>
+  </url>
 </urlset>
