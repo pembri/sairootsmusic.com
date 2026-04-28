@@ -15,6 +15,13 @@ const sairootsDB = {
     ],
     "lyrics": [
         {
+            "id": "lirik-jurus-liar",
+            "title": "Lirik Jurus Liar",
+            "category": "Single",
+            "image": "/asset_gambar/default.jpg",
+            "excerpt": ""
+        },
+        {
             "id": "lirik-eksploitasi",
             "title": "Lirik Eksploitasi",
             "category": "Single",
