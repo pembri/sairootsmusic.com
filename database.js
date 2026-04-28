@@ -14,16 +14,7 @@ const sairootsDB = {
         }
     ],
     "lyrics": [],
-    "discography": [
-        {
-            "id": "critical-fire",
-            "title": "Critical Fire",
-            "category": "Album",
-            "image": "/asset_gambar/critical-fire.jpg",
-            "audio": "/discography/critical-fire.mp3",
-            "excerpt": "Album perdana yang menjadi titik awal pergerakan."
-        }
-    ]
+    "discography": []
 };
 
 // === DATA PENCARIAN GLOBAL (FUSE.JS) ===
