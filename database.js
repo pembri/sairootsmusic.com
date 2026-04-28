@@ -2,18 +2,22 @@
 // File ini akan di-update otomatis oleh admin_post.html
 
 const sairootsDB = {
-    // 1. DATA ARTIKEL
-    articles: [],
-
-    // 2. DATA LIRIK
-    lyrics: [],
-
-    // 3. DATA DISKOGRAFI
-    discography: []
+    "articles": [
+        {
+            "id": "profil-sai-roots",
+            "title": "Profil SAI Roots",
+            "category": "Artikel",
+            "image": "/asset_gambar/default.jpg",
+            "excerpt": "",
+            "color": "green",
+            "date": "28 April 2026"
+        }
+    ],
+    "lyrics": [],
+    "discography": []
 };
 
 // === DATA PENCARIAN GLOBAL (FUSE.JS) ===
-// Mesin yang menggabungkan seluruh data di atas agar bisa dicari dari menu Hamburger
 const searchData = [
     ...sairootsDB.articles.map(a => ({ type: "Article", title: a.title, url: `/article/${a.id}`, excerpt: a.excerpt, category: a.category })),
     ...sairootsDB.lyrics.map(l => ({ type: "Lyric", title: `${l.title} (Lyrics)`, url: `/lyric/${l.id}`, excerpt: l.excerpt, category: l.category })),
