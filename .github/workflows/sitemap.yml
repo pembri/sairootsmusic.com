@@ -2,79 +2,82 @@ name: Generate Sitemap Automated
 
 on:
   push:
-    branches: [ main ] # Jalankan setiap ada push ke branch main
+    branches: [ main ]
+
+permissions:
+  contents: write
 
 jobs:
   sitemap_job:
     runs-on: ubuntu-latest
-    name: Generate a sitemap
     steps:
     - name: Checkout the repo
       uses: actions/checkout@v4
-      with:
-        fetch-depth: 0 
 
-    - name: Generate the base sitemap
-      id: sitemap
-      uses: cicirello/generate-sitemap@v1
-      with:
-        base-url-path: https://sairootsmusic.com/
-        path-to-root: .
-        # Dilarang baca folder admin
-        drop-directory-prefixes: 'admin_pages/'
-        # Aktifkan Clean URL (tanpa .html)
-        clean-urls: true
-        # File yang gak perlu masuk sitemap
-        exclude-files: '404.html, favicon.ico, site.webmanifest'
-
-    - name: Auto-Read Tracks from database.js
+    - name: Generate Clean Sitemap
       run: |
-        # Menggunakan Node.js bawaan Ubuntu untuk membaca database.js
         node -e "
-          const fs = require('fs');
-          try {
-            const content = fs.readFileSync('database.js', 'utf8');
-            
-            // Cari bagian array 'discography' biar nggak kecampur artikel/lirik
-            const discoMatch = content.match(/discography:\s*\[([\s\S]*?)\]/i) || content.match(/const discography\s*=\s*\[([\s\S]*?)\]/i);
-            
-            let sitemapExtra = '';
-            if (discoMatch) {
-              const discoData = discoMatch[1];
-              // Cari semua text di dalam title: \"...\"
-              const titleRegex = /title:\s*['\"](.*?)['\"]/g;
-              let match;
-              
-              // Looping untuk setiap lagu yang ketemu
-              while ((match = titleRegex.exec(discoData)) !== null) {
-                const title = match[1];
-                // Buat format clean url / slug
-                const slug = title.toLowerCase().replace(/[^a-z0-9]+/g, '-').replace(/(^-|-$)+/g, '');
-                
-                // Rangkai tag XML-nya
-                sitemapExtra += '  <url>\\n    <loc>https://sairootsmusic.com/discography?track=' + slug + '</loc>\\n    <priority>0.8</priority>\\n  </url>\\n';
+        const fs = require('fs');
+        const path = require('path');
+
+        const baseUrl = 'https://sairootsmusic.com';
+        const urls = [];
+
+        // 1. Ambil semua file HTML kecuali admin_pages & 404
+        function walk(dir) {
+          let files = fs.readdirSync(dir);
+          for (let f of files) {
+            let fullPath = path.join(dir, f);
+            if (fs.statSync(fullPath).isDirectory()) {
+              // Blokir folder admin dan git
+              if (f !== 'admin_pages' && f !== '.git' && f !== '.github' && f !== 'node_modules') {
+                walk(fullPath);
               }
-              
-              // Masukkan ke sitemap.xml sebelum tag penutup
-              const sitemap = fs.readFileSync('sitemap.xml', 'utf8');
-              const newSitemap = sitemap.replace('</urlset>', sitemapExtra + '</urlset>');
-              fs.writeFileSync('sitemap.xml', newSitemap);
-              
-              console.log('Berhasil membaca database.js dan memasukkan link lagu otomatis ke sitemap!');
-            } else {
-              console.log('Tidak menemukan array discography di database.js');
+            } else if (f.endsWith('.html') && f !== '404.html') {
+              let cleanPath = fullPath.replace(/\\/g, '/');
+              // Buang .html dan /index
+              let urlPath = cleanPath.replace(/\.html$/, '').replace(/\/index$/, '');
+              if (urlPath === 'index') urlPath = ''; 
+              urls.push(\`\${baseUrl}/\${urlPath}\`.replace(/\/$/, ''));
             }
-          } catch (e) {
-            console.log('Gagal memproses file:', e.message);
           }
+        }
+        walk('.');
+
+        // 2. Scan database.js untuk track lagu
+        try {
+          if (fs.existsSync('database.js')) {
+            const db = fs.readFileSync('database.js', 'utf8');
+            // Mencari pola title di dalam file
+            const titleMatches = db.match(/title:\s*['\"](.+?)['\"]/g);
+            if (titleMatches) {
+              titleMatches.forEach(m => {
+                const title = m.match(/['\"](.+?)['\"]/)[1];
+                const slug = title.toLowerCase().replace(/[^a-z0-9]+/g, '-').replace(/(^-|-$)+/g, '');
+                urls.push(\`\${baseUrl}/discography?track=\${slug}\`);
+              });
+            }
+          }
+        } catch (e) { console.log('Gagal scan track:', e.message); }
+
+        // 3. Bangun XML dengan format yang benar
+        const sitemapEntries = [...new Set(urls)].map(url => {
+          const priority = url.includes('track=') ? '0.8' : (url === baseUrl ? '1.0' : '0.7');
+          return \`  <url>\\n    <loc>\${url}</loc>\\n    <priority>\${priority}</priority>\\n  </url>\`;
+        }).join('\\n');
+
+        const xml = \`<?xml version=\"1.0\" encoding=\"UTF-8\"?>\\n<urlset xmlns=\"http://www.sitemaps.org/schemas/sitemap/0.9\">\\n\${sitemapEntries}\\n</urlset>\`;
+        
+        fs.writeFileSync('sitemap.xml', xml);
+        console.log('Sitemap Berhasil Dibuat: Bersih dari admin & 404, Track lagu masuk!');
         "
 
-    - name: Commit and push if changed
+    - name: Commit and push changes
       run: |
         if [[ -n "$(git status --porcelain sitemap.xml)" ]]; then
           git config --global user.name 'GitHub Action'
           git config --global user.email 'action@github.com'
           git add sitemap.xml
-          git commit -m "Automated sitemap update: Auto-read tracks for SAI Roots"
+          git commit -m "Fix Sitemap: Secure admin_pages, clean URLs, and auto-track sync"
           git push
         fi
