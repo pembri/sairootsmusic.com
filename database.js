@@ -16,14 +16,6 @@ const sairootsDB = {
     "lyrics": [],
     "discography": [
         {
-            "id": "reborn-riddim",
-            "title": "Reborn Riddim",
-            "category": "Single",
-            "image": "/asset_gambar/reborn-riddim.jpg",
-            "audio": "/discography/reborn-riddim.mp3",
-            "excerpt": "Single terbaru dengan sentuhan Roots Reggae yang khas."
-        },
-        {
             "id": "critical-fire",
             "title": "Critical Fire",
             "category": "Album",
