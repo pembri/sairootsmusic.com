@@ -261,8 +261,8 @@ async function saveData() {
 
     // Create a working copy of the DB
     let tempDb = JSON.parse(JSON.stringify(db)); 
-    if(editingId === "NEW") {
-        tempDb[currentTab].push(itemData);
+        if(editingId === "NEW") {
+        tempDb[currentTab].unshift(itemData);
     } else {
         const idx = tempDb[currentTab].findIndex(i => i.id === editingId);
         tempDb[currentTab][idx] = itemData;
