@@ -15,6 +15,13 @@ const sairootsDB = {
     ],
     "lyrics": [
         {
+            "id": "lirik-kasih-mengalun",
+            "title": "Lirik Kasih Mengalun",
+            "category": "Single",
+            "image": "/asset_gambar/default.jpg",
+            "excerpt": ""
+        },
+        {
             "id": "lirik-dari-jauh",
             "title": "Lirik Dari Jauh",
             "category": "Single",
