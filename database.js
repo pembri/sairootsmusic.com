@@ -149,14 +149,6 @@ const sairootsDB = {
             "image": "/asset_gambar/art-critical-fire.jpg",
             "excerpt": "",
             "audio": "/discography/skank-patrol.mp3"
-        },
-        {
-            "id": "propaganda",
-            "title": "Propaganda",
-            "category": "Album Critical",
-            "image": "/asset_gambar/art-critical-fire.jpg",
-            "excerpt": "",
-            "audio": "/discography/propaganda.mp3"
         }
     ]
 };
