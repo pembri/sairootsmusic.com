@@ -15,6 +15,13 @@ const sairootsDB = {
     ],
     "lyrics": [
         {
+            "id": "lirik-evaluasi-lagi",
+            "title": "Lirik Evaluasi Lagi",
+            "category": "Album - Critical Fire",
+            "image": "/asset_gambar/default.jpg",
+            "excerpt": ""
+        },
+        {
             "id": "lirik-blaze-it-up",
             "title": "Lirik Blaze It Up",
             "category": "Album - Critical Fire",
