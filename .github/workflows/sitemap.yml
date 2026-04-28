@@ -1,99 +1,159 @@
-name: Generate Sitemap Automated
+name: Generate Sitemap
 
 on:
   push:
-    branches: [ main ]
+    branches:
+      - main
+  workflow_dispatch:
 
 permissions:
   contents: write
 
 jobs:
-  sitemap_job:
+  generate-sitemap:
     runs-on: ubuntu-latest
+
     steps:
-    - name: Checkout the repo
-      uses: actions/checkout@v4
+      - name: Checkout Repository
+        uses: actions/checkout@v4
+        with:
+          fetch-depth: 0
+          token: ${{ secrets.GITHUB_TOKEN }}
 
-    - name: Generate Clean Sitemap
-      run: |
-        node -e "
-        const fs = require('fs');
-        const path = require('path');
+      - name: Setup Node.js
+        uses: actions/setup-node@v4
+        with:
+          node-version: '20'
 
-        const baseUrl = 'https://sairootsmusic.com';
-        const urls = [];
+      - name: Generate sitemap.xml
+        run: |
+          cat << 'EOF' > generate-sitemap.js
+          const fs = require('fs');
+          const path = require('path');
 
-        // 1. SCAN FILE FISIK (DENGAN FILTER SANGAT KETAT)
-        function walk(dir) {
-          const files = fs.readdirSync(dir);
-          for (let f of files) {
-            let fullPath = path.join(dir, f);
-            let stat = fs.statSync(fullPath);
+          const BASE_URL = 'https://sairootsmusic.com';
+          const ROOT_DIR = '.';
 
-            if (stat.isDirectory()) {
-              // BLOKIR TOTAL FOLDER ADMIN & SISTEM
-              const blacklistedDirs = ['admin_pages', '.git', '.github', 'node_modules', 'asset_gambar', 'assets'];
-              if (!blacklistedDirs.includes(f)) {
-                walk(fullPath);
-              }
-            } else if (f.endsWith('.html')) {
-              // BANTAI 404.HTML DAN ADMIN_PAGES (JAGA-JAGA)
-              if (f.toLowerCase() === '404.html' || fullPath.includes('admin_pages')) continue;
+          // Blacklist konfigurasi
+          const BLACKLIST_FOLDERS = ['admin_pages', 'node_modules', '.git', '.github'];
+          const BLACKLIST_FILES = ['404.html'];
 
-              let cleanPath = fullPath.replace(/\\/g, '/');
-              if (cleanPath.startsWith('./')) cleanPath = cleanPath.substring(2);
-              
-              // BANTAI .HTML DAN /INDEX (UNTUK CLEAN URL)
-              let urlPath = cleanPath.replace(/\.html$/i, '').replace(/\/index$/i, '');
-              if (urlPath === 'index') urlPath = ''; 
-              
-              urls.push(\`\${baseUrl}/\${urlPath}\`.replace(/\/$/, ''));
-            }
-          }
-        }
-        walk('.');
+          const today = new Date().toISOString().split('T')[0];
+          const urls = new Set();
 
-        // 2. SCAN TRACK DARI DATABASE.JS (LOGIKA JSON SAI ROOTS)
-        try {
-          if (fs.existsSync('database.js')) {
-            const content = fs.readFileSync('database.js', 'utf8');
-            // Hanya ambil bagian discography agar akurat
-            const discoSection = content.match(/\"discography\":\s*\[([\s\S]*?)\]/);
-            
-            if (discoSection) {
-              const titles = discoSection[1].match(/\"title\":\s*\"(.+?)\"/g);
-              if (titles) {
-                titles.forEach(t => {
-                  const titleName = t.match(/\"title\":\s*\"(.+?)\"/)[1];
-                  // Slug format: Huruf kecil, ganti spasi jadi strip
-                  const slug = titleName.toLowerCase().replace(/[^a-z0-9]+/g, '-').replace(/(^-|-$)+/g, '');
-                  urls.push(\`\${baseUrl}/discography?track=\${slug}\`);
-                });
+          // Fungsi rekursif scan folder HTML
+          function scanDir(dir) {
+            const items = fs.readdirSync(dir, { withFileTypes: true });
+
+            for (const item of items) {
+              const fullPath = path.join(dir, item.name);
+
+              if (item.isDirectory()) {
+                if (BLACKLIST_FOLDERS.includes(item.name)) continue;
+                if (item.name.startsWith('.')) continue;
+                scanDir(fullPath);
+              } else if (item.isFile() && item.name.endsWith('.html')) {
+                if (BLACKLIST_FILES.includes(item.name)) continue;
+
+                let relativePath = path.relative(ROOT_DIR, fullPath).replace(/\\/g, '/');
+
+                // Hapus ekstensi .html
+                relativePath = relativePath.replace(/\.html$/, '');
+
+                // Hapus akhiran /index
+                relativePath = relativePath.replace(/\/index$/, '');
+
+                // Khusus root index
+                if (relativePath === 'index') relativePath = '';
+
+                const url = relativePath ? `${BASE_URL}/${relativePath}` : `${BASE_URL}/`;
+                urls.add(url);
               }
             }
           }
-        } catch (e) { console.log('Gagal scan track:', e.message); }
 
-        // 3. RAKIT XML TANPA DUPLIKAT
-        const sitemapEntries = [...new Set(urls)].map(url => {
-          const priority = url.includes('?track=') ? '0.8' : (url === baseUrl ? '1.0' : '0.7');
-          return \`  <url>\\n    <loc>\${url}</loc>\\n    <priority>\${priority}</priority>\\n  </url>\`;
-        }).join('\\n');
+          // Fungsi slugify
+          function slugify(text) {
+            return text
+              .toLowerCase()
+              .trim()
+              .replace(/[^\w\s-]/g, '')
+              .replace(/\s+/g, '-')
+              .replace(/-+/g, '-');
+          }
 
-        const xml = \`<?xml version=\"1.0\" encoding=\"UTF-8\"?>\\n<urlset xmlns=\"http://www.sitemaps.org/schemas/sitemap/0.9\">\\n\${sitemapEntries}\\n</urlset>\`;
-        
-        fs.writeFileSync('sitemap.xml', xml);
-        console.log('Sitemap Berhasil Dibuat: 404 Dibuang, Admin Diblokir, URL Bersih!');
-        "
+          // Parse database.js untuk ambil title dari discography
+          function parseDiscography() {
+            const dbPath = path.join(ROOT_DIR, 'database.js');
+            if (!fs.existsSync(dbPath)) {
+              console.warn('database.js tidak ditemukan, skip discography.');
+              return [];
+            }
 
-    - name: Commit and push changes
-      run: |
-        git config --global user.name 'GitHub Action'
-        git config --global user.email 'action@github.com'
-        git add sitemap.xml
-        if git diff --staged --quiet; then
-          echo "No changes to commit"
-        else
-          git commit -m "Sitemap Fix: 404 and Admin Pages removed, Clean URLs enforced"
-          git push
-        fi
+            const content = fs.readFileSync(dbPath, 'utf-8');
+
+            // Cari blok discography: [...]
+            const discographyMatch = content.match(/discography\s*:\s*\[([\s\S]*?)\]/);
+            if (!discographyMatch) {
+              console.warn('Array discography tidak ditemukan dalam database.js');
+              return [];
+            }
+
+            const discographyBlock = discographyMatch[1];
+
+            // Ambil semua title dengan regex (mendukung quote " atau ')
+            const titleRegex = /title\s*:\s*["'`]([^"'`]+)["'`]/g;
+            const titles = [];
+            let match;
+            while ((match = titleRegex.exec(discographyBlock)) !== null) {
+              titles.push(match[1]);
+            }
+
+            return titles;
+          }
+
+          // Mulai scanning
+          console.log('Scanning HTML files...');
+          scanDir(ROOT_DIR);
+
+          console.log('Parsing database.js untuk discography...');
+          const tracks = parseDiscography();
+          console.log(`Ditemukan ${tracks.length} tracks.`);
+
+          tracks.forEach(title => {
+            const slug = slugify(title);
+            urls.add(`${BASE_URL}/discography?track=${slug}`);
+          });
+
+          // Build XML
+          let xml = '<?xml version="1.0" encoding="UTF-8"?>\n';
+          xml += '<urlset xmlns="http://www.sitemaps.org/schemas/sitemap/0.9">\n';
+
+          [...urls].sort().forEach(url => {
+            xml += '  <url>\n';
+            xml += `    <loc>${url}</loc>\n`;
+            xml += `    <lastmod>${today}</lastmod>\n`;
+            xml += '    <changefreq>weekly</changefreq>\n';
+            xml += '    <priority>0.8</priority>\n';
+            xml += '  </url>\n';
+          });
+
+          xml += '</urlset>\n';
+
+          fs.writeFileSync('sitemap.xml', xml);
+          console.log(`Sitemap berhasil dibuat dengan ${urls.size} URL.`);
+          EOF
+
+          node generate-sitemap.js
+
+      - name: Commit & Push sitemap.xml
+        run: |
+          git config --local user.name "github-actions[bot]"
+          git config --local user.email "41898282+github-actions[bot]@users.noreply.github.com"
+          git add sitemap.xml
+          if git diff --staged --quiet; then
+            echo "Tidak ada perubahan pada sitemap.xml"
+          else
+            git commit -m "chore: auto-update sitemap.xml [skip ci]"
+            git push
+          fi
