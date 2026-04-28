@@ -4,15 +4,6 @@
 const sairootsDB = {
     "articles": [
         {
-            "id": "lirik-dari-jauh",
-            "title": "Lirik Dari Jauh",
-            "category": "Single",
-            "image": "/asset_gambar/default.jpg",
-            "excerpt": "",
-            "color": "green",
-            "date": "28 April 2026"
-        },
-        {
             "id": "profil-sai-roots",
             "title": "Profil SAI Roots",
             "category": "Article",
