@@ -30,7 +30,15 @@
         .rasta-stripe { height: 3px; background: linear-gradient(90deg, #2D8659 0%, #FBBF24 50%, #DC2626 100%); width: 100%; position: fixed; top: 0; z-index: 60; }
         #mobile-menu { transition: transform 0.4s cubic-bezier(0.4, 0, 0.2, 1); overflow-y: auto; }
         .menu-open { transform: translateX(0) !important; }
-        .ql-editor { font-size: 1.125rem; line-height: 1.8; color: #d1d5db; }
+        .ql-editor {
+    font-size: 1.125rem;
+    line-height: 1.8;
+    color: #d1d5db;
+    white-space: pre-wrap;
+    overflow-wrap: break-word;
+    word-break: break-word;
+    max-width: 100%;
+}
         .ql-editor h1, .ql-editor h2 { font-family: 'Anton', sans-serif; text-transform: uppercase; color: white; margin-top: 2rem; margin-bottom: 1rem; }
         .ql-editor blockquote { border-left: 4px solid #FBBF24; padding-left: 1.5rem; font-style: italic; color: #9ca3af; }
         .ql-editor a { color: #FBBF24; text-decoration: underline; }
@@ -42,7 +50,7 @@
         <div class="container mx-auto px-6 py-4 flex justify-between items-center">
             <div class="text-3xl font-display uppercase tracking-wider">
                 <a href="/" class="flex items-center gap-3 hover:text-rasta-yellow transition-colors duration-300">
-                    <img src="https://raw.githubusercontent.com/sairootsmusic/sairootsmusic.com/refs/heads/main/android-chrome-192x192.png" alt="Logo SAI Roots" class="w-10 h-10 rounded-full object-cover border border-white/10">
+                    <img src="/android-chrome-192x192.png" alt="Logo SAI Roots" class="w-10 h-10 rounded-full object-cover border border-white/10">
                     <span>SAI <span class="text-rasta-green">Roots</span></span>
                 </a>
             </div>
