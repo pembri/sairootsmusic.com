@@ -141,7 +141,16 @@ const sairootsDB = {
             "excerpt": ""
         }
     ],
-    "discography": []
+    "discography": [
+        {
+            "id": "drama-klenik",
+            "title": "Drama Klenik",
+            "category": "Single",
+            "image": "/asset_gambar/default.jpg",
+            "excerpt": "",
+            "audio": "/discography/drama-klenik.mp3"
+        }
+    ]
 };
 
 // === DATA PENCARIAN GLOBAL (FUSE.JS) ===
