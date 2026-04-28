@@ -163,16 +163,7 @@
         window.onload = function() {
             quill = new Quill('#quill-editor', {
                 theme: 'snow',
-                modules: { 
-                    toolbar: [ 
-                        ['bold', 'italic', 'underline', 'strike'], 
-                        ['blockquote'], 
-                        [{ 'header': [1, 2, 3, false] }], 
-                        [{ 'list': 'ordered'}, { 'list': 'bullet' }], 
-                        [{ 'align': [] }], 
-                        ['link'] 
-                    ] 
-                }
+                modules: { toolbar: [ ['bold', 'italic', 'underline', 'strike'], ['blockquote'], [{ 'header': [1, 2, 3, false] }], [{ 'list': 'ordered'}, { 'list': 'bullet' }], [{ 'align': [] }], ['link'] ] }
             });
 
             if(localStorage.getItem('github_pat')) {
@@ -226,14 +217,10 @@
 
         function showStatus(msg, type) {
             const el = document.getElementById('global-status');
-            el.classList.remove('hidden', 'bg-rasta-green/20', 'text-rasta-green', 'border-rasta-green', 
-                                'bg-rasta-red/20', 'text-rasta-red', 'border-rasta-red', 
-                                'bg-rasta-yellow/20', 'text-rasta-yellow', 'border-rasta-yellow');
-            
+            el.classList.remove('hidden', 'bg-rasta-green/20', 'text-rasta-green', 'border-rasta-green', 'bg-rasta-red/20', 'text-rasta-red', 'border-rasta-red', 'bg-rasta-yellow/20', 'text-rasta-yellow', 'border-rasta-yellow');
             if(type === 'success') el.classList.add('bg-rasta-green/20', 'text-rasta-green', 'border-rasta-green');
             else if(type === 'error') el.classList.add('bg-rasta-red/20', 'text-rasta-red', 'border-rasta-red');
             else el.classList.add('bg-rasta-yellow/20', 'text-rasta-yellow', 'border-rasta-yellow');
-            
             el.innerText = msg;
             if(type === 'success') setTimeout(() => el.classList.add('hidden'), 5000);
         }
@@ -299,17 +286,14 @@
 
         function renderList(containerId, items, type) {
             const container = document.getElementById(containerId);
-            if(items.length === 0) { 
-                container.innerHTML = '<p class="text-gray-500 text-sm">Belum ada data.</p>'; 
-                return; 
-            }
+            if(items.length === 0) { container.innerHTML = '<p class="text-gray-500 text-sm">Belum ada data.</p>'; return; }
             
             let html = '<div class="space-y-3">';
             items.forEach(item => {
                 html += `
                     <div class="flex items-center justify-between bg-black border border-white/5 p-3 rounded hover:border-white/20 transition">
                         <div class="flex items-center gap-4">
-                            <img src="${item.image || '/asset_gambar/default.jpg'}" class="w-10 h-10 object-cover rounded grayscale brightness-75">
+                            <img src="${item.image}" class="w-10 h-10 object-cover rounded grayscale brightness-75">
                             <div>
                                 <h4 class="text-white font-bold text-sm leading-tight">${item.title}</h4>
                                 <span class="text-[10px] text-gray-500 uppercase tracking-widest">${item.category}</span>
@@ -327,7 +311,7 @@
         }
 
         async function executeDelete(type, id, title) {
-            if(!confirm(`YAKIN MAU MENGHAPUS "${title}" PERMANEN?`)) return;
+            if(!confirm(`YAKIN MAU MENGHAPUS "${title}" PERMANEN?\nFile HTML dan data akan lenyap.`)) return;
             
             try {
                 showStatus(`Menghapus ${title}...`, "process");
@@ -342,11 +326,10 @@
                 if(type === 'music') dbObj.discography = dbObj.discography.filter(a => a.id !== id);
 
                 let newDbString = `// === PUSAT DATA SAI ROOTS ===\n// File ini akan di-update otomatis oleh admin_post.html\n\nconst sairootsDB = ${JSON.stringify(dbObj, null, 4)};\n\n// === DATA PENCARIAN GLOBAL (FUSE.JS) ===\nconst searchData = [\n    ...sairootsDB.articles.map(a => ({ type: "Article", title: a.title, url: \`/article/\${a.id}\`, excerpt: a.excerpt, category: a.category })),\n    ...sairootsDB.lyrics.map(l => ({ type: "Lyric", title: \`\${l.title} (Lyrics)\`, url: \`/lyric/\${l.id}\`, excerpt: l.excerpt, category: l.category })),\n    ...sairootsDB.discography.map(d => ({ type: "Discography", title: d.title, url: \`/discography/\${d.id}\`, excerpt: d.excerpt, category: d.category }))\n];`;
-
                 await uploadFile('database.js', strToBase64(newDbString), `Deleted ${title} via CMS`);
 
-                if(type === 'article') await deleteFile(`article/${id}/index.html`, `Delete article ${title}`);
-                if(type === 'lyric') await deleteFile(`lyric/${id}/index.html`, `Delete lyric ${title}`);
+                if(type === 'article') await deleteFile(`article/${id}/index.html`, `Delete article HTML ${title}`);
+                if(type === 'lyric') await deleteFile(`lyric/${id}/index.html`, `Delete lyric HTML ${title}`);
                 if(type === 'music') await deleteFile(`discography/${id}.mp3`, `Delete MP3 ${title}`);
 
                 showStatus(`Berhasil menghapus ${title}!`, "success");
@@ -373,14 +356,12 @@
             switchSubTab(type);
 
             document.getElementById('edit-alert').classList.remove('hidden');
-            document.getElementById('input-title').value = editOriginalData.title || '';
-            document.getElementById('input-category').value = editOriginalData.category || '';
+            document.getElementById('input-title').value = editOriginalData.title;
+            document.getElementById('input-category').value = editOriginalData.category;
             document.getElementById('input-excerpt').value = editOriginalData.excerpt || '';
             
-            if(type === 'article' && editOriginalData.color) {
-                document.getElementById('input-color').value = editOriginalData.color;
-            }
-
+            if(type === 'article') document.getElementById('input-color').value = editOriginalData.color || 'green';
+            
             document.getElementById('edit-img-note').classList.remove('hidden');
             document.getElementById('edit-audio-note').classList.remove('hidden');
             document.getElementById('btn-publish').innerHTML = '<i class="fas fa-save mr-2"></i> Update Data';
@@ -388,12 +369,13 @@
             document.getElementById('btn-publish').classList.replace('text-white', 'text-black');
 
             if(type !== 'music') {
+                showStatus("Menarik konten dari server...", "process");
                 try {
-                    showStatus("Menarik konten lama...", "process");
                     const htmlRes = await fetchGitHub(`\( {type}/ \){id}/index.html`);
                     const rawHtml = base64ToStr(htmlRes.content);
                     const htmlMatch = rawHtml.match(/<div class="[^"]*ql-editor[^"]*">([\s\S]*?)<\/div>\s*<\/article>/);
-                    quill.root.innerHTML = htmlMatch ? htmlMatch[1] : "<p>Konten lama tidak dapat diekstrak.</p>";
+                    if(htmlMatch) quill.root.innerHTML = htmlMatch[1];
+                    else quill.root.innerHTML = "<p>Gagal mengekstrak isi konten HTML lama.</p>";
                     showStatus("Siap diedit.", "success");
                 } catch(e) {
                     quill.root.innerHTML = "<p>File HTML tidak ditemukan.</p>";
@@ -420,9 +402,7 @@
             showStatus("Batal edit.", "success");
         }
 
-        // ==========================================================
-        // GENERATOR TEMPLATE (tetap sama seperti aslinya)
-        // ==========================================================
+        // GENERATOR TEMPLATE (tetap sama seperti asli)
         function generateHTMLTemplate(title, type, contentHTML) {
             return `<!DOCTYPE html>
 <html lang="id">
@@ -520,11 +500,11 @@
         function toggleMenu() {
             const isOpen = mobileMenu.classList.toggle('menu-open');
             if (isOpen) {
-                hamburgerIcon.innerHTML = '<path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M6 18L18 6M6 6l12 12"></path>';
+                hamburgerIcon.innerHTML = `<path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M6 18L18 6M6 6l12 12"></path>`;
                 hamburgerIcon.classList.add('text-rasta-yellow');
                 document.body.style.overflow = 'hidden';
             } else {
-                hamburgerIcon.innerHTML = '<path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M4 6h16M4 12h16m-7 6h7"></path>';
+                hamburgerIcon.innerHTML = `<path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M4 6h16M4 12h16m-7 6h7"></path>`;
                 hamburgerIcon.classList.remove('text-rasta-yellow');
                 document.body.style.overflow = 'auto';
                 searchInput.value = '';
@@ -565,7 +545,7 @@
         }
 
         // ==========================================================
-        // PROSES PUBLISH / UPDATE (SUDAH DIPERBAIKI)
+        // PROSES PUBLISH / UPDATE (SUDAH DIPERBAIKI UNTUK MUSIC)
         // ==========================================================
         async function publishData() {
             const btn = document.getElementById('btn-publish');
@@ -576,7 +556,7 @@
 
                 const title = document.getElementById('input-title').value.trim();
                 const category = document.getElementById('input-category').value.trim();
-                const excerpt = document.getElementById('input-excerpt').value.trim() || "Official release by SAI Roots";
+                const excerpt = document.getElementById('input-excerpt').value.trim();
                 const imgFile = document.getElementById('input-image').files[0];
 
                 if(!title || !category) throw new Error("Judul dan Kategori wajib diisi!");
@@ -596,18 +576,11 @@
                 let dbMatch = dbContent.match(/const sairootsDB = ([\s\S]*?);\s*\/\//);
                 let dbObj = eval('(' + dbMatch[1] + ')');
 
-                const newDataObj = { 
-                    id: cleanId, 
-                    title: title, 
-                    category: category, 
-                    image: imgUrl, 
-                    excerpt: excerpt 
-                };
+                const newDataObj = { id: cleanId, title: title, category: category, image: imgUrl, excerpt: excerpt || "" };
 
                 if (currentSubTab === 'article') {
                     const color = document.getElementById('input-color').value;
                     const date = isEditMode && editOriginalData ? editOriginalData.date : new Date().toLocaleDateString('id-ID', { day: 'numeric', month: 'long', year: 'numeric' });
-                    
                     newDataObj.color = color;
                     newDataObj.date = date;
 
@@ -628,7 +601,7 @@
                         </article>
                     `;
                     const masterHtml = generateHTMLTemplate(title, 'article', postContent);
-                    await uploadFile(`article/${cleanId}/index.html`, strToBase64(masterHtml), `Publish article: ${title}`);
+                    await uploadFile(`article/${cleanId}/index.html`, strToBase64(masterHtml), `Generate article ${title}`);
 
                 } else if (currentSubTab === 'lyric') {
                     if(isEditMode) {
@@ -647,16 +620,16 @@
                         </article>
                     `;
                     const masterHtml = generateHTMLTemplate(title, 'lyric', postContent);
-                    await uploadFile(`lyric/${cleanId}/index.html`, strToBase64(masterHtml), `Publish lyric: ${title}`);
+                    await uploadFile(`lyric/${cleanId}/index.html`, strToBase64(masterHtml), `Generate lyric ${title}`);
 
                 } else if (currentSubTab === 'music') {
                     const audioFile = document.getElementById('input-audio').files[0];
-                    let audioUrl = isEditMode && editOriginalData ? editOriginalData.audio || "" : "";
+                    let audioUrl = (isEditMode && editOriginalData && editOriginalData.audio) ? editOriginalData.audio : "";
 
                     if (!audioFile && !isEditMode) throw new Error("File MP3 wajib diupload untuk musik baru!");
 
                     if (audioFile) {
-                        showStatus("Mengunggah MP3 ke GitHub... (bisa agak lama)", "process");
+                        showStatus("Mengunggah MP3... (mohon tunggu)", "process");
                         const audioBase64 = await fileToBase64(audioFile);
                         audioUrl = await uploadFile(`discography/${cleanId}.mp3`, audioBase64, `Upload MP3 ${title}`);
                     }
@@ -671,7 +644,6 @@
                     }
                 }
 
-                // Update database.js
                 let newDbString = `// === PUSAT DATA SAI ROOTS ===\n// File ini akan di-update otomatis oleh admin_post.html\n\nconst sairootsDB = ${JSON.stringify(dbObj, null, 4)};\n\n// === DATA PENCARIAN GLOBAL (FUSE.JS) ===\nconst searchData = [\n    ...sairootsDB.articles.map(a => ({ type: "Article", title: a.title, url: \`/article/\${a.id}\`, excerpt: a.excerpt, category: a.category })),\n    ...sairootsDB.lyrics.map(l => ({ type: "Lyric", title: \`\${l.title} (Lyrics)\`, url: \`/lyric/\${l.id}\`, excerpt: l.excerpt, category: l.category })),\n    ...sairootsDB.discography.map(d => ({ type: "Discography", title: d.title, url: \`/discography/\${d.id}\`, excerpt: d.excerpt, category: d.category }))\n];`;
 
                 await uploadFile('database.js', strToBase64(newDbString), `Update DB for ${title}`);
@@ -686,6 +658,7 @@
             } catch (error) {
                 console.error(error);
                 showStatus("GAGAL: " + error.message, "error");
+            } finally {
                 btn.innerHTML = isEditMode ? '<i class="fas fa-save mr-2"></i> Update Data' : '<i class="fas fa-rocket mr-2"></i> Publish Konten';
                 btn.disabled = false;
             }
