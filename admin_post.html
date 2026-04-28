@@ -303,7 +303,7 @@
                 html += `
                     <div class="flex items-center justify-between bg-black border border-white/5 p-3 rounded hover:border-white/20 transition">
                         <div class="flex items-center gap-4">
-                            <img src="${item.image}" class="w-10 h-10 object-cover rounded grayscale brightness-75">
+                            <img src="${item.image}" class="w-10 h-10 object-cover rounded brightness-100">
                             <div>
                                 <h4 class="text-white font-bold text-sm leading-tight">${item.title}</h4>
                                 <span class="text-[10px] text-gray-500 uppercase tracking-widest">${item.category}</span>
@@ -627,7 +627,7 @@
                     
                     const postContent = `
                         <article class="max-w-4xl mx-auto">
-                            <img src="${imgUrl}" class="w-full h-64 md:h-96 object-cover grayscale brightness-75 mb-8">
+                            <img src="${imgUrl}" class="w-full h-64 md:h-96 object-cover brightness-100 mb-8">
                             <span class="text-xs text-rasta-${color} font-bold uppercase tracking-widest bg-rasta-${color}/10 py-1 px-3 mb-4 inline-block">${category}</span>
                             <h1 class="font-display text-4xl md:text-6xl text-white mb-4 uppercase">${title}</h1>
                             <div class="text-gray-400 text-sm mb-8">${date}</div>
@@ -647,7 +647,7 @@
                     
                     const postContent = `
                         <article class="max-w-2xl mx-auto text-center">
-                            <img src="${imgUrl}" class="w-48 h-48 mx-auto object-cover grayscale brightness-75 mb-8 rounded-full border border-white/10">
+                            <img src="${imgUrl}" class="w-48 h-48 mx-auto object-cover brightness-100 mb-8 rounded-full border border-white/10">
                             <span class="text-xs text-rasta-red font-bold uppercase tracking-widest border border-rasta-red/20 py-0.5 px-2 mb-4 inline-block">${category}</span>
                             <h1 class="font-display text-5xl md:text-7xl text-white mb-8 uppercase">${title}</h1>
                             <div class="text-gray-300 leading-loose font-light text-lg ql-editor text-left px-0">${quill.root.innerHTML}</div>
