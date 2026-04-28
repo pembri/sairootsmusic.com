@@ -1,0 +1,176 @@
+<!DOCTYPE html>
+<html lang="id">
+<head>
+    <link rel="canonical" href="https://sairootsmusic.com/" />
+‎    <link rel="icon" type="image/x-icon" href="/favicon.ico">
+‎    <link rel="shortcut icon" type="image/x-icon" href="/favicon.ico">
+‎    <link rel="icon" type="image/png" sizes="32x32" href="/favicon-32x32.png">
+‎    <link rel="icon" type="image/png" sizes="16x16" href="/favicon-16x16.png">
+‎    <link rel="apple-touch-icon" sizes="180x180" href="/apple-touch-icon.png">
+‎    <link rel="icon" type="image/png" sizes="192x192" href="/android-chrome-192x192.png">
+‎    <link rel="icon" type="image/png" sizes="512x512" href="/android-chrome-512x512.png">
+‎    <link rel="manifest" href="/site.webmanifest">
+    
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no">
+    <title>Lirik Ormas Tipu-tipu | SAI Roots</title>
+    <meta name="description" content="Official website of SAI Roots - Roots Reggae, Ska, & Reggae Rap musician.">
+    <meta property="og:title" content="Lirik Ormas Tipu-tipu | SAI Roots">
+    ‎<meta property="og:site_name" content="SAI Roots Music">
+    <script src="https://cdn.tailwindcss.com"></script>
+    <script src="https://cdn.jsdelivr.net/npm/fuse.js@7.0.0/dist/fuse.min.js"></script>
+    <link href="https://fonts.googleapis.com/css2?family=Anton&family=Inter:wght@300;400;600&display=swap" rel="stylesheet">
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.5.1/css/all.min.css">
+    <script>
+        tailwind.config = { theme: { extend: { colors: { rasta: { green: '#2D8659', yellow: '#FBBF24', red: '#DC2626' }, neutral: { 950: '#050505' } }, fontFamily: { sans: ['Inter', 'sans-serif'], display: ['Anton', 'sans-serif'] } } } }
+    </script>
+    <style>
+        body { background-color: #050505; color: #f0f0f0; }
+        .glass { background: rgba(5, 5, 5, 0.85); backdrop-filter: blur(12px); border-bottom: 1px solid rgba(255,255,255,0.03); }
+        .rasta-stripe { height: 3px; background: linear-gradient(90deg, #2D8659 0%, #FBBF24 50%, #DC2626 100%); width: 100%; position: fixed; top: 0; z-index: 60; }
+        #mobile-menu { transition: transform 0.4s cubic-bezier(0.4, 0, 0.2, 1); overflow-y: auto; }
+        .menu-open { transform: translateX(0) !important; }
+        .ql-editor {
+    font-size: 1.125rem;
+    line-height: 1.8;
+    color: #d1d5db;
+    white-space: pre-wrap;
+    overflow-wrap: break-word;
+    word-break: break-word;
+    max-width: 100%;
+}
+        .ql-editor h1, .ql-editor h2 { font-family: 'Anton', sans-serif; text-transform: uppercase; color: white; margin-top: 2rem; margin-bottom: 1rem; }
+        .ql-editor blockquote { border-left: 4px solid #FBBF24; padding-left: 1.5rem; font-style: italic; color: #9ca3af; }
+        .ql-editor a { color: #FBBF24; text-decoration: underline; }
+    </style>
+</head>
+<body class="overflow-x-hidden pt-1">
+    <div class="rasta-stripe"></div>
+    <header class="fixed top-[3px] w-full z-50 glass">
+        <div class="container mx-auto px-6 py-4 flex justify-between items-center">
+            <div class="text-3xl font-display uppercase tracking-wider">
+                <a href="/" class="flex items-center gap-3 hover:text-rasta-yellow transition-colors duration-300">
+                    <img src="/android-chrome-192x192.png" alt="Logo SAI Roots" class="w-10 h-10 rounded-full object-cover border border-white/10">
+                    <span>SAI <span class="text-rasta-green">Roots</span></span>
+                </a>
+            </div>
+            <button id="menu-btn" class="focus:outline-none z-50 p-2 rounded-full hover:bg-white/5 transition">
+                <svg id="hamburger-icon" class="w-7 h-7 text-white" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M4 6h16M4 12h16m-7 6h7"></path></svg>
+            </button>      
+        </div>
+    </header>
+
+    <div id="mobile-menu" class="fixed inset-0 z-40 bg-neutral-950 translate-x-full flex flex-col items-center pt-28 pb-12 p-6 border-l border-white/5">
+        <div class="w-full max-w-md relative mb-8 shrink-0">
+            <input type="text" id="search-input" placeholder="Cari artikel, lirik, atau lagu..." class="w-full bg-white/5 border border-white/10 rounded-none py-4 px-6 focus:outline-none focus:border-rasta-yellow transition-all text-white text-lg">
+            <span class="absolute right-5 top-1/2 -translate-y-1/2 text-gray-500">⏎</span>
+        </div>
+        <div id="search-results" class="w-full max-w-md flex-1 overflow-y-auto hidden"></div>
+        <nav id="main-nav" class="flex flex-col space-y-6 text-center uppercase tracking-widest w-full max-w-md">
+            <a href="/" class="text-3xl font-display hover:text-rasta-green transition duration-300">Home</a>
+            <a href="/discography" class="text-3xl font-display hover:text-rasta-yellow transition duration-300">Discography</a>
+            <a href="/lyric" class="text-3xl font-display hover:text-rasta-red transition duration-300">Lyric</a>
+            <a href="/about" class="hover:text-rasta-green transition duration-300 text-base font-sans mt-4">About</a>
+            <a href="/privacy" class="hover:text-rasta-yellow transition duration-300 text-base font-sans">Privacy Policy</a>
+            <a href="/contact" class="hover:text-rasta-red transition duration-300 text-base font-sans">Contact Us</a>
+        </nav>
+    </div>
+
+    <main class="pt-32 pb-20 container mx-auto px-6 min-h-[70vh]">
+        
+                        <article class="max-w-2xl mx-auto text-center">
+                            <img src="/asset_gambar/default.jpg" class="w-48 h-48 mx-auto object-cover brightness-100 mb-8 rounded-full border border-white/10">
+                            <span class="text-xs text-rasta-red font-bold uppercase tracking-widest border border-rasta-red/20 py-0.5 px-2 mb-4 inline-block">Album - Critical Fire</span>
+                            <h1 class="font-display text-5xl md:text-7xl text-white mb-8 uppercase">Lirik Ormas Tipu-tipu</h1>
+                            <div class="text-gray-300 leading-loose font-light text-lg ql-editor text-left px-0"><p>Ha! Fire pon di mic…</p><p><br></p><p>Di jalan sok jagoan, bendera dijadikan tameng,</p><p>Teriak bela rakyat, padahal rakyat lo yang krameng.</p><p>Datang rame-rame kayak mau perang,</p><p>Tapi ujung-ujungnya cuma cari panggung doang.</p><p><br></p><p>Ngaku pelindung moral, tapi moralnya bolong,</p><p>Ngatur-ngatur wilayah kayak kampung dia yang nyolong.</p><p>Ngamuk dikit bawa nama besar,</p><p>Padahal mental tipis, cuma gaya biar viral.</p><p><br></p><p>Seragam hitam-hitam, tapi hati abu-abu,</p><p>Sok jadi hakim padahal otaknya unyu-unyu.</p><p>Deketin pejabat biar dapat perlindungan,</p><p>Besok kalau rame tinggal bilang “kami perjuangan”.</p><p><br></p><p>Cari panggung… cari panggung…</p><p>Kegaduhan dijual kayak dagang karung.</p><p>Cari panggung… cari panggung…</p><p>Teriak bela rakyat, tapi rakyat kalian buntung.</p><p><br></p><p>Cari panggung… cari panggung…</p><p>Kegaduhan dijual kayak dagang karung.</p><p>Cari panggung… cari panggung…</p><p>Teriak bela rakyat, tapi rakyat kalian buntung.</p><p><br></p><p>Lo datang konvoi, bikin macet satu kota,</p><p>Kayak mau demo, padahal cuma show off kuota.</p><p>Bawa toa, bawa spanduk, style ala mafia,</p><p>Tapi isi kepala cuma “gimana biar masuk media”.</p><p><br></p><p>Bikin aturan sendiri, polisi jadi bingung,</p><p>Dikit-dikit sweeping, sok jadi undang-undang.</p><p>Ngaku suci, tapi kelakuan penuh tipu,</p><p>Nama “ormas” tapi vibe-nya preman tipu-tipu.</p><p><br></p><p>Kalo ada kasus, larinya komando,</p><p>Tiba-tiba pada hilang kayak kabur dikejar cukong.</p><p>Giliran aman, muncul lagi sok alim,</p><p>Padahal track record lo udah mirip barisan maling.</p><p><br></p><p>Cari panggung… cari panggung…</p><p>Kegaduhan dijual kayak dagang karung.</p><p>Cari panggung… cari panggung…</p><p>Teriak bela rakyat, tapi rakyat kalian buntung.</p><p><br></p><p>Cari panggung… cari panggung…</p><p>Kegaduhan dijual kayak dagang karung.</p><p>Cari panggung… cari panggung…</p><p>Teriak bela rakyat, tapi rakyat kalian buntung.</p><p><br></p><p>Ya man… Riddim slow tapi lirik makin panas,</p><p>Them say “kami penolong” but di jalan just chaos…</p><p>No justice, no freedom, hanya gimmick kosong…</p><p>Fire burn!</p><p><br></p><p>Lo teriak bela negara, tapi negara yang lo repotin,</p><p>Setiap nongol berita pasti drama yang lo tonjolin.</p><p>Dikit-dikit lapor, dikit-dikit ngamuk,</p><p>Padahal masalah kecil, tapi lo bikin kayak perang nuklir.</p><p><br></p><p>Banyak gaya, tapi kontribusi? nihil.</p><p>Kalo gak bikin ribut ya menghilang kayak angin.</p><p>Mending pulang introspeksi, upgrade isi kepala,</p><p>Daripada terus-terusan malu-maluin negara.</p><p><br></p><p>Cari panggung… cari panggung…</p><p>Kegaduhan dijual kayak dagang karung.</p><p>Cari panggung… cari panggung…</p><p>Teriak bela rakyat, tapi rakyat kalian buntung.</p><p><br></p><p>Cari panggung… cari panggung…</p><p>Kegaduhan dijual kayak dagang karung.</p><p>Cari panggung… cari panggung…</p><p>Teriak bela rakyat, tapi rakyat kalian buntung.</p></div>
+                        </article>
+                    
+    </main>
+
+    <footer id="footer" class="border-t border-white/5 py-12 bg-black">
+        <div class="container mx-auto px-6 text-center">
+            <p class="text-gray-600 text-[10px] tracking-[0.3em] uppercase mb-6">Stream Our Music</p>
+            <div class="flex flex-wrap justify-center gap-7 mb-10 text-gray-400">
+                <a href="https://www.youtube.com/@sairoots" target="_blank" class="hover:text-[#ff0000]"><i class="fab fa-youtube text-2xl"></i></a>
+                <a href="https://open.spotify.com/artist/0xOPCtZvhXVd9RTbU1aYTr" target="_blank" class="hover:text-[#1DB954]"><i class="fab fa-spotify text-2xl"></i></a>
+                <a href="https://music.apple.com/id/artist/sai-roots/1892187423?l=id" target="_blank" class="hover:text-white"><i class="fab fa-apple text-2xl"></i></a>
+                <a href="https://m.soundcloud.com/sairoots" target="_blank" class="hover:text-[#ff5500]"><i class="fab fa-soundcloud text-2xl"></i></a>
+                <a href="https://link.deezer.com/s/3366qh6efN8QoSqSPCEsB" target="_blank" class="hover:text-white"><i class="fab fa-deezer text-2xl"></i></a>
+                <a href="https://music.amazon.com/artists/B0GTFWNC32/sai-roots" target="_blank" class="hover:text-[#00a8e1]"><i class="fab fa-amazon text-2xl"></i></a>
+            </div>
+            <div class="flex justify-center space-x-8 mb-10 text-gray-500">
+                <a href="https://instagram.com/ahmadsupembri" target="_blank" class="hover:text-white"><i class="fab fa-instagram text-xl"></i></a>
+                <a href="https://tiktok.com/@ahmadsupembri" target="_blank" class="hover:text-white"><i class="fab fa-tiktok text-xl"></i></a>
+                <a href="https://facebook.com/ahmadsupembri" target="_blank" class="hover:text-[#1877F2]"><i class="fab fa-facebook-f text-xl"></i></a>
+            </div>
+            <div class="border-t border-white/5 pt-8">
+                <p class="text-gray-600 text-[11px] tracking-[0.2em] uppercase">© 2026 <span class="text-white font-medium">SAI Roots Music</span>. All Rights Reserved.</p>
+                <p class="text-gray-800 text-[9px] mt-2 tracking-[0.4em] uppercase italic">Roots • Reggae • Rap</p>
+            </div>
+        </div>
+    </footer>
+
+    <script src="/database.js"></script>
+    <script>
+        const menuBtn = document.getElementById('menu-btn');
+        const mobileMenu = document.getElementById('mobile-menu');
+        const hamburgerIcon = document.getElementById('hamburger-icon');
+        const searchInput = document.getElementById('search-input');
+
+        function toggleMenu() {
+            const isOpen = mobileMenu.classList.toggle('menu-open');
+            if (isOpen) {
+                hamburgerIcon.innerHTML = '<path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M6 18L18 6M6 6l12 12"></path>';
+                hamburgerIcon.classList.add('text-rasta-yellow');
+                document.body.style.overflow = 'hidden';
+            } else {
+                hamburgerIcon.innerHTML = '<path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M4 6h16M4 12h16m-7 6h7"></path>';
+                hamburgerIcon.classList.remove('text-rasta-yellow');
+                document.body.style.overflow = 'auto';
+                searchInput.value = '';
+                document.getElementById('search-results').classList.add('hidden');
+                document.getElementById('main-nav').classList.remove('hidden');
+            }
+        }
+        menuBtn.addEventListener('click', toggleMenu);
+        searchInput.addEventListener('click', e => e.stopPropagation());
+
+        try {
+            const fuse = new Fuse(searchData, { keys: ['title', 'excerpt', 'category', 'type'], threshold: 0.3 });
+            function showSearchResults(query) {
+                const container = document.getElementById('search-results');
+                const nav = document.getElementById('main-nav');
+                if (query.length < 2) { container.classList.add('hidden'); nav.classList.remove('hidden'); return; }
+                const results = fuse.search(query);
+                nav.classList.add('hidden'); container.classList.remove('hidden'); container.innerHTML = '';
+                if (results.length === 0) {
+                    container.innerHTML =
+'<div class="text-center py-10">' +
+'<p class="text-gray-400 text-lg">Tidak ada hasil untuk "<span class="text-white">' + query + '</span>"</p>' +
+'<p class="text-gray-600 text-sm mt-2">Coba kata kunci lain.</p>' +
+'</div>'; return;
+                }
+                let html = '<div class="flex flex-col space-y-3 w-full pb-6">';
+                results.forEach(result => {
+                    const item = result.item;
+                    let colorClass = 'text-gray-400 border-gray-400';
+                    if (item.type === 'Article') colorClass = 'text-rasta-green border-rasta-green';
+                    else if (item.type === 'Discography') colorClass = 'text-rasta-yellow border-rasta-yellow';
+                    else if (item.type === 'Lyric') colorClass = 'text-rasta-red border-rasta-red';
+                    html +=
+'<a href="' + item.url + '" class="block bg-white/5 border border-white/10 p-4 hover:bg-white/10 hover:border-white/30 transition-all text-left">' +
+'<div class="flex justify-between items-start mb-2">' +
+'<span class="text-[10px] uppercase tracking-widest px-2 py-0.5 border ' + colorClass + '">' + item.type + '</span>' +
+'<span class="text-xs text-gray-500">' + item.category + '</span>' +
+'</div>' +
+'<h4 class="text-xl font-display text-white mb-1 tracking-wide">' + item.title + '</h4>' +
+'<p class="text-sm text-gray-400 line-clamp-2 font-light">' + item.excerpt + '</p>' +
+'</a>';
+                });
+                html += '</div>'; container.innerHTML = html;
+            }
+            searchInput.addEventListener('input', (e) => showSearchResults(e.target.value.trim()));
+        } catch (error) { console.warn("Menunggu database.js...", error); }
+    </script>
+</body>
+</html>
