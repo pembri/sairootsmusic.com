@@ -15,6 +15,13 @@ const sairootsDB = {
     ],
     "lyrics": [
         {
+            "id": "lirik-propaganda",
+            "title": "Lirik Propaganda",
+            "category": "Album - Critical Fire",
+            "image": "/asset_gambar/default.jpg",
+            "excerpt": ""
+        },
+        {
             "id": "babylon-burn",
             "title": "Babylon Burn",
             "category": "Album - Critical Fire",
