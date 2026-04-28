@@ -13,7 +13,15 @@ const sairootsDB = {
             "date": "28 April 2026"
         }
     ],
-    "lyrics": [],
+    "lyrics": [
+        {
+            "id": "lirik-drama-klenik",
+            "title": "Lirik Drama Klenik",
+            "category": "Single",
+            "image": "/asset_gambar/default.jpg",
+            "excerpt": ""
+        }
+    ],
     "discography": []
 };
 
