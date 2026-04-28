@@ -15,6 +15,13 @@ const sairootsDB = {
     ],
     "lyrics": [
         {
+            "id": "lirik-eksploitasi",
+            "title": "Lirik Eksploitasi",
+            "category": "Single",
+            "image": "/asset_gambar/default.jpg",
+            "excerpt": ""
+        },
+        {
             "id": "lirik-senandung-manis",
             "title": "Lirik Senandung Manis",
             "category": "Single",
