@@ -149,6 +149,14 @@ const sairootsDB = {
             "image": "/asset_gambar/art-critical-fire.jpg",
             "excerpt": "",
             "audio": "/discography/skank-patrol.mp3"
+        },
+        {
+            "id": "roots-medications",
+            "title": "Roots Medication",
+            "category": "Album Critical Fire",
+            "image": "/asset_gambar/art-critical-fire.jpg",
+            "excerpt": "",
+            "audio": "/discography/roots-medication.mp3"
         }
     ]
 };
