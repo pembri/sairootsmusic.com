@@ -355,12 +355,20 @@
             searchInput.addEventListener('input', (e) => showSearchResults(e.target.value.trim()));
 
             window.addEventListener('load', () => {
-                renderDiscography();
-            });
 
-        } catch (error) {
-            console.warn("Menunggu database.js...", error);
+    setTimeout(() => {
+
+        if (typeof renderDiscography === "function") {
+            renderDiscography();
         }
+
+    }, 400);
+
+});
+
+} catch (error) {
+    console.warn("Menunggu database.js...", error);
+}
     </script>
 </body>
 </html>
