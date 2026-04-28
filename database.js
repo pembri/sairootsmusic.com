@@ -15,6 +15,13 @@ const sairootsDB = {
     ],
     "lyrics": [
         {
+            "id": "babylon-burn",
+            "title": "Babylon Burn",
+            "category": "Album - Critical Fire",
+            "image": "/asset_gambar/default.jpg",
+            "excerpt": ""
+        },
+        {
             "id": "lirik-timpang",
             "title": "Lirik Timpang",
             "category": "Single",
