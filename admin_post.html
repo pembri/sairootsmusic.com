@@ -29,7 +29,6 @@
         .ql-snow .ql-picker { color: #ccc; }
         .tab-main-active { border-bottom: 2px solid #2D8659; color: #2D8659; }
         .tab-sub-active { border-bottom: 2px solid #FBBF24; color: #FBBF24; }
-        /* Scrollbar styling */
         ::-webkit-scrollbar { width: 8px; }
         ::-webkit-scrollbar-track { background: #050505; }
         ::-webkit-scrollbar-thumb { background: #333; border-radius: 4px; }
@@ -156,18 +155,24 @@
         let currentMainTab = 'create';
         let currentSubTab = 'article';
         
-        // Mode Edit Variables
         let isEditMode = false;
         let editId = null;
         let editOriginalData = null;
-        
-        // Cache DB untuk Manage
         let cachedDB = null;
 
         window.onload = function() {
             quill = new Quill('#quill-editor', {
                 theme: 'snow',
-                modules: { toolbar: [ ['bold', 'italic', 'underline', 'strike'], ['blockquote'], [{ 'header': [1, 2, 3, false] }], [{ 'list': 'ordered'}, { 'list': 'bullet' }], [{ 'align': [] }], ['link'] ] }
+                modules: { 
+                    toolbar: [ 
+                        ['bold', 'italic', 'underline', 'strike'], 
+                        ['blockquote'], 
+                        [{ 'header': [1, 2, 3, false] }], 
+                        [{ 'list': 'ordered'}, { 'list': 'bullet' }], 
+                        [{ 'align': [] }], 
+                        ['link'] 
+                    ] 
+                }
             });
 
             if(localStorage.getItem('github_pat')) {
@@ -176,14 +181,13 @@
             }
         };
 
-        // --- SISTEM LOGIN ---
         function login() {
             const token = document.getElementById('github-pat').value;
             if(token.trim().length < 10) { alert('Token tidak valid!'); return; }
             localStorage.setItem('github_pat', token);
             document.getElementById('login-screen').classList.add('hidden');
             document.getElementById('dashboard-screen').classList.remove('hidden');
-            loadDatabaseManage(); // Tarik data saat berhasil masuk
+            loadDatabaseManage();
         }
 
         function logout() {
@@ -191,7 +195,6 @@
             location.reload();
         }
 
-        // --- SISTEM TABS ---
         function switchMainTab(tab) {
             currentMainTab = tab;
             document.getElementById('tab-main-create').className = `flex-1 py-4 transition ${tab === 'create' ? 'tab-main-active' : 'text-gray-500 hover:bg-white/5'}`;
@@ -204,7 +207,7 @@
         }
 
         function switchSubTab(tab) {
-            if(isEditMode) return; // Kunci tab kalau lagi mode edit
+            if(isEditMode) return;
             currentSubTab = tab;
             ['article', 'lyric', 'music'].forEach(t => {
                 document.getElementById('tab-sub-' + t).className = `pb-3 px-2 transition ${t === tab ? 'tab-sub-active' : 'text-gray-500 hover:text-white'}`;
@@ -223,17 +226,18 @@
 
         function showStatus(msg, type) {
             const el = document.getElementById('global-status');
-            el.classList.remove('hidden', 'bg-rasta-green/20', 'text-rasta-green', 'border-rasta-green', 'bg-rasta-red/20', 'text-rasta-red', 'border-rasta-red', 'bg-rasta-yellow/20', 'text-rasta-yellow', 'border-rasta-yellow');
+            el.classList.remove('hidden', 'bg-rasta-green/20', 'text-rasta-green', 'border-rasta-green', 
+                                'bg-rasta-red/20', 'text-rasta-red', 'border-rasta-red', 
+                                'bg-rasta-yellow/20', 'text-rasta-yellow', 'border-rasta-yellow');
+            
             if(type === 'success') el.classList.add('bg-rasta-green/20', 'text-rasta-green', 'border-rasta-green');
             else if(type === 'error') el.classList.add('bg-rasta-red/20', 'text-rasta-red', 'border-rasta-red');
             else el.classList.add('bg-rasta-yellow/20', 'text-rasta-yellow', 'border-rasta-yellow');
-            el.innerText = msg;
             
-            // Auto hide success msg
+            el.innerText = msg;
             if(type === 'success') setTimeout(() => el.classList.add('hidden'), 5000);
         }
 
-        // --- FUNGSI API GITHUB ---
         async function fetchGitHub(path, method = 'GET', body = null, sha = null) {
             const token = localStorage.getItem('github_pat');
             const headers = { 'Authorization': `Bearer ${token}`, 'Accept': 'application/vnd.github.v3+json' };
@@ -242,7 +246,7 @@
                 if(sha) body.sha = sha;
                 opts.body = JSON.stringify(body);
             }
-            const res = await fetch(`https://api.github.com/repos/${REPO}/contents/${path}`, opts);
+            const res = await fetch(`https://api.github.com/repos/\( {REPO}/contents/ \){path}`, opts);
             if(!res.ok && res.status !== 404) throw new Error(await res.text());
             return res.status === 404 ? null : await res.json();
         }
@@ -256,9 +260,9 @@
 
         async function deleteFile(path, message) {
             const existing = await fetchGitHub(path);
-            if(!existing) return; // File ga ada
+            if(!existing) return;
             const token = localStorage.getItem('github_pat');
-            await fetch(`https://api.github.com/repos/${REPO}/contents/${path}`, {
+            await fetch(`https://api.github.com/repos/\( {REPO}/contents/ \){path}`, {
                 method: 'DELETE',
                 headers: { 'Authorization': `Bearer ${token}`, 'Accept': 'application/vnd.github.v3+json' },
                 body: JSON.stringify({ message: message, sha: existing.sha })
@@ -276,7 +280,6 @@
         function strToBase64(str) { return btoa(unescape(encodeURIComponent(str))); }
         function base64ToStr(b64) { return decodeURIComponent(escape(atob(b64))); }
 
-        // --- LOGIKA MENGAMBIL & MENAMPILKAN DATABASE UNTUK DIKELOLA ---
         async function loadDatabaseManage() {
             try {
                 const dbRes = await fetchGitHub('database.js');
@@ -296,22 +299,25 @@
 
         function renderList(containerId, items, type) {
             const container = document.getElementById(containerId);
-            if(items.length === 0) { container.innerHTML = '<p class="text-gray-500 text-sm">Belum ada data.</p>'; return; }
+            if(items.length === 0) { 
+                container.innerHTML = '<p class="text-gray-500 text-sm">Belum ada data.</p>'; 
+                return; 
+            }
             
             let html = '<div class="space-y-3">';
             items.forEach(item => {
                 html += `
                     <div class="flex items-center justify-between bg-black border border-white/5 p-3 rounded hover:border-white/20 transition">
                         <div class="flex items-center gap-4">
-                            <img src="${item.image}" class="w-10 h-10 object-cover rounded grayscale brightness-75">
+                            <img src="${item.image || '/asset_gambar/default.jpg'}" class="w-10 h-10 object-cover rounded grayscale brightness-75">
                             <div>
                                 <h4 class="text-white font-bold text-sm leading-tight">${item.title}</h4>
                                 <span class="text-[10px] text-gray-500 uppercase tracking-widest">${item.category}</span>
                             </div>
                         </div>
                         <div class="flex gap-2">
-                            <button onclick="startEdit('${type}', '${item.id}')" class="px-3 py-1 bg-white/10 hover:bg-rasta-yellow hover:text-black rounded text-xs font-bold transition"><i class="fas fa-edit"></i></button>
-                            <button onclick="executeDelete('${type}', '${item.id}', '${item.title}')" class="px-3 py-1 bg-white/10 hover:bg-rasta-red hover:text-white rounded text-xs font-bold transition"><i class="fas fa-trash"></i></button>
+                            <button onclick="startEdit('\( {type}', ' \){item.id}')" class="px-3 py-1 bg-white/10 hover:bg-rasta-yellow hover:text-black rounded text-xs font-bold transition"><i class="fas fa-edit"></i></button>
+                            <button onclick="executeDelete('\( {type}', ' \){item.id}', '${item.title}')" class="px-3 py-1 bg-white/10 hover:bg-rasta-red hover:text-white rounded text-xs font-bold transition"><i class="fas fa-trash"></i></button>
                         </div>
                     </div>
                 `;
@@ -320,48 +326,41 @@
             container.innerHTML = html;
         }
 
-        // --- LOGIKA HAPUS DATA (DELETE) ---
         async function executeDelete(type, id, title) {
-            if(!confirm(`YAKIN MAU MENGHAPUS "${title}" PERMANEN?\nFile HTML dan data akan lenyap.`)) return;
+            if(!confirm(`YAKIN MAU MENGHAPUS "${title}" PERMANEN?`)) return;
             
             try {
                 showStatus(`Menghapus ${title}...`, "process");
                 
-                // 1. Ambil DB terbaru
                 const dbRes = await fetchGitHub('database.js');
                 let dbContent = base64ToStr(dbRes.content);
                 let dbMatch = dbContent.match(/const sairootsDB = ([\s\S]*?);\s*\/\//);
                 let dbObj = eval('(' + dbMatch[1] + ')');
 
-                // 2. Filter / Buang data dari array
                 if(type === 'article') dbObj.articles = dbObj.articles.filter(a => a.id !== id);
                 if(type === 'lyric') dbObj.lyrics = dbObj.lyrics.filter(a => a.id !== id);
                 if(type === 'music') dbObj.discography = dbObj.discography.filter(a => a.id !== id);
 
-                // 3. Simpan DB baru
                 let newDbString = `// === PUSAT DATA SAI ROOTS ===\n// File ini akan di-update otomatis oleh admin_post.html\n\nconst sairootsDB = ${JSON.stringify(dbObj, null, 4)};\n\n// === DATA PENCARIAN GLOBAL (FUSE.JS) ===\nconst searchData = [\n    ...sairootsDB.articles.map(a => ({ type: "Article", title: a.title, url: \`/article/\${a.id}\`, excerpt: a.excerpt, category: a.category })),\n    ...sairootsDB.lyrics.map(l => ({ type: "Lyric", title: \`\${l.title} (Lyrics)\`, url: \`/lyric/\${l.id}\`, excerpt: l.excerpt, category: l.category })),\n    ...sairootsDB.discography.map(d => ({ type: "Discography", title: d.title, url: \`/discography/\${d.id}\`, excerpt: d.excerpt, category: d.category }))\n];`;
+
                 await uploadFile('database.js', strToBase64(newDbString), `Deleted ${title} via CMS`);
 
-                // 4. Hapus File fisiknya di GitHub API
-                if(type === 'article') await deleteFile(`article/${id}/index.html`, `Delete article HTML ${title}`);
-                if(type === 'lyric') await deleteFile(`lyric/${id}/index.html`, `Delete lyric HTML ${title}`);
+                if(type === 'article') await deleteFile(`article/${id}/index.html`, `Delete article ${title}`);
+                if(type === 'lyric') await deleteFile(`lyric/${id}/index.html`, `Delete lyric ${title}`);
                 if(type === 'music') await deleteFile(`discography/${id}.mp3`, `Delete MP3 ${title}`);
 
                 showStatus(`Berhasil menghapus ${title}!`, "success");
-                loadDatabaseManage(); // Refresh list
-
+                loadDatabaseManage();
             } catch(e) {
                 console.error(e);
                 showStatus("Gagal menghapus: " + e.message, "error");
             }
         }
 
-        // --- LOGIKA EDIT DATA (READ TO UPDATE) ---
         async function startEdit(type, id) {
             isEditMode = true;
             editId = id;
             
-            // Cari data di cache
             let arr = [];
             if(type === 'article') arr = cachedDB.articles;
             if(type === 'lyric') arr = cachedDB.lyrics;
@@ -370,34 +369,31 @@
             editOriginalData = arr.find(item => item.id === id);
             if(!editOriginalData) return alert('Data tidak ditemukan!');
 
-            // Pindah Tab Otomatis
             switchMainTab('create');
             switchSubTab(type);
 
-            // Isi Form
             document.getElementById('edit-alert').classList.remove('hidden');
-            document.getElementById('input-title').value = editOriginalData.title;
-            document.getElementById('input-category').value = editOriginalData.category;
-            document.getElementById('input-excerpt').value = editOriginalData.excerpt;
+            document.getElementById('input-title').value = editOriginalData.title || '';
+            document.getElementById('input-category').value = editOriginalData.category || '';
+            document.getElementById('input-excerpt').value = editOriginalData.excerpt || '';
             
-            if(type === 'article') document.getElementById('input-color').value = editOriginalData.color;
-            
+            if(type === 'article' && editOriginalData.color) {
+                document.getElementById('input-color').value = editOriginalData.color;
+            }
+
             document.getElementById('edit-img-note').classList.remove('hidden');
             document.getElementById('edit-audio-note').classList.remove('hidden');
             document.getElementById('btn-publish').innerHTML = '<i class="fas fa-save mr-2"></i> Update Data';
             document.getElementById('btn-publish').classList.replace('bg-rasta-green', 'bg-rasta-yellow');
             document.getElementById('btn-publish').classList.replace('text-white', 'text-black');
 
-            // Ambil konten HTML lama dari file GitHub
             if(type !== 'music') {
-                showStatus("Menarik konten dari server...", "process");
                 try {
-                    const htmlRes = await fetchGitHub(`${type}/${id}/index.html`);
+                    showStatus("Menarik konten lama...", "process");
+                    const htmlRes = await fetchGitHub(`\( {type}/ \){id}/index.html`);
                     const rawHtml = base64ToStr(htmlRes.content);
-                    // Ekstrak yang ada di dalam class ql-editor
                     const htmlMatch = rawHtml.match(/<div class="[^"]*ql-editor[^"]*">([\s\S]*?)<\/div>\s*<\/article>/);
-                    if(htmlMatch) quill.root.innerHTML = htmlMatch[1];
-                    else quill.root.innerHTML = "<p>Gagal mengekstrak isi konten HTML lama.</p>";
+                    quill.root.innerHTML = htmlMatch ? htmlMatch[1] : "<p>Konten lama tidak dapat diekstrak.</p>";
                     showStatus("Siap diedit.", "success");
                 } catch(e) {
                     quill.root.innerHTML = "<p>File HTML tidak ditemukan.</p>";
@@ -425,7 +421,7 @@
         }
 
         // ==========================================================
-        // GENERATOR TEMPLATE MUTLAK (HEADER, SEARCH, FOOTER 100%)
+        // GENERATOR TEMPLATE (tetap sama seperti aslinya)
         // ==========================================================
         function generateHTMLTemplate(title, type, contentHTML) {
             return `<!DOCTYPE html>
@@ -524,11 +520,11 @@
         function toggleMenu() {
             const isOpen = mobileMenu.classList.toggle('menu-open');
             if (isOpen) {
-                hamburgerIcon.innerHTML = \\\`<path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M6 18L18 6M6 6l12 12"></path>\\\`;
+                hamburgerIcon.innerHTML = '<path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M6 18L18 6M6 6l12 12"></path>';
                 hamburgerIcon.classList.add('text-rasta-yellow');
                 document.body.style.overflow = 'hidden';
             } else {
-                hamburgerIcon.innerHTML = \\\`<path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M4 6h16M4 12h16m-7 6h7"></path>\\\`;
+                hamburgerIcon.innerHTML = '<path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M4 6h16M4 12h16m-7 6h7"></path>';
                 hamburgerIcon.classList.remove('text-rasta-yellow');
                 document.body.style.overflow = 'auto';
                 searchInput.value = '';
@@ -548,7 +544,7 @@
                 const results = fuse.search(query);
                 nav.classList.add('hidden'); container.classList.remove('hidden'); container.innerHTML = '';
                 if (results.length === 0) {
-                    container.innerHTML = \\\`<div class="text-center py-10"><p class="text-gray-400 text-lg">Tidak ada hasil untuk "<span class="text-white">\${query}</span>"</p><p class="text-gray-600 text-sm mt-2">Coba kata kunci lain.</p></div>\\\`; return;
+                    container.innerHTML = `<div class="text-center py-10"><p class="text-gray-400 text-lg">Tidak ada hasil untuk "<span class="text-white">${query}</span>"</p><p class="text-gray-600 text-sm mt-2">Coba kata kunci lain.</p></div>`; return;
                 }
                 let html = '<div class="flex flex-col space-y-3 w-full pb-6">';
                 results.forEach(result => {
@@ -557,7 +553,7 @@
                     if (item.type === 'Article') colorClass = 'text-rasta-green border-rasta-green';
                     else if (item.type === 'Discography') colorClass = 'text-rasta-yellow border-rasta-yellow';
                     else if (item.type === 'Lyric') colorClass = 'text-rasta-red border-rasta-red';
-                    html += \\\`<a href="\${item.url}" class="block bg-white/5 border border-white/10 p-4 hover:bg-white/10 hover:border-white/30 transition-all text-left"><div class="flex justify-between items-start mb-2"><span class="text-[10px] uppercase tracking-widest px-2 py-0.5 border \${colorClass}">\${item.type}</span><span class="text-xs text-gray-500">\${item.category}</span></div><h4 class="text-xl font-display text-white mb-1 tracking-wide">\${item.title}</h4><p class="text-sm text-gray-400 line-clamp-2 font-light">\${item.excerpt}</p></a>\\\`;
+                    html += `<a href="${item.url}" class="block bg-white/5 border border-white/10 p-4 hover:bg-white/10 hover:border-white/30 transition-all text-left"><div class="flex justify-between items-start mb-2"><span class="text-[10px] uppercase tracking-widest px-2 py-0.5 border \( {colorClass}"> \){item.type}</span><span class="text-xs text-gray-500">\( {item.category}</span></div><h4 class="text-xl font-display text-white mb-1 tracking-wide"> \){item.title}</h4><p class="text-sm text-gray-400 line-clamp-2 font-light">${item.excerpt}</p></a>`;
                 });
                 html += '</div>'; container.innerHTML = html;
             }
@@ -569,7 +565,7 @@
         }
 
         // ==========================================================
-        // PROSES PUBLISH / UPDATE KE GITHUB (CREATE & EDIT LOGIC)
+        // PROSES PUBLISH / UPDATE (SUDAH DIPERBAIKI)
         // ==========================================================
         async function publishData() {
             const btn = document.getElementById('btn-publish');
@@ -578,42 +574,39 @@
                 btn.disabled = true;
                 showStatus(isEditMode ? "Memulai proses UPDATE..." : "Menyiapkan file baru...", "process");
 
-                const title = document.getElementById('input-title').value;
-                const category = document.getElementById('input-category').value;
-                const excerpt = document.getElementById('input-excerpt').value;
+                const title = document.getElementById('input-title').value.trim();
+                const category = document.getElementById('input-category').value.trim();
+                const excerpt = document.getElementById('input-excerpt').value.trim() || "Official release by SAI Roots";
                 const imgFile = document.getElementById('input-image').files[0];
-                
+
                 if(!title || !category) throw new Error("Judul dan Kategori wajib diisi!");
 
-                // Pakai ID lama jika Edit, ID baru jika Create
                 const cleanId = isEditMode ? editId : title.toLowerCase().replace(/[^a-z0-9]+/g, '-').replace(/(^-|-$)+/g, '');
-                
-                // Urus Gambar
-                let imgUrl = isEditMode ? editOriginalData.image : "/asset_gambar/default.jpg";
+
+                let imgUrl = isEditMode && editOriginalData ? editOriginalData.image : "/asset_gambar/default.jpg";
                 if(imgFile) {
-                    showStatus("Mengunggah gambar ke GitHub...", "process");
+                    showStatus("Mengunggah gambar...", "process");
                     const imgBase64 = await fileToBase64(imgFile);
-                    imgUrl = await uploadFile(`asset_gambar/${cleanId}-${imgFile.name}`, imgBase64, `Upload image for ${title}`);
+                    imgUrl = await uploadFile(`asset_gambar/\( {cleanId}- \){imgFile.name}`, imgBase64, `Upload image for ${title}`);
                 }
 
-                // Ambil Database Terbaru
-                showStatus("Memperbarui database.js...", "process");
                 const dbRes = await fetchGitHub('database.js');
-                if(!dbRes) throw new Error("File database.js tidak ditemukan di repository.");
+                if(!dbRes) throw new Error("File database.js tidak ditemukan.");
                 let dbContent = base64ToStr(dbRes.content);
                 let dbMatch = dbContent.match(/const sairootsDB = ([\s\S]*?);\s*\/\//);
                 let dbObj = eval('(' + dbMatch[1] + ')');
 
-                let newHtmlPath = "";
-                let masterHtml = "";
+                const newDataObj = { 
+                    id: cleanId, 
+                    title: title, 
+                    category: category, 
+                    image: imgUrl, 
+                    excerpt: excerpt 
+                };
 
-                // Susun Data Baru
-                const newDataObj = { id: cleanId, title: title, category: category, image: imgUrl, excerpt: excerpt };
-
-                // LOGIKA BERDASARKAN TAB
-                if(currentSubTab === 'article') {
+                if (currentSubTab === 'article') {
                     const color = document.getElementById('input-color').value;
-                    const date = isEditMode ? editOriginalData.date : new Date().toLocaleDateString('id-ID', { day: 'numeric', month: 'long', year: 'numeric' });
+                    const date = isEditMode && editOriginalData ? editOriginalData.date : new Date().toLocaleDateString('id-ID', { day: 'numeric', month: 'long', year: 'numeric' });
                     
                     newDataObj.color = color;
                     newDataObj.date = date;
@@ -624,27 +617,27 @@
                     } else {
                         dbObj.articles.unshift(newDataObj);
                     }
-                    
+
                     const postContent = `
                         <article class="max-w-4xl mx-auto">
                             <img src="${imgUrl}" class="w-full h-64 md:h-96 object-cover grayscale brightness-75 mb-8">
-                            <span class="text-xs text-rasta-${color} font-bold uppercase tracking-widest bg-rasta-${color}/10 py-1 px-3 mb-4 inline-block">${category}</span>
+                            <span class="text-xs text-rasta-\( {color} font-bold uppercase tracking-widest bg-rasta- \){color}/10 py-1 px-3 mb-4 inline-block">${category}</span>
                             <h1 class="font-display text-4xl md:text-6xl text-white mb-4 uppercase">${title}</h1>
                             <div class="text-gray-400 text-sm mb-8">${date}</div>
                             <div class="text-gray-300 leading-relaxed font-light ql-editor px-0">${quill.root.innerHTML}</div>
                         </article>
                     `;
-                    masterHtml = generateHTMLTemplate(title, 'article', postContent);
-                    newHtmlPath = `article/${cleanId}/index.html`;
+                    const masterHtml = generateHTMLTemplate(title, 'article', postContent);
+                    await uploadFile(`article/${cleanId}/index.html`, strToBase64(masterHtml), `Publish article: ${title}`);
 
-                } else if(currentSubTab === 'lyric') {
+                } else if (currentSubTab === 'lyric') {
                     if(isEditMode) {
                         const idx = dbObj.lyrics.findIndex(x => x.id === editId);
                         if(idx !== -1) dbObj.lyrics[idx] = newDataObj;
                     } else {
                         dbObj.lyrics.unshift(newDataObj);
                     }
-                    
+
                     const postContent = `
                         <article class="max-w-2xl mx-auto text-center">
                             <img src="${imgUrl}" class="w-48 h-48 mx-auto object-cover grayscale brightness-75 mb-8 rounded-full border border-white/10">
@@ -653,20 +646,21 @@
                             <div class="text-gray-300 leading-loose font-light text-lg ql-editor text-left px-0">${quill.root.innerHTML}</div>
                         </article>
                     `;
-                    masterHtml = generateHTMLTemplate(title, 'lyric', postContent);
-                    newHtmlPath = `lyric/${cleanId}/index.html`;
+                    const masterHtml = generateHTMLTemplate(title, 'lyric', postContent);
+                    await uploadFile(`lyric/${cleanId}/index.html`, strToBase64(masterHtml), `Publish lyric: ${title}`);
 
-                } else if(currentSubTab === 'music') {
+                } else if (currentSubTab === 'music') {
                     const audioFile = document.getElementById('input-audio').files[0];
-                    let audioUrl = isEditMode ? editOriginalData.audio : "";
-                    
-                    if(!audioFile && !isEditMode) throw new Error("File MP3 wajib diupload untuk musik baru!");
-                    
-                    if(audioFile) {
-                        showStatus("Mengunggah MP3 ke GitHub... (Tunggu sebentar)", "process");
+                    let audioUrl = isEditMode && editOriginalData ? editOriginalData.audio || "" : "";
+
+                    if (!audioFile && !isEditMode) throw new Error("File MP3 wajib diupload untuk musik baru!");
+
+                    if (audioFile) {
+                        showStatus("Mengunggah MP3 ke GitHub... (bisa agak lama)", "process");
                         const audioBase64 = await fileToBase64(audioFile);
                         audioUrl = await uploadFile(`discography/${cleanId}.mp3`, audioBase64, `Upload MP3 ${title}`);
                     }
+
                     newDataObj.audio = audioUrl;
 
                     if(isEditMode) {
@@ -677,21 +671,17 @@
                     }
                 }
 
-                // Tulis Ulang Database String
+                // Update database.js
                 let newDbString = `// === PUSAT DATA SAI ROOTS ===\n// File ini akan di-update otomatis oleh admin_post.html\n\nconst sairootsDB = ${JSON.stringify(dbObj, null, 4)};\n\n// === DATA PENCARIAN GLOBAL (FUSE.JS) ===\nconst searchData = [\n    ...sairootsDB.articles.map(a => ({ type: "Article", title: a.title, url: \`/article/\${a.id}\`, excerpt: a.excerpt, category: a.category })),\n    ...sairootsDB.lyrics.map(l => ({ type: "Lyric", title: \`\${l.title} (Lyrics)\`, url: \`/lyric/\${l.id}\`, excerpt: l.excerpt, category: l.category })),\n    ...sairootsDB.discography.map(d => ({ type: "Discography", title: d.title, url: \`/discography/\${d.id}\`, excerpt: d.excerpt, category: d.category }))\n];`;
-                
-                showStatus("Menyimpan database...", "process");
+
                 await uploadFile('database.js', strToBase64(newDbString), `Update DB for ${title}`);
 
-                // Upload HTML kalau Artikel atau Lirik
-                if(newHtmlPath !== "") {
-                    showStatus("Menyimpan halaman HTML...", "process");
-                    await uploadFile(newHtmlPath, strToBase64(masterHtml), `Generate HTML for ${title}`);
-                }
-
-                showStatus(`BERHASIL! Konten "${title}" berhasil di-${isEditMode ? 'update' : 'publish'}.`, "success");
+                showStatus(`BERHASIL! \( {currentSubTab.toUpperCase()} " \){title}" berhasil di-${isEditMode ? 'update' : 'publish'}.`, "success");
                 
-                setTimeout(() => { cancelEdit(); switchMainTab('manage'); }, 2000);
+                setTimeout(() => { 
+                    cancelEdit(); 
+                    switchMainTab('manage'); 
+                }, 1800);
 
             } catch (error) {
                 console.error(error);
