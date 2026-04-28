@@ -561,7 +561,15 @@
                     if (item.type === 'Article') colorClass = 'text-rasta-green border-rasta-green';
                     else if (item.type === 'Discography') colorClass = 'text-rasta-yellow border-rasta-yellow';
                     else if (item.type === 'Lyric') colorClass = 'text-rasta-red border-rasta-red';
-                    html += \\\`<a href="\${item.url}" class="block bg-white/5 border border-white/10 p-4 hover:bg-white/10 hover:border-white/30 transition-all text-left"><div class="flex justify-between items-start mb-2"><span class="text-[10px] uppercase tracking-widest px-2 py-0.5 border \${colorClass}">\${item.type}</span><span class="text-xs text-gray-500">\${item.category}</span></div><h4 class="text-xl font-display text-white mb-1 tracking-wide">\${item.title}</h4><p class="text-sm text-gray-400 line-clamp-2 font-light">\${item.excerpt}</p></a>\\\`;
+                    html +=
+'<a href="' + item.url + '" class="block bg-white/5 border border-white/10 p-4 hover:bg-white/10 hover:border-white/30 transition-all text-left">' +
+'<div class="flex justify-between items-start mb-2">' +
+'<span class="text-[10px] uppercase tracking-widest px-2 py-0.5 border ' + colorClass + '">' + item.type + '</span>' +
+'<span class="text-xs text-gray-500">' + item.category + '</span>' +
+'</div>' +
+'<h4 class="text-xl font-display text-white mb-1 tracking-wide">' + item.title + '</h4>' +
+'<p class="text-sm text-gray-400 line-clamp-2 font-light">' + item.excerpt + '</p>' +
+'</a>';
                 });
                 html += '</div>'; container.innerHTML = html;
             }
