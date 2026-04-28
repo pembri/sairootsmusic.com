@@ -15,6 +15,13 @@ const sairootsDB = {
     ],
     "lyrics": [
         {
+            "id": "lirik-senandung-manis",
+            "title": "Lirik Senandung Manis",
+            "category": "Single",
+            "image": "/asset_gambar/default.jpg",
+            "excerpt": ""
+        },
+        {
             "id": "lirik-drama-klenik",
             "title": "Lirik Drama Klenik",
             "category": "Single",
