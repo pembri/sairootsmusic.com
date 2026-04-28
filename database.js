@@ -19,7 +19,16 @@ const sairootsDB = {
       "date": "31 Maret 2026"
     }
   ],
-  "lyrics": [],
+  "lyrics": [
+    {
+      "id": "propaganda",
+      "title": "Propaganda",
+      "category": "Album Critical Fire",
+      "image": "/asset_gambar/propaganda-art-critical-fire.jpg",
+      "excerpt": "",
+      "content": "<p>suara layar bicara penuh</p>"
+    }
+  ],
   "discography": [
     {
       "id": "reborn-ridim",
