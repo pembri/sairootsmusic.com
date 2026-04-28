@@ -4,6 +4,15 @@
 const sairootsDB = {
     "articles": [
         {
+            "id": "lirik-senandung-manis",
+            "title": "Lirik Senandung Manis",
+            "category": "Single",
+            "image": "/asset_gambar/default.jpg",
+            "excerpt": "",
+            "color": "green",
+            "date": "28 April 2026"
+        },
+        {
             "id": "profil-sai-roots",
             "title": "Profil SAI Roots",
             "category": "Article",
