@@ -6,9 +6,9 @@ const sairootsDB = {
         {
             "id": "profil-sai-roots",
             "title": "Profil SAI Roots",
-            "category": "Artikel",
+            "category": "Article",
             "image": "/asset_gambar/sairoots.jpg",
-            "excerpt": "",
+            "excerpt": "Proyek Musik Independen",
             "color": "green",
             "date": "28 April 2026"
         }
