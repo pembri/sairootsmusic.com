@@ -1,24 +1,24 @@
 <!DOCTYPE html>
 <html lang="id">
 <head>
-    ‎<script type="application/ld+json">
-‎    {
-‎      "@context": "https://schema.org",
-‎      "@type": "WebSite",
-‎      "name": "SAI Roots Music",
-‎      "url": "https://sairootsmusic.com"
-‎    }
-‎    </script>
-‎    <link rel="canonical" href="https://sairootsmusic.com/" />
-‎    <link rel="icon" type="image/x-icon" href="/favicon.ico">
-‎    <link rel="shortcut icon" type="image/x-icon" href="/favicon.ico">
-‎    <link rel="icon" type="image/png" sizes="32x32" href="/favicon-32x32.png">
-‎    <link rel="icon" type="image/png" sizes="16x16" href="/favicon-16x16.png">
-‎    <link rel="apple-touch-icon" sizes="180x180" href="/apple-touch-icon.png">
-‎    <link rel="icon" type="image/png" sizes="192x192" href="/android-chrome-192x192.png">
-‎    <link rel="icon" type="image/png" sizes="512x512" href="/android-chrome-512x512.png">
-‎    <link rel="manifest" href="/site.webmanifest">
-    ‎<link rel="canonical" href="https://sairootsmusic.com/discography">
+    <script type="application/ld+json">
+    {
+      "@context": "https://schema.org",
+      "@type": "WebSite",
+      "name": "SAI Roots Music",
+      "url": "https://sairootsmusic.com"
+    }
+    </script>
+    <link rel="canonical" href="https://sairootsmusic.com/" />
+    <link rel="icon" type="image/x-icon" href="/favicon.ico">
+    <link rel="shortcut icon" type="image/x-icon" href="/favicon.ico">
+    <link rel="icon" type="image/png" sizes="32x32" href="/favicon-32x32.png">
+    <link rel="icon" type="image/png" sizes="16x16" href="/favicon-16x16.png">
+    <link rel="apple-touch-icon" sizes="180x180" href="/apple-touch-icon.png">
+    <link rel="icon" type="image/png" sizes="192x192" href="/android-chrome-192x192.png">
+    <link rel="icon" type="image/png" sizes="512x512" href="/android-chrome-512x512.png">
+    <link rel="manifest" href="/site.webmanifest">
+    <link rel="canonical" href="https://sairootsmusic.com/discography">
 
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no">
@@ -26,7 +26,7 @@
     
     <meta name="description" content="Official discography of SAI Roots - Roots Reggae, Ska, & Reggae Rap musician.">
     <meta property="og:title" content="Discography | SAI Roots">
-    ‎<meta property="og:site_name" content="SAI Roots Music">
+    <meta property="og:site_name" content="SAI Roots Music">
 
     <script src="https://cdn.tailwindcss.com"></script>
     <script src="https://cdn.jsdelivr.net/npm/fuse.js@7.0.0/dist/fuse.min.js"></script>
@@ -58,10 +58,16 @@
         #mobile-menu { transition: transform 0.4s cubic-bezier(0.4, 0, 0.2, 1); overflow-y: auto; }
         .menu-open { transform: translateX(0) !important; }
         
-        /* Custom Audio Player Style */
-        input[type='range'] { overflow: hidden; appearance: none; background-color: rgba(255,255,255,0.1); }
-        input[type='range']::-webkit-slider-runnable-track { height: 4px; appearance: none; color: #FBBF24; }
-        input[type='range']::-webkit-slider-thumb { width: 0; appearance: none; height: 0; box-shadow: -100vw 0 0 100vw #FBBF24; }
+        /* Custom Audio Player Style (Mini Player) */
+        #seek-bar { overflow: hidden; appearance: none; background-color: rgba(255,255,255,0.1); }
+        #seek-bar::-webkit-slider-runnable-track { height: 4px; appearance: none; color: #FBBF24; }
+        #seek-bar::-webkit-slider-thumb { width: 0; appearance: none; height: 0; box-shadow: -100vw 0 0 100vw #FBBF24; }
+
+        /* Custom Fullscreen Player Seekbar */
+        #fs-seek-bar { appearance: none; background: rgba(255,255,255,0.2); height: 4px; border-radius: 2px; outline: none; overflow: visible; }
+        #fs-seek-bar::-webkit-slider-runnable-track { height: 4px; appearance: none; }
+        #fs-seek-bar::-webkit-slider-thumb { width: 12px; height: 12px; appearance: none; background: #fff; border-radius: 50%; box-shadow: 0 0 5px rgba(0,0,0,0.5); margin-top: -4px; cursor: pointer; transition: transform 0.1s; }
+        #fs-seek-bar::-webkit-slider-thumb:hover { transform: scale(1.2); }
     </style>
 </head>
 <body class="overflow-x-hidden pt-1">
@@ -115,7 +121,7 @@
             </p>
         </div>
 
-        <div id="global-player" class="fixed bottom-0 left-0 w-full bg-neutral-950/95 border-t border-white/10 p-4 z-[100] transform translate-y-full transition-transform duration-500 backdrop-blur-md">
+        <div id="global-player" onclick="openFullscreenPlayer()" class="fixed bottom-0 left-0 w-full bg-neutral-950/95 border-t border-white/10 p-4 z-[100] transform translate-y-full transition-transform duration-500 backdrop-blur-md cursor-pointer hover:bg-neutral-900">
             <div class="container mx-auto flex items-center gap-4">
                 <img id="player-img" src="" class="w-12 h-12 rounded object-cover border border-white/10 hidden md:block">
                 <div class="flex-1 min-w-0">
@@ -123,15 +129,69 @@
                     <p id="player-cat" class="text-rasta-yellow text-[10px] uppercase tracking-widest">Category</p>
                 </div>
                 <div class="flex items-center gap-4">
-                    <button id="play-pause-btn" class="text-white hover:text-rasta-yellow transition">
-                        <i class="fas fa-play text-xl"></i>
+                    <button id="play-pause-btn" onclick="togglePlay(event)" class="text-white hover:text-rasta-yellow transition z-10 p-2 relative">
+                        <i class="fas fa-play text-xl" id="play-icon"></i>
                     </button>
                     <div class="hidden sm:flex flex-col w-32 md:w-64">
-                        <input type="range" id="seek-bar" value="0" class="w-full h-1">
+                        <input type="range" id="seek-bar" value="0" class="w-full h-1" onclick="event.stopPropagation()">
                     </div>
                 </div>
             </div>
             <audio id="main-audio-element"></audio>
+        </div>
+
+        <div id="fullscreen-player" class="fixed inset-0 z-[200] bg-neutral-950 flex flex-col transform translate-y-full transition-transform duration-500 pb-10">
+            <div class="absolute inset-0 bg-gradient-to-b from-neutral-900 to-black z-[-1]"></div>
+            
+            <div class="flex justify-between items-center w-full px-6 pt-8 pb-4">
+                <button onclick="closeFullscreenPlayer()" class="text-white hover:text-rasta-yellow p-2 transition-colors">
+                    <i class="fas fa-chevron-down text-xl"></i>
+                </button>
+                <div class="text-center">
+                    <p class="text-[10px] text-gray-400 tracking-widest uppercase mb-1">Memainkan dari Artis</p>
+                    <p class="text-sm text-white font-bold tracking-wide">SAI Roots</p>
+                </div>
+                <div class="relative">
+                    <button onclick="shareTrack()" class="text-white hover:text-rasta-green p-2 transition-colors">
+                        <i class="fas fa-share-alt text-xl"></i>
+                    </button>
+                    <span id="share-tooltip" class="absolute right-0 top-12 bg-white text-black text-[10px] px-3 py-1 rounded-full opacity-0 transition-opacity duration-300 pointer-events-none whitespace-nowrap font-bold shadow-lg">Tautan Disalin!</span>
+                </div>
+            </div>
+
+            <div class="flex-1 flex items-center justify-center px-8 w-full max-w-md mx-auto">
+                <img id="fs-player-img" src="" class="w-full aspect-square object-cover rounded-xl shadow-[0_20px_50px_rgba(0,0,0,0.5)] border border-white/5">
+            </div>
+
+            <div class="w-full px-8 max-w-md mx-auto mt-4">
+                <div class="flex justify-between items-end mb-6">
+                    <div class="min-w-0 flex-1">
+                        <h2 id="fs-player-title" class="text-2xl font-display text-white truncate mb-1">Judul Lagu</h2>
+                        <p id="fs-player-cat" class="text-rasta-yellow text-xs uppercase tracking-widest">Category</p>
+                    </div>
+                    <button class="text-white hover:text-rasta-green transition p-2">
+                        <i class="fas fa-plus text-xl"></i>
+                    </button>
+                </div>
+
+                <div class="w-full mb-2 flex items-center h-4">
+                    <input type="range" id="fs-seek-bar" value="0" class="w-full h-1 cursor-pointer">
+                </div>
+                <div class="flex justify-between text-[11px] text-gray-400 font-mono mb-8">
+                    <span id="fs-current-time">0:00</span>
+                    <span id="fs-total-time">0:00</span>
+                </div>
+
+                <div class="w-full flex justify-between items-center px-2">
+                    <button id="btn-shuffle" onclick="toggleShuffle()" class="text-white hover:text-rasta-green transition text-xl"><i class="fas fa-random"></i></button>
+                    <button onclick="playPrev()" class="text-white hover:text-rasta-yellow transition text-3xl"><i class="fas fa-step-backward"></i></button>
+                    <button id="fs-play-pause-btn" onclick="togglePlay(event)" class="text-black bg-white rounded-full w-16 h-16 flex items-center justify-center hover:scale-105 transition-transform">
+                        <i class="fas fa-play text-2xl" style="margin-left: 4px;" id="fs-play-icon"></i>
+                    </button>
+                    <button onclick="playNext()" class="text-white hover:text-rasta-yellow transition text-3xl"><i class="fas fa-step-forward"></i></button>
+                    <button id="btn-repeat" onclick="toggleRepeat()" class="text-white hover:text-rasta-green transition text-xl"><i class="fas fa-redo"></i></button>
+                </div>
+            </div>
         </div>
 
         <div id="disco-list" class="flex flex-col space-y-4 max-w-4xl mx-auto">
@@ -189,46 +249,187 @@
         menuBtn.addEventListener('click', toggleMenu);
         searchInput.addEventListener('click', e => e.stopPropagation());
 
-        // ================= AUDIO PLAYER LOGIC =================
+        // ================= AUDIO PLAYER LOGIC UPGRADE =================
         const audio = document.getElementById('main-audio-element');
         const globalPlayer = document.getElementById('global-player');
-        const playPauseBtn = document.getElementById('play-pause-btn');
+        const fullscreenPlayer = document.getElementById('fullscreen-player');
+        
+        // Elemen Player
+        const playIcon = document.getElementById('play-icon');
+        const fsPlayIcon = document.getElementById('fs-play-icon');
         const seekBar = document.getElementById('seek-bar');
+        const fsSeekBar = document.getElementById('fs-seek-bar');
+        const fsCurrentTime = document.getElementById('fs-current-time');
+        const fsTotalTime = document.getElementById('fs-total-time');
 
-        function playTrack(url, title, cat, img) {
-            if (audio.src.includes(url) && !audio.paused) {
-                audio.pause();
-                playPauseBtn.innerHTML = '<i class="fas fa-play text-xl"></i>';
+        let currentTrackIndex = -1;
+        let isRepeat = false;
+        let isShuffle = false;
+
+        window.createSlug = function(title) {
+            return title.toLowerCase().replace(/[^a-z0-9]+/g, '-').replace(/(^-|-$)+/g, '');
+        };
+
+        window.formatTime = function(seconds) {
+            if (isNaN(seconds)) return "0:00";
+            const m = Math.floor(seconds / 60);
+            const s = Math.floor(seconds % 60);
+            return m + ":" + (s < 10 ? "0" : "") + s;
+        };
+
+        window.openFullscreenPlayer = function() {
+            fullscreenPlayer.classList.remove('translate-y-full');
+            document.body.style.overflow = 'hidden';
+        };
+
+        window.closeFullscreenPlayer = function() {
+            fullscreenPlayer.classList.add('translate-y-full');
+            document.body.style.overflow = 'auto';
+        };
+
+        window.updatePlayState = function(isPlaying) {
+            if (isPlaying) {
+                playIcon.className = 'fas fa-pause text-xl';
+                fsPlayIcon.className = 'fas fa-pause text-2xl';
+                fsPlayIcon.style.marginLeft = '0px'; 
             } else {
-                audio.src = url;
-                audio.play();
-                globalPlayer.classList.remove('translate-y-full');
-                document.getElementById('player-title').innerText = title;
-                document.getElementById('player-cat').innerText = cat;
-                document.getElementById('player-img').src = img;
-                playPauseBtn.innerHTML = '<i class="fas fa-pause text-xl"></i>';
+                playIcon.className = 'fas fa-play text-xl';
+                fsPlayIcon.className = 'fas fa-play text-2xl';
+                fsPlayIcon.style.marginLeft = '4px'; 
             }
-        }
+        };
 
-        playPauseBtn.addEventListener('click', () => {
+        window.togglePlay = function(event) {
+            if(event) event.stopPropagation(); // Mencegah bubbling dari mini-player
             if (audio.paused) {
                 audio.play();
-                playPauseBtn.innerHTML = '<i class="fas fa-pause text-xl"></i>';
+                updatePlayState(true);
             } else {
                 audio.pause();
-                playPauseBtn.innerHTML = '<i class="fas fa-play text-xl"></i>';
+                updatePlayState(false);
+            }
+        };
+
+        window.playTrack = function(index) {
+            if (typeof sairootsDB === 'undefined') return;
+            const track = sairootsDB.discography[index];
+            if (!track) return;
+            
+            currentTrackIndex = index;
+            audio.src = track.audio;
+            audio.play();
+            
+            // Update Mini Player
+            globalPlayer.classList.remove('translate-y-full');
+            document.getElementById('player-title').innerText = track.title;
+            document.getElementById('player-cat').innerText = track.category;
+            document.getElementById('player-img').src = track.image;
+            
+            // Update Fullscreen Player
+            document.getElementById('fs-player-title').innerText = track.title;
+            document.getElementById('fs-player-cat').innerText = track.category;
+            document.getElementById('fs-player-img').src = track.image;
+            
+            updatePlayState(true);
+            openFullscreenPlayer();
+            
+            // Update URL Clean Mode (Tautan Shareable)
+            const slug = createSlug(track.title);
+            const newUrl = window.location.protocol + "//" + window.location.host + window.location.pathname + '?track=' + slug;
+            window.history.pushState({path: newUrl}, '', newUrl);
+        };
+
+        window.playNext = function() {
+            if (currentTrackIndex === -1 || typeof sairootsDB === 'undefined') return;
+            let nextIndex = currentTrackIndex + 1;
+            if (isShuffle) {
+                nextIndex = Math.floor(Math.random() * sairootsDB.discography.length);
+            } else if (nextIndex >= sairootsDB.discography.length) {
+                nextIndex = 0;
+            }
+            playTrack(nextIndex);
+        };
+
+        window.playPrev = function() {
+            if (currentTrackIndex === -1 || typeof sairootsDB === 'undefined') return;
+            let prevIndex = currentTrackIndex - 1;
+            if (prevIndex < 0) {
+                prevIndex = sairootsDB.discography.length - 1;
+            }
+            playTrack(prevIndex);
+        };
+
+        window.toggleRepeat = function() {
+            isRepeat = !isRepeat;
+            document.getElementById('btn-repeat').classList.toggle('text-rasta-green', isRepeat);
+            document.getElementById('btn-repeat').classList.toggle('text-white', !isRepeat);
+            audio.loop = isRepeat;
+        };
+
+        window.toggleShuffle = function() {
+            isShuffle = !isShuffle;
+            document.getElementById('btn-shuffle').classList.toggle('text-rasta-green', isShuffle);
+            document.getElementById('btn-shuffle').classList.toggle('text-white', !isShuffle);
+        };
+
+        window.shareTrack = async function() {
+            if (currentTrackIndex === -1 || typeof sairootsDB === 'undefined') return;
+            const track = sairootsDB.discography[currentTrackIndex];
+            
+            const shareData = {
+                title: track.title + ' - SAI Roots',
+                text: 'Dengarkan lagu ' + track.title + ' dari SAI Roots!',
+                url: window.location.href
+            };
+
+            // Web Share API (Utama)
+            if (navigator.share) {
+                try {
+                    await navigator.share(shareData);
+                } catch (err) {
+                    console.log('Berbagi dibatalkan', err);
+                }
+            } else {
+                // Fallback: Copy link
+                navigator.clipboard.writeText(window.location.href).then(() => {
+                    const tooltip = document.getElementById('share-tooltip');
+                    tooltip.classList.remove('opacity-0');
+                    setTimeout(() => tooltip.classList.add('opacity-0'), 2500);
+                });
+            }
+        };
+
+        // Event Listeners Audio
+        audio.addEventListener('timeupdate', () => {
+            if (audio.duration) {
+                const percent = (audio.currentTime / audio.duration) * 100;
+                seekBar.value = percent;
+                fsSeekBar.value = percent;
+                
+                // Animasi gradient Rasta Green di progres bar fullscreen
+                fsSeekBar.style.background = `linear-gradient(to right, #2D8659 ${percent}%, rgba(255,255,255,0.2) ${percent}%)`;
+                
+                fsCurrentTime.innerText = formatTime(audio.currentTime);
+                fsTotalTime.innerText = formatTime(audio.duration);
             }
         });
 
-        audio.ontimeupdate = () => {
-            if (audio.duration) {
-                seekBar.value = (audio.currentTime / audio.duration) * 100;
-            }
-        };
+        audio.addEventListener('loadedmetadata', () => {
+            fsTotalTime.innerText = formatTime(audio.duration);
+        });
 
-        seekBar.oninput = () => {
+        audio.addEventListener('ended', () => {
+            if (!isRepeat) playNext();
+        });
+
+        fsSeekBar.addEventListener('input', () => {
+            audio.currentTime = (fsSeekBar.value / 100) * audio.duration;
+        });
+        
+        seekBar.addEventListener('input', () => {
             audio.currentTime = (seekBar.value / 100) * audio.duration;
-        };
+        });
+
 
         // ================= LOGIKA DATA & PENCARIAN =================
         try {
@@ -237,18 +438,18 @@
                 threshold: 0.3 
             });
 
-            function renderDiscography() {
+            window.renderDiscography = function() {
                 const list = document.getElementById('disco-list');
                 if(!list) return;
                 list.innerHTML = '';
 
-                sairootsDB.discography.forEach(track => {
+                sairootsDB.discography.forEach((track, index) => {
                     const html = `
                         <div class="group bg-white/5 border border-white/5 hover:bg-white/10 transition-all p-4 flex items-center justify-between">
                             <div class="flex items-center gap-6 min-w-0">
                                 <div class="relative w-16 h-16 shrink-0 group-hover:scale-105 transition-transform duration-300">
                                     <img src="${track.image}" class="w-full h-full object-cover brightness-100">
-                                    <button onclick="playTrack('${track.audio}', '${track.title}', '${track.category}', '${track.image}')" 
+                                    <button onclick="playTrack(${index})" 
                                             class="absolute inset-0 flex items-center justify-center bg-black/40 opacity-0 group-hover:opacity-100 transition-opacity">
                                         <i class="fas fa-play text-white text-lg"></i>
                                     </button>
@@ -320,7 +521,21 @@
             searchInput.addEventListener('input', (e) => showSearchResults(e.target.value.trim()));
 
             window.addEventListener('load', () => {
+                // 1. Render data awal
                 renderDiscography();
+
+                // 2. Deteksi URL otomatis saat ada yang akses link hasil Share
+                const urlParams = new URLSearchParams(window.location.search);
+                const trackSlug = urlParams.get('track');
+                
+                if (trackSlug) {
+                    // Cari lagu yang cocok berdasarkan parameter
+                    const index = sairootsDB.discography.findIndex(t => createSlug(t.title) === trackSlug);
+                    if (index !== -1) {
+                        // Putar otomatis dengan jeda tipis agar animasi UI smooth
+                        setTimeout(() => playTrack(index), 600);
+                    }
+                }
             });
 
         } catch (error) {
