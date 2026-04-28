@@ -2,18 +2,21 @@
 // File ini akan di-update otomatis oleh admin_post.html
 
 const sairootsDB = {
-    // 1. DATA ARTIKEL
-    articles: [],
-
-    // 2. DATA LIRIK
-    lyrics: [],
-
-    // 3. DATA DISKOGRAFI
-    discography: []
+    "articles": [],
+    "lyrics": [],
+    "discography": [
+        {
+            "id": "babylon-burn",
+            "title": "Babylon Burn",
+            "category": "Album Critical Fire",
+            "image": "/asset_gambar/babylon-burn-150468.png",
+            "excerpt": "",
+            "audio": "/discography/babylon-burn.mp3"
+        }
+    ]
 };
 
 // === DATA PENCARIAN GLOBAL (FUSE.JS) ===
-// Mesin yang menggabungkan seluruh data di atas agar bisa dicari dari menu Hamburger
 const searchData = [
     ...sairootsDB.articles.map(a => ({ type: "Article", title: a.title, url: `/article/${a.id}`, excerpt: a.excerpt, category: a.category })),
     ...sairootsDB.lyrics.map(l => ({ type: "Lyric", title: `${l.title} (Lyrics)`, url: `/lyric/${l.id}`, excerpt: l.excerpt, category: l.category })),
