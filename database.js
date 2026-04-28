@@ -15,6 +15,13 @@ const sairootsDB = {
     ],
     "lyrics": [
         {
+            "id": "lirik-genjer-hijau",
+            "title": "Lirik Genjer Hijau",
+            "category": "Single",
+            "image": "/asset_gambar/default.jpg",
+            "excerpt": ""
+        },
+        {
             "id": "lirik-kasih-mengalun",
             "title": "Lirik Kasih Mengalun",
             "category": "Single",
