@@ -141,7 +141,16 @@ const sairootsDB = {
             "excerpt": ""
         }
     ],
-    "discography": []
+    "discography": [
+        {
+            "id": "skank-patrol",
+            "title": "Skank Patrol",
+            "category": "Album Critical Fire",
+            "image": "/asset_gambar/art-critical-fire.jpg",
+            "excerpt": "",
+            "audio": "/discography/skank-patrol.mp3"
+        }
+    ]
 };
 
 // === DATA PENCARIAN GLOBAL (FUSE.JS) ===
