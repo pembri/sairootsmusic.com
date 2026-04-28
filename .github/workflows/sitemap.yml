@@ -1,0 +1,80 @@
+name: Generate Sitemap Automated
+
+on:
+  push:
+    branches: [ main ] # Jalankan setiap ada push ke branch main
+
+jobs:
+  sitemap_job:
+    runs-on: ubuntu-latest
+    name: Generate a sitemap
+    steps:
+    - name: Checkout the repo
+      uses: actions/checkout@v4
+      with:
+        fetch-depth: 0 
+
+    - name: Generate the base sitemap
+      id: sitemap
+      uses: cicirello/generate-sitemap@v1
+      with:
+        base-url-path: https://sairootsmusic.com/
+        path-to-root: .
+        # Dilarang baca folder admin
+        drop-directory-prefixes: 'admin_pages/'
+        # Aktifkan Clean URL (tanpa .html)
+        clean-urls: true
+        # File yang gak perlu masuk sitemap
+        exclude-files: '404.html, favicon.ico, site.webmanifest'
+
+    - name: Auto-Read Tracks from database.js
+      run: |
+        # Menggunakan Node.js bawaan Ubuntu untuk membaca database.js
+        node -e "
+          const fs = require('fs');
+          try {
+            const content = fs.readFileSync('database.js', 'utf8');
+            
+            // Cari bagian array 'discography' biar nggak kecampur artikel/lirik
+            const discoMatch = content.match(/discography:\s*\[([\s\S]*?)\]/i) || content.match(/const discography\s*=\s*\[([\s\S]*?)\]/i);
+            
+            let sitemapExtra = '';
+            if (discoMatch) {
+              const discoData = discoMatch[1];
+              // Cari semua text di dalam title: \"...\"
+              const titleRegex = /title:\s*['\"](.*?)['\"]/g;
+              let match;
+              
+              // Looping untuk setiap lagu yang ketemu
+              while ((match = titleRegex.exec(discoData)) !== null) {
+                const title = match[1];
+                // Buat format clean url / slug
+                const slug = title.toLowerCase().replace(/[^a-z0-9]+/g, '-').replace(/(^-|-$)+/g, '');
+                
+                // Rangkai tag XML-nya
+                sitemapExtra += '  <url>\\n    <loc>https://sairootsmusic.com/discography?track=' + slug + '</loc>\\n    <priority>0.8</priority>\\n  </url>\\n';
+              }
+              
+              // Masukkan ke sitemap.xml sebelum tag penutup
+              const sitemap = fs.readFileSync('sitemap.xml', 'utf8');
+              const newSitemap = sitemap.replace('</urlset>', sitemapExtra + '</urlset>');
+              fs.writeFileSync('sitemap.xml', newSitemap);
+              
+              console.log('Berhasil membaca database.js dan memasukkan link lagu otomatis ke sitemap!');
+            } else {
+              console.log('Tidak menemukan array discography di database.js');
+            }
+          } catch (e) {
+            console.log('Gagal memproses file:', e.message);
+          }
+        "
+
+    - name: Commit and push if changed
+      run: |
+        if [[ -n "$(git status --porcelain sitemap.xml)" ]]; then
+          git config --global user.name 'GitHub Action'
+          git config --global user.email 'action@github.com'
+          git add sitemap.xml
+          git commit -m "Automated sitemap update: Auto-read tracks for SAI Roots"
+          git push
+        fi
