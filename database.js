@@ -15,6 +15,13 @@ const sairootsDB = {
     ],
     "lyrics": [
         {
+            "id": "lirik-irama-hidup",
+            "title": "Lirik Irama Hidup",
+            "category": "Album - Critical Fire",
+            "image": "/asset_gambar/default.jpg",
+            "excerpt": ""
+        },
+        {
             "id": "lirik-evaluasi-lagi",
             "title": "Lirik Evaluasi Lagi",
             "category": "Album - Critical Fire",
