@@ -4,16 +4,7 @@
 const sairootsDB = {
     "articles": [],
     "lyrics": [],
-    "discography": [
-        {
-            "id": "babylon-burn",
-            "title": "Babylon Burn",
-            "category": "Album Critical Fire",
-            "image": "/asset_gambar/babylon-burn-150468.png",
-            "excerpt": "",
-            "audio": "/discography/babylon-burn.mp3"
-        }
-    ]
+    "discography": []
 };
 
 // === DATA PENCARIAN GLOBAL (FUSE.JS) ===
