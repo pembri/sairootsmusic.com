@@ -23,25 +23,28 @@ jobs:
         const baseUrl = 'https://sairootsmusic.com';
         const urls = [];
 
-        // 1. SCAN FILE FISIK (FILTER KETAT)
+        // 1. SCAN FILE FISIK (DENGAN FILTER SANGAT KETAT)
         function walk(dir) {
           const files = fs.readdirSync(dir);
           for (let f of files) {
             let fullPath = path.join(dir, f);
-            if (fs.statSync(fullPath).isDirectory()) {
-              // BLOKIR FOLDER ADMIN & SISTEM
-              if (!['admin_pages', '.git', '.github', 'node_modules', 'asset_gambar', 'discography'].includes(f)) {
+            let stat = fs.statSync(fullPath);
+
+            if (stat.isDirectory()) {
+              // BLOKIR TOTAL FOLDER ADMIN & SISTEM
+              const blacklistedDirs = ['admin_pages', '.git', '.github', 'node_modules', 'asset_gambar', 'assets'];
+              if (!blacklistedDirs.includes(f)) {
                 walk(fullPath);
               }
             } else if (f.endsWith('.html')) {
-              // TENDANG 404
-              if (f === '404.html') continue;
+              // BANTAI 404.HTML DAN ADMIN_PAGES (JAGA-JAGA)
+              if (f.toLowerCase() === '404.html' || fullPath.includes('admin_pages')) continue;
 
               let cleanPath = fullPath.replace(/\\/g, '/');
               if (cleanPath.startsWith('./')) cleanPath = cleanPath.substring(2);
               
-              // BANTAI .HTML DAN /INDEX
-              let urlPath = cleanPath.replace(/\.html$/, '').replace(/\/index$/, '');
+              // BANTAI .HTML DAN /INDEX (UNTUK CLEAN URL)
+              let urlPath = cleanPath.replace(/\.html$/i, '').replace(/\/index$/i, '');
               if (urlPath === 'index') urlPath = ''; 
               
               urls.push(\`\${baseUrl}/\${urlPath}\`.replace(/\/$/, ''));
@@ -50,11 +53,11 @@ jobs:
         }
         walk('.');
 
-        // 2. SCAN TRACK DARI DATABASE.JS (LOGIKA JSON)
+        // 2. SCAN TRACK DARI DATABASE.JS (LOGIKA JSON SAI ROOTS)
         try {
           if (fs.existsSync('database.js')) {
             const content = fs.readFileSync('database.js', 'utf8');
-            // Ambil hanya bagian discography agar tidak campur dengan lirik/artikel
+            // Hanya ambil bagian discography agar akurat
             const discoSection = content.match(/\"discography\":\s*\[([\s\S]*?)\]/);
             
             if (discoSection) {
@@ -62,6 +65,7 @@ jobs:
               if (titles) {
                 titles.forEach(t => {
                   const titleName = t.match(/\"title\":\s*\"(.+?)\"/)[1];
+                  // Slug format: Huruf kecil, ganti spasi jadi strip
                   const slug = titleName.toLowerCase().replace(/[^a-z0-9]+/g, '-').replace(/(^-|-$)+/g, '');
                   urls.push(\`\${baseUrl}/discography?track=\${slug}\`);
                 });
@@ -70,7 +74,7 @@ jobs:
           }
         } catch (e) { console.log('Gagal scan track:', e.message); }
 
-        // 3. RAKIT XML (UNIQUE)
+        // 3. RAKIT XML TANPA DUPLIKAT
         const sitemapEntries = [...new Set(urls)].map(url => {
           const priority = url.includes('?track=') ? '0.8' : (url === baseUrl ? '1.0' : '0.7');
           return \`  <url>\\n    <loc>\${url}</loc>\\n    <priority>\${priority}</priority>\\n  </url>\`;
@@ -79,7 +83,7 @@ jobs:
         const xml = \`<?xml version=\"1.0\" encoding=\"UTF-8\"?>\\n<urlset xmlns=\"http://www.sitemaps.org/schemas/sitemap/0.9\">\\n\${sitemapEntries}\\n</urlset>\`;
         
         fs.writeFileSync('sitemap.xml', xml);
-        console.log('Sitemap Berhasil Dibuat!');
+        console.log('Sitemap Berhasil Dibuat: 404 Dibuang, Admin Diblokir, URL Bersih!');
         "
 
     - name: Commit and push changes
@@ -90,6 +94,6 @@ jobs:
         if git diff --staged --quiet; then
           echo "No changes to commit"
         else
-          git commit -m "Sitemap Auto-Update: Bersih, Tanpa Admin, Track Terdeteksi"
+          git commit -m "Sitemap Fix: 404 and Admin Pages removed, Clean URLs enforced"
           git push
         fi
