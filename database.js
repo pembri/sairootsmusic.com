@@ -43,6 +43,13 @@ const sairootsDB = {
             "excerpt": ""
         },
         {
+            "id": "lirik-senandung-manis",
+            "title": "Lirik Senandung Manis",
+            "category": "Single",
+            "image": "/asset_gambar/default.jpg",
+            "excerpt": ""
+        },
+        {
             "id": "lirik-evaluasi-lagi",
             "title": "Lirik Evaluasi Lagi",
             "category": "Album - Critical Fire",
@@ -54,13 +61,6 @@ const sairootsDB = {
             "title": "Lirik Irama Hidup",
             "category": "Album - Critical Fire",
             "image": "/asset_gambar/art-critical-fire.jpg",
-            "excerpt": ""
-        },
-        {
-            "id": "lirik-senandung-manis",
-            "title": "Lirik Senandung Manis",
-            "category": "Single",
-            "image": "/asset_gambar/default.jpg",
             "excerpt": ""
         },
         {
