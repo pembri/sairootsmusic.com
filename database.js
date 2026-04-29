@@ -36,15 +36,15 @@ const sairootsDB = {
             "excerpt": ""
         },
         {
-            "id": "lirik-roots-medication",
-            "title": "Lirik Roots Medication",
+            "id": "babylon-burn",
+            "title": "Lirik Babylon Burn",
             "category": "Album - Critical Fire",
             "image": "/asset_gambar/default.jpg",
             "excerpt": ""
         },
         {
-            "id": "babylon-burn",
-            "title": "Lirik Babylon Burn",
+            "id": "lirik-roots-medication",
+            "title": "Lirik Roots Medication",
             "category": "Album - Critical Fire",
             "image": "/asset_gambar/default.jpg",
             "excerpt": ""
