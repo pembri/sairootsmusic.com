@@ -43,6 +43,13 @@ const sairootsDB = {
             "excerpt": ""
         },
         {
+            "id": "lirik-drama-klenik",
+            "title": "Lirik Drama Klenik",
+            "category": "Single",
+            "image": "/asset_gambar/default.jpg",
+            "excerpt": ""
+        },
+        {
             "id": "lirik-irama-hidup",
             "title": "Lirik Irama Hidup",
             "category": "Album - Critical Fire",
@@ -54,13 +61,6 @@ const sairootsDB = {
             "title": "Lirik Jamaican Sound",
             "category": "Album - Critical Fire",
             "image": "/asset_gambar/art-critical-fire.jpg",
-            "excerpt": ""
-        },
-        {
-            "id": "lirik-drama-klenik",
-            "title": "Lirik Drama Klenik",
-            "category": "Single",
-            "image": "/asset_gambar/default.jpg",
             "excerpt": ""
         },
         {
