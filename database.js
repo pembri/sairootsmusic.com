@@ -143,6 +143,14 @@ const sairootsDB = {
     ],
     "discography": [
         {
+            "id": "drama-klenik",
+            "title": "Drama Klenik",
+            "category": "",
+            "image": "/asset_gambar/drama-klenik.jpg",
+            "excerpt": "",
+            "audio": "/discography/drama-klenik.mp3"
+        },
+        {
             "id": "babylon-burn",
             "title": "Babylon Burn",
             "category": "Album Critical Fire",
