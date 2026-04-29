@@ -143,6 +143,14 @@ const sairootsDB = {
     ],
     "discography": [
         {
+            "id": "eksploitasi",
+            "title": "Eksploitasi",
+            "category": "Single",
+            "image": "/asset_gambar/eksploitasi.jpg",
+            "excerpt": "",
+            "audio": "/discography/eksploitasi.mp3"
+        },
+        {
             "id": "senandung-manis",
             "title": "Senandung Manis",
             "category": "Single",
