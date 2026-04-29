@@ -156,7 +156,7 @@ const sairootsDB = {
             "category": "Single",
             "image": "/asset_gambar/genjer-hijau.jpg",
             "excerpt": "",
-            "audio": "/discography/genjer-hijau.mp3"
+            "audio": "/discography/art-genjer-hijau.mp3"
         },
         {
             "id": "kasih-mengalun",
