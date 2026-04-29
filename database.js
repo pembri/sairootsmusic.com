@@ -106,15 +106,15 @@ const sairootsDB = {
             "excerpt": ""
         },
         {
-            "id": "lirik-genjer-hijau",
-            "title": "Lirik Genjer Hijau",
+            "id": "lirik-eksploitasi",
+            "title": "Lirik Eksploitasi",
             "category": "Single",
             "image": "/asset_gambar/default.jpg",
             "excerpt": ""
         },
         {
-            "id": "lirik-eksploitasi",
-            "title": "Lirik Eksploitasi",
+            "id": "lirik-genjer-hijau",
+            "title": "Lirik Genjer Hijau",
             "category": "Single",
             "image": "/asset_gambar/default.jpg",
             "excerpt": ""
