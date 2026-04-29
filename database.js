@@ -36,17 +36,17 @@ const sairootsDB = {
             "excerpt": ""
         },
         {
-            "id": "lirik-blaze-it-up",
-            "title": "Lirik Blaze It Up",
-            "category": "Album - Critical Fire",
-            "image": "/asset_gambar/art-critical-fire.jpg",
-            "excerpt": ""
-        },
-        {
             "id": "lirik-senandung-manis",
             "title": "Lirik Senandung Manis",
             "category": "Single",
             "image": "/asset_gambar/default.jpg",
+            "excerpt": ""
+        },
+        {
+            "id": "lirik-blaze-it-up",
+            "title": "Lirik Blaze It Up",
+            "category": "Album - Critical Fire",
+            "image": "/asset_gambar/art-critical-fire.jpg",
             "excerpt": ""
         },
         {
