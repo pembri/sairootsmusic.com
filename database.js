@@ -106,15 +106,15 @@ const sairootsDB = {
             "excerpt": ""
         },
         {
-            "id": "lirik-kasih-mengalun",
-            "title": "Lirik Kasih Mengalun",
+            "id": "lirik-senandung-manis",
+            "title": "Lirik Senandung Manis",
             "category": "Single",
             "image": "/asset_gambar/default.jpg",
             "excerpt": ""
         },
         {
-            "id": "lirik-senandung-manis",
-            "title": "Lirik Senandung Manis",
+            "id": "lirik-kasih-mengalun",
+            "title": "Lirik Kasih Mengalun",
             "category": "Single",
             "image": "/asset_gambar/default.jpg",
             "excerpt": ""
