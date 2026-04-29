@@ -143,6 +143,14 @@ const sairootsDB = {
     ],
     "discography": [
         {
+            "id": "blaze-it-up",
+            "title": "Blaze It Up",
+            "category": "Album Critical Fire",
+            "image": "/asset_gambar/art-critical-fire.jpg",
+            "excerpt": "",
+            "audio": "/discography/blaze-it-up.mp3"
+        },
+        {
             "id": "evaluasi-lagi",
             "title": "Evaluasi Lagi",
             "category": "Album Critical Fire",
