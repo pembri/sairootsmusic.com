@@ -162,9 +162,9 @@ const sairootsDB = {
             "id": "kasih-mengalun",
             "title": "Kasih Mengalun",
             "category": "Single",
-            "image": "/asset_gambar/kasih-mengalun.jpg",
+            "image": "/asset_gambar/art-kasih-mengalun.jpg",
             "excerpt": "",
-            "audio": "/discography/art-kasih-mengalun.mp3"
+            "audio": "/discography/kasih-mengalun.mp3"
         },
         {
             "id": "dari-jauh",
