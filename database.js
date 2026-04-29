@@ -39,7 +39,7 @@ const sairootsDB = {
             "id": "lirik-dari-jauh",
             "title": "Lirik Dari Jauh",
             "category": "Single",
-            "image": "/asset_gambar/default.jpg",
+            "image": "/asset_gambar/dari-jauh.png",
             "excerpt": ""
         },
         {
