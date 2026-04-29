@@ -29,6 +29,13 @@ const sairootsDB = {
             "excerpt": ""
         },
         {
+            "id": "lirik-blaze-it-up",
+            "title": "Lirik Blaze It Up",
+            "category": "Album - Critical Fire",
+            "image": "/asset_gambar/default.jpg",
+            "excerpt": ""
+        },
+        {
             "id": "lirik-ormas-tipu-tipu",
             "title": "Lirik Ormas Tipu-tipu",
             "category": "Album - Critical Fire",
@@ -38,13 +45,6 @@ const sairootsDB = {
         {
             "id": "lirik-jamaican-sound",
             "title": "Lirik Jamaican Sound",
-            "category": "Album - Critical Fire",
-            "image": "/asset_gambar/default.jpg",
-            "excerpt": ""
-        },
-        {
-            "id": "lirik-blaze-it-up",
-            "title": "Lirik Blaze It Up",
             "category": "Album - Critical Fire",
             "image": "/asset_gambar/default.jpg",
             "excerpt": ""
