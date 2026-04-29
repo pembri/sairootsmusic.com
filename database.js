@@ -43,15 +43,15 @@ const sairootsDB = {
             "excerpt": ""
         },
         {
-            "id": "lirik-ormas-tipu-tipu",
-            "title": "Lirik Ormas Tipu-tipu",
+            "id": "babylon-burn",
+            "title": "Lirik Babylon Burn",
             "category": "Album - Critical Fire",
             "image": "/asset_gambar/default.jpg",
             "excerpt": ""
         },
         {
-            "id": "babylon-burn",
-            "title": "Lirik Babylon Burn",
+            "id": "lirik-ormas-tipu-tipu",
+            "title": "Lirik Ormas Tipu-tipu",
             "category": "Album - Critical Fire",
             "image": "/asset_gambar/default.jpg",
             "excerpt": ""
