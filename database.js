@@ -113,17 +113,17 @@ const sairootsDB = {
             "excerpt": ""
         },
         {
-            "id": "lirik-propaganda",
-            "title": "Lirik Propaganda",
-            "category": "Album - Critical Fire",
-            "image": "/asset_gambar/art-critical-fire.jpg",
-            "excerpt": ""
-        },
-        {
             "id": "lirik-timpang",
             "title": "Lirik Timpang",
             "category": "Single",
             "image": "/asset_gambar/default.jpg",
+            "excerpt": ""
+        },
+        {
+            "id": "lirik-propaganda",
+            "title": "Lirik Propaganda",
+            "category": "Album - Critical Fire",
+            "image": "/asset_gambar/art-critical-fire.jpg",
             "excerpt": ""
         },
         {
