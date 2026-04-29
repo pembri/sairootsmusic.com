@@ -143,6 +143,14 @@ const sairootsDB = {
     ],
     "discography": [
         {
+            "id": "roots-medication",
+            "title": "Roots Medication",
+            "category": "Album Critical Fire",
+            "image": "/asset_gambar/art-critical-fire.jpg",
+            "excerpt": "",
+            "audio": "/discography/roots-medication.mp3"
+        },
+        {
             "id": "skank-patrol",
             "title": "Skank Patrol",
             "category": "Album Critical Fire",
