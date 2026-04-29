@@ -15,15 +15,15 @@ const sairootsDB = {
     ],
     "lyrics": [
         {
-            "id": "lirik-dari-jauh",
-            "title": "Lirik Dari Jauh",
+            "id": "lirik-kasih-mengalun",
+            "title": "Lirik Kasih Mengalun",
             "category": "Single",
             "image": "/asset_gambar/default.jpg",
             "excerpt": ""
         },
         {
-            "id": "lirik-kasih-mengalun",
-            "title": "Lirik Kasih Mengalun",
+            "id": "lirik-dari-jauh",
+            "title": "Lirik Dari Jauh",
             "category": "Single",
             "image": "/asset_gambar/default.jpg",
             "excerpt": ""
@@ -127,15 +127,15 @@ const sairootsDB = {
             "excerpt": ""
         },
         {
-            "id": "lirik-timpang",
-            "title": "Lirik Timpang",
+            "id": "lirik-genjer-hijau",
+            "title": "Lirik Genjer Hijau",
             "category": "Single",
             "image": "/asset_gambar/default.jpg",
             "excerpt": ""
         },
         {
-            "id": "lirik-genjer-hijau",
-            "title": "Lirik Genjer Hijau",
+            "id": "lirik-timpang",
+            "title": "Lirik Timpang",
             "category": "Single",
             "image": "/asset_gambar/default.jpg",
             "excerpt": ""
