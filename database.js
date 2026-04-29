@@ -50,17 +50,17 @@ const sairootsDB = {
             "excerpt": ""
         },
         {
-            "id": "lirik-propaganda",
-            "title": "Lirik Propaganda",
-            "category": "Album - Critical Fire",
-            "image": "/asset_gambar/art-critical-fire.jpg",
-            "excerpt": ""
-        },
-        {
             "id": "lirik-jamaican-sound",
             "title": "Lirik Jamaican Sound",
             "category": "Album - Critical Fire",
             "image": "/asset_gambar/default.jpg",
+            "excerpt": ""
+        },
+        {
+            "id": "lirik-propaganda",
+            "title": "Lirik Propaganda",
+            "category": "Album - Critical Fire",
+            "image": "/asset_gambar/art-critical-fire.jpg",
             "excerpt": ""
         },
         {
