@@ -29,7 +29,6 @@
         .ql-snow .ql-picker { color: #ccc; }
         .tab-main-active { border-bottom: 2px solid #2D8659; color: #2D8659; }
         .tab-sub-active { border-bottom: 2px solid #FBBF24; color: #FBBF24; }
-        /* Scrollbar styling */
         ::-webkit-scrollbar { width: 8px; }
         ::-webkit-scrollbar-track { background: #050505; }
         ::-webkit-scrollbar-thumb { background: #333; border-radius: 4px; }
@@ -107,15 +106,15 @@
 
                 <div class="grid grid-cols-1 md:grid-cols-2 gap-6 p-4 border border-white/5 bg-black rounded">
                     <div>
-                        <label class="block text-xs text-gray-400 uppercase tracking-widest mb-2"><i class="fas fa-image mr-2"></i>Upload Cover/Gambar</label>
-                        <input type="file" id="input-image" accept="image/*" class="text-sm text-gray-500 file:mr-4 file:py-2 file:px-4 file:border-0 file:text-xs file:font-bold file:uppercase file:bg-white/10 file:text-white hover:file:bg-white/20">
-                        <p id="edit-img-note" class="hidden text-[10px] text-gray-500 mt-2">*Kosongkan jika tidak ingin mengubah gambar lama.</p>
+                        <label class="block text-xs text-gray-400 uppercase tracking-widest mb-2"><i class="fas fa-image mr-2"></i>File Path / URL Cover</label>
+                        <input type="text" id="input-image" class="w-full bg-neutral-900 border border-white/10 px-4 py-3 text-sm text-white focus:outline-none focus:border-rasta-green transition" placeholder="/asset_gambar/cover.jpg atau URL Link">
+                        <p id="edit-img-note" class="hidden text-[10px] text-gray-500 mt-2">*Kosongkan jika tidak ingin mengubah URL gambar lama.</p>
                     </div>
                     
                     <div id="music-upload-section" class="hidden border-t md:border-t-0 md:border-l border-white/5 pt-4 md:pt-0 md:pl-6">
-                        <label class="block text-xs text-rasta-yellow uppercase tracking-widest mb-2"><i class="fas fa-music mr-2"></i>Upload File MP3</label>
-                        <input type="file" id="input-audio" accept=".mp3,audio/mpeg,audio/*" class="text-sm text-gray-500 file:mr-4 file:py-2 file:px-4 file:border-0 file:text-xs file:font-bold file:uppercase file:bg-rasta-yellow/20 file:text-rasta-yellow hover:file:bg-rasta-yellow/30">
-                        <p id="edit-audio-note" class="hidden text-[10px] text-gray-500 mt-2">*Kosongkan jika tidak ingin mengubah MP3 lama.</p>
+                        <label class="block text-xs text-rasta-yellow uppercase tracking-widest mb-2"><i class="fas fa-music mr-2"></i>File Path / URL MP3</label>
+                        <input type="text" id="input-audio" class="w-full bg-neutral-900 border border-white/10 px-4 py-3 text-sm text-rasta-yellow focus:outline-none focus:border-rasta-yellow transition" placeholder="/discography/lagu.mp3 atau URL Link">
+                        <p id="edit-audio-note" class="hidden text-[10px] text-gray-500 mt-2">*Kosongkan jika tidak ingin mengubah URL MP3 lama.</p>
                     </div>
                 </div>
 
@@ -156,12 +155,9 @@
         let currentMainTab = 'create';
         let currentSubTab = 'article';
         
-        // Mode Edit Variables
         let isEditMode = false;
         let editId = null;
         let editOriginalData = null;
-        
-        // Cache DB untuk Manage
         let cachedDB = null;
 
         window.onload = function() {
@@ -176,14 +172,13 @@
             }
         };
 
-        // --- SISTEM LOGIN ---
         function login() {
             const token = document.getElementById('github-pat').value;
             if(token.trim().length < 10) { alert('Token tidak valid!'); return; }
             localStorage.setItem('github_pat', token);
             document.getElementById('login-screen').classList.add('hidden');
             document.getElementById('dashboard-screen').classList.remove('hidden');
-            loadDatabaseManage(); // Tarik data saat berhasil masuk
+            loadDatabaseManage(); 
         }
 
         function logout() {
@@ -191,7 +186,6 @@
             location.reload();
         }
 
-        // --- SISTEM TABS ---
         function switchMainTab(tab) {
             currentMainTab = tab;
             document.getElementById('tab-main-create').className = `flex-1 py-4 transition ${tab === 'create' ? 'tab-main-active' : 'text-gray-500 hover:bg-white/5'}`;
@@ -204,7 +198,7 @@
         }
 
         function switchSubTab(tab) {
-            if(isEditMode) return; // Kunci tab kalau lagi mode edit
+            if(isEditMode) return;
             currentSubTab = tab;
             ['article', 'lyric', 'music'].forEach(t => {
                 document.getElementById('tab-sub-' + t).className = `pb-3 px-2 transition ${t === tab ? 'tab-sub-active' : 'text-gray-500 hover:text-white'}`;
@@ -229,11 +223,9 @@
             else el.classList.add('bg-rasta-yellow/20', 'text-rasta-yellow', 'border-rasta-yellow');
             el.innerText = msg;
             
-            // Auto hide success msg
             if(type === 'success') setTimeout(() => el.classList.add('hidden'), 5000);
         }
 
-        // --- FUNGSI API GITHUB ---
         async function fetchGitHub(path, method = 'GET', body = null, sha = null) {
             const token = localStorage.getItem('github_pat');
             const headers = { 'Authorization': `Bearer ${token}`, 'Accept': 'application/vnd.github.v3+json' };
@@ -256,7 +248,7 @@
 
         async function deleteFile(path, message) {
             const existing = await fetchGitHub(path);
-            if(!existing) return; // File ga ada
+            if(!existing) return;
             const token = localStorage.getItem('github_pat');
             await fetch(`https://api.github.com/repos/${REPO}/contents/${path}`, {
                 method: 'DELETE',
@@ -265,18 +257,9 @@
             });
         }
 
-        function fileToBase64(file) {
-            return new Promise((resolve, reject) => {
-                const reader = new FileReader();
-                reader.onload = () => resolve(reader.result.split(',')[1]);
-                reader.onerror = error => reject(error);
-                reader.readAsDataURL(file);
-            });
-        }
         function strToBase64(str) { return btoa(unescape(encodeURIComponent(str))); }
         function base64ToStr(b64) { return decodeURIComponent(escape(atob(b64))); }
 
-        // --- LOGIKA MENGAMBIL & MENAMPILKAN DATABASE UNTUK DIKELOLA ---
         async function loadDatabaseManage() {
             try {
                 const dbRes = await fetchGitHub('database.js');
@@ -320,35 +303,29 @@
             container.innerHTML = html;
         }
 
-        // --- LOGIKA HAPUS DATA (DELETE) ---
         async function executeDelete(type, id, title) {
             if(!confirm(`YAKIN MAU MENGHAPUS "${title}" PERMANEN?\nFile HTML dan data akan lenyap.`)) return;
             
             try {
                 showStatus(`Menghapus ${title}...`, "process");
                 
-                // 1. Ambil DB terbaru
                 const dbRes = await fetchGitHub('database.js');
                 let dbContent = base64ToStr(dbRes.content);
                 let dbMatch = dbContent.match(/const sairootsDB = ([\s\S]*?);\s*\/\//);
                 let dbObj = eval('(' + dbMatch[1] + ')');
 
-                // 2. Filter / Buang data dari array
                 if(type === 'article') dbObj.articles = dbObj.articles.filter(a => a.id !== id);
                 if(type === 'lyric') dbObj.lyrics = dbObj.lyrics.filter(a => a.id !== id);
                 if(type === 'music') dbObj.discography = dbObj.discography.filter(a => a.id !== id);
 
-                // 3. Simpan DB baru
                 let newDbString = `// === PUSAT DATA SAI ROOTS ===\n// File ini akan di-update otomatis oleh admin_post.html\n\nconst sairootsDB = ${JSON.stringify(dbObj, null, 4)};\n\n// === DATA PENCARIAN GLOBAL (FUSE.JS) ===\nconst searchData = [\n    ...sairootsDB.articles.map(a => ({ type: "Article", title: a.title, url: \`/article/\${a.id}\`, excerpt: a.excerpt, category: a.category })),\n    ...sairootsDB.lyrics.map(l => ({ type: "Lyric", title: \`\${l.title} (Lyrics)\`, url: \`/lyric/\${l.id}\`, excerpt: l.excerpt, category: l.category })),\n    ...sairootsDB.discography.map(d => ({ type: "Discography", title: d.title, url: \`/discography/\${d.id}\`, excerpt: d.excerpt, category: d.category }))\n];`;
                 await uploadFile('database.js', strToBase64(newDbString), `Deleted ${title} via CMS`);
 
-                // 4. Hapus File fisiknya di GitHub API
                 if(type === 'article') await deleteFile(`article/${id}/index.html`, `Delete article HTML ${title}`);
                 if(type === 'lyric') await deleteFile(`lyric/${id}/index.html`, `Delete lyric HTML ${title}`);
-                if(type === 'music') await deleteFile(`discography/${id}.mp3`, `Delete MP3 ${title}`);
 
                 showStatus(`Berhasil menghapus ${title}!`, "success");
-                loadDatabaseManage(); // Refresh list
+                loadDatabaseManage(); 
 
             } catch(e) {
                 console.error(e);
@@ -356,12 +333,10 @@
             }
         }
 
-        // --- LOGIKA EDIT DATA (READ TO UPDATE) ---
         async function startEdit(type, id) {
             isEditMode = true;
             editId = id;
             
-            // Cari data di cache
             let arr = [];
             if(type === 'article') arr = cachedDB.articles;
             if(type === 'lyric') arr = cachedDB.lyrics;
@@ -370,11 +345,9 @@
             editOriginalData = arr.find(item => item.id === id);
             if(!editOriginalData) return alert('Data tidak ditemukan!');
 
-            // Pindah Tab Otomatis
             switchMainTab('create');
             switchSubTab(type);
 
-            // Isi Form
             document.getElementById('edit-alert').classList.remove('hidden');
             document.getElementById('input-title').value = editOriginalData.title;
             document.getElementById('input-category').value = editOriginalData.category;
@@ -388,16 +361,22 @@
             document.getElementById('btn-publish').classList.replace('bg-rasta-green', 'bg-rasta-yellow');
             document.getElementById('btn-publish').classList.replace('text-white', 'text-black');
 
-            // Ambil konten HTML lama dari file GitHub
+            // MENGGUNAKAN DOMPARSER AGAR EKSTRAKSI LEBIH AMAN & PRESISI
             if(type !== 'music') {
                 showStatus("Menarik konten dari server...", "process");
                 try {
                     const htmlRes = await fetchGitHub(`${type}/${id}/index.html`);
                     const rawHtml = base64ToStr(htmlRes.content);
-                    // Ekstrak yang ada di dalam class ql-editor
-                    const htmlMatch = rawHtml.match(/<div class="[^"]*ql-editor[^"]*">([\s\S]*?)<\/div>\s*<\/article>/);
-                    if(htmlMatch) quill.root.innerHTML = htmlMatch[1];
-                    else quill.root.innerHTML = "<p>Gagal mengekstrak isi konten HTML lama.</p>";
+                    
+                    const parser = new DOMParser();
+                    const doc = parser.parseFromString(rawHtml, 'text/html');
+                    const editorContent = doc.querySelector('.ql-editor');
+                    
+                    if(editorContent) {
+                        quill.root.innerHTML = editorContent.innerHTML;
+                    } else {
+                        quill.root.innerHTML = "<p>Gagal mengekstrak isi konten HTML lama.</p>";
+                    }
                     showStatus("Siap diedit.", "success");
                 } catch(e) {
                     quill.root.innerHTML = "<p>File HTML tidak ditemukan.</p>";
@@ -413,6 +392,8 @@
             document.getElementById('input-title').value = '';
             document.getElementById('input-category').value = '';
             document.getElementById('input-excerpt').value = '';
+            document.getElementById('input-image').value = '';
+            document.getElementById('input-audio').value = '';
             quill.root.innerHTML = '';
             document.getElementById('edit-img-note').classList.add('hidden');
             document.getElementById('edit-audio-note').classList.add('hidden');
@@ -424,29 +405,27 @@
             showStatus("Batal edit.", "success");
         }
 
-        // ==========================================================
-        // GENERATOR TEMPLATE MUTLAK (HEADER, SEARCH, FOOTER 100%)
-        // ==========================================================
+        // GENERATOR TEMPLATE TELAH DIBERSIHKAN DARI KARAKTER GAIB, TAMPILAN 100% IDENTIK
         function generateHTMLTemplate(title, type, contentHTML) {
             return `<!DOCTYPE html>
 <html lang="id">
 <head>
     <link rel="canonical" href="https://sairootsmusic.com/" />
-‎    <link rel="icon" type="image/x-icon" href="/favicon.ico">
-‎    <link rel="shortcut icon" type="image/x-icon" href="/favicon.ico">
-‎    <link rel="icon" type="image/png" sizes="32x32" href="/favicon-32x32.png">
-‎    <link rel="icon" type="image/png" sizes="16x16" href="/favicon-16x16.png">
-‎    <link rel="apple-touch-icon" sizes="180x180" href="/apple-touch-icon.png">
-‎    <link rel="icon" type="image/png" sizes="192x192" href="/android-chrome-192x192.png">
-‎    <link rel="icon" type="image/png" sizes="512x512" href="/android-chrome-512x512.png">
-‎    <link rel="manifest" href="/site.webmanifest">
+    <link rel="icon" type="image/x-icon" href="/favicon.ico">
+    <link rel="shortcut icon" type="image/x-icon" href="/favicon.ico">
+    <link rel="icon" type="image/png" sizes="32x32" href="/favicon-32x32.png">
+    <link rel="icon" type="image/png" sizes="16x16" href="/favicon-16x16.png">
+    <link rel="apple-touch-icon" sizes="180x180" href="/apple-touch-icon.png">
+    <link rel="icon" type="image/png" sizes="192x192" href="/android-chrome-192x192.png">
+    <link rel="icon" type="image/png" sizes="512x512" href="/android-chrome-512x512.png">
+    <link rel="manifest" href="/site.webmanifest">
     
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no">
     <title>${title} | SAI Roots</title>
     <meta name="description" content="Official website of SAI Roots - Roots Reggae, Ska, & Reggae Rap musician.">
     <meta property="og:title" content="${title} | SAI Roots">
-    ‎<meta property="og:site_name" content="SAI Roots Music">
+    <meta property="og:site_name" content="SAI Roots Music">
     <script src="https://cdn.tailwindcss.com"><\/script>
     <script src="https://cdn.jsdelivr.net/npm/fuse.js@7.0.0/dist/fuse.min.js"><\/script>
     <link href="https://fonts.googleapis.com/css2?family=Anton&family=Inter:wght@300;400;600&display=swap" rel="stylesheet">
@@ -460,15 +439,7 @@
         .rasta-stripe { height: 3px; background: linear-gradient(90deg, #2D8659 0%, #FBBF24 50%, #DC2626 100%); width: 100%; position: fixed; top: 0; z-index: 60; }
         #mobile-menu { transition: transform 0.4s cubic-bezier(0.4, 0, 0.2, 1); overflow-y: auto; }
         .menu-open { transform: translateX(0) !important; }
-        .ql-editor {
-    font-size: 1.125rem;
-    line-height: 1.8;
-    color: #d1d5db;
-    white-space: pre-wrap;
-    overflow-wrap: break-word;
-    word-break: break-word;
-    max-width: 100%;
-}
+        .ql-editor { font-size: 1.125rem; line-height: 1.8; color: #d1d5db; white-space: pre-wrap; overflow-wrap: break-word; word-break: break-word; max-width: 100%; }
         .ql-editor h1, .ql-editor h2 { font-family: 'Anton', sans-serif; text-transform: uppercase; color: white; margin-top: 2rem; margin-bottom: 1rem; }
         .ql-editor blockquote { border-left: 4px solid #FBBF24; padding-left: 1.5rem; font-style: italic; color: #9ca3af; }
         .ql-editor a { color: #FBBF24; text-decoration: underline; }
@@ -522,9 +493,9 @@
                 <a href="https://music.amazon.com/artists/B0GTFWNC32/sai-roots" target="_blank" class="hover:text-[#00a8e1]"><i class="fab fa-amazon text-2xl"></i></a>
             </div>
             <div class="flex justify-center space-x-8 mb-10 text-gray-500">
-                <a href="https://instagram.com/ahmadsupembri" target="_blank" class="hover:text-white"><i class="fab fa-instagram text-xl"></i></a>
-                <a href="https://tiktok.com/@ahmadsupembri" target="_blank" class="hover:text-white"><i class="fab fa-tiktok text-xl"></i></a>
-                <a href="https://facebook.com/ahmadsupembri" target="_blank" class="hover:text-[#1877F2]"><i class="fab fa-facebook-f text-xl"></i></a>
+                <a href="https://instagram.com/sairoots" target="_blank" class="hover:text-white"><i class="fab fa-instagram text-xl"></i></a>
+                <a href="https://tiktok.com/@sairoots" target="_blank" class="hover:text-white"><i class="fab fa-tiktok text-xl"></i></a>
+                <a href="https://facebook.com/sairoots" target="_blank" class="hover:text-[#1877F2]"><i class="fab fa-facebook-f text-xl"></i></a>
             </div>
             <div class="border-t border-white/5 pt-8">
                 <p class="text-gray-600 text-[11px] tracking-[0.2em] uppercase">© 2026 <span class="text-white font-medium">SAI Roots Music</span>. All Rights Reserved.</p>
@@ -567,11 +538,7 @@
                 const results = fuse.search(query);
                 nav.classList.add('hidden'); container.classList.remove('hidden'); container.innerHTML = '';
                 if (results.length === 0) {
-                    container.innerHTML =
-'<div class="text-center py-10">' +
-'<p class="text-gray-400 text-lg">Tidak ada hasil untuk "<span class="text-white">' + query + '</span>"</p>' +
-'<p class="text-gray-600 text-sm mt-2">Coba kata kunci lain.</p>' +
-'</div>'; return;
+                    container.innerHTML = '<div class="text-center py-10"><p class="text-gray-400 text-lg">Tidak ada hasil untuk "<span class="text-white">' + query + '</span>"</p><p class="text-gray-600 text-sm mt-2">Coba kata kunci lain.</p></div>'; return;
                 }
                 let html = '<div class="flex flex-col space-y-3 w-full pb-6">';
                 results.forEach(result => {
@@ -580,15 +547,7 @@
                     if (item.type === 'Article') colorClass = 'text-rasta-green border-rasta-green';
                     else if (item.type === 'Discography') colorClass = 'text-rasta-yellow border-rasta-yellow';
                     else if (item.type === 'Lyric') colorClass = 'text-rasta-red border-rasta-red';
-                    html +=
-'<a href="' + item.url + '" class="block bg-white/5 border border-white/10 p-4 hover:bg-white/10 hover:border-white/30 transition-all text-left">' +
-'<div class="flex justify-between items-start mb-2">' +
-'<span class="text-[10px] uppercase tracking-widest px-2 py-0.5 border ' + colorClass + '">' + item.type + '</span>' +
-'<span class="text-xs text-gray-500">' + item.category + '</span>' +
-'</div>' +
-'<h4 class="text-xl font-display text-white mb-1 tracking-wide">' + item.title + '</h4>' +
-'<p class="text-sm text-gray-400 line-clamp-2 font-light">' + item.excerpt + '</p>' +
-'</a>';
+                    html += '<a href="' + item.url + '" class="block bg-white/5 border border-white/10 p-4 hover:bg-white/10 hover:border-white/30 transition-all text-left"><div class="flex justify-between items-start mb-2"><span class="text-[10px] uppercase tracking-widest px-2 py-0.5 border ' + colorClass + '">' + item.type + '</span><span class="text-xs text-gray-500">' + item.category + '</span></div><h4 class="text-xl font-display text-white mb-1 tracking-wide">' + item.title + '</h4><p class="text-sm text-gray-400 line-clamp-2 font-light">' + item.excerpt + '</p></a>';
                 });
                 html += '</div>'; container.innerHTML = html;
             }
@@ -599,9 +558,6 @@
 </html>`;
         }
 
-        // ==========================================================
-        // PROSES PUBLISH / UPDATE KE GITHUB (CREATE & EDIT LOGIC)
-        // ==========================================================
         async function publishData() {
             const btn = document.getElementById('btn-publish');
             try {
@@ -612,22 +568,16 @@
                 const title = document.getElementById('input-title').value;
                 const category = document.getElementById('input-category').value;
                 const excerpt = document.getElementById('input-excerpt').value;
-                const imgFile = document.getElementById('input-image').files[0];
                 
                 if(!title || !category) throw new Error("Judul dan Kategori wajib diisi!");
 
-                // Pakai ID lama jika Edit, ID baru jika Create
                 const cleanId = isEditMode ? editId : title.toLowerCase().replace(/[^a-z0-9]+/g, '-').replace(/(^-|-$)+/g, '');
                 
-                // Urus Gambar
+                // LOGIKA GAMBAR DARI FILE PATH / URL Teks
+                const inputImgVal = document.getElementById('input-image').value.trim();
                 let imgUrl = isEditMode ? editOriginalData.image : "/asset_gambar/default.jpg";
-                if(imgFile) {
-                    showStatus("Mengunggah gambar ke GitHub...", "process");
-                    const imgBase64 = await fileToBase64(imgFile);
-                    imgUrl = await uploadFile(`asset_gambar/${cleanId}-${imgFile.name}`, imgBase64, `Upload image for ${title}`);
-                }
+                if(inputImgVal !== "") imgUrl = inputImgVal;
 
-                // Ambil Database Terbaru
                 showStatus("Memperbarui database.js...", "process");
                 const dbRes = await fetchGitHub('database.js');
                 if(!dbRes) throw new Error("File database.js tidak ditemukan di repository.");
@@ -638,10 +588,8 @@
                 let newHtmlPath = "";
                 let masterHtml = "";
 
-                // Susun Data Baru
                 const newDataObj = { id: cleanId, title: title, category: category, image: imgUrl, excerpt: excerpt };
 
-                // LOGIKA BERDASARKAN TAB
                 if(currentSubTab === 'article') {
                     const color = document.getElementById('input-color').value;
                     const date = isEditMode ? editOriginalData.date : new Date().toLocaleDateString('id-ID', { day: 'numeric', month: 'long', year: 'numeric' });
@@ -688,29 +636,13 @@
                     newHtmlPath = `lyric/${cleanId}/index.html`;
 
                 } else if(currentSubTab === 'music') {
-                    const audioFile = document.getElementById('input-audio').files[0];
+                    // LOGIKA AUDIO DARI FILE PATH / URL Teks
+                    const inputAudioVal = document.getElementById('input-audio').value.trim();
                     let audioUrl = isEditMode ? editOriginalData.audio : "";
                     
-                    if(!audioFile && !isEditMode) throw new Error("File MP3 wajib diupload untuk musik baru!");
+                    if(!inputAudioVal && !isEditMode) throw new Error("Path file MP3 atau URL Link wajib diisi untuk musik baru!");
+                    if(inputAudioVal !== "") audioUrl = inputAudioVal;
                     
-                    if(audioFile) {
-
-    if(audioFile.size > 15000000)
-        throw new Error("Ukuran MP3 maksimal 15MB");
-
-    if(!audioFile.name.toLowerCase().endsWith('.mp3'))
-        throw new Error("File harus format MP3");
-
-    showStatus("Mengunggah MP3 ke GitHub...", "process");
-
-    const audioBase64 = await fileToBase64(audioFile);
-
-    audioUrl = await uploadFile(
-        `discography/${cleanId}.mp3`,
-        audioBase64,
-        `Upload MP3 ${title}`
-    );
-}
                     newDataObj.audio = audioUrl;
 
                     if(isEditMode) {
@@ -721,13 +653,12 @@
                     }
                 }
 
-                // Tulis Ulang Database String
+                // SIMPAN STRUKTUR DATABASE SECARA KAKU & AMAN
                 let newDbString = `// === PUSAT DATA SAI ROOTS ===\n// File ini akan di-update otomatis oleh admin_post.html\n\nconst sairootsDB = ${JSON.stringify(dbObj, null, 4)};\n\n// === DATA PENCARIAN GLOBAL (FUSE.JS) ===\nconst searchData = [\n    ...sairootsDB.articles.map(a => ({ type: "Article", title: a.title, url: \`/article/\${a.id}\`, excerpt: a.excerpt, category: a.category })),\n    ...sairootsDB.lyrics.map(l => ({ type: "Lyric", title: \`\${l.title} (Lyrics)\`, url: \`/lyric/\${l.id}\`, excerpt: l.excerpt, category: l.category })),\n    ...sairootsDB.discography.map(d => ({ type: "Discography", title: d.title, url: \`/discography/\${d.id}\`, excerpt: d.excerpt, category: d.category }))\n];`;
                 
                 showStatus("Menyimpan database...", "process");
                 await uploadFile('database.js', strToBase64(newDbString), `Update DB for ${title}`);
 
-                // Upload HTML kalau Artikel atau Lirik
                 if(newHtmlPath !== "") {
                     showStatus("Menyimpan halaman HTML...", "process");
                     await uploadFile(newHtmlPath, strToBase64(masterHtml), `Generate HTML for ${title}`);
