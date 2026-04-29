@@ -43,15 +43,15 @@ const sairootsDB = {
             "excerpt": ""
         },
         {
-            "id": "lirik-roots-medication",
-            "title": "Lirik Roots Medication",
+            "id": "lirik-evaluasi-lagi",
+            "title": "Lirik Evaluasi Lagi",
             "category": "Album - Critical Fire",
             "image": "/asset_gambar/default.jpg",
             "excerpt": ""
         },
         {
-            "id": "lirik-evaluasi-lagi",
-            "title": "Lirik Evaluasi Lagi",
+            "id": "lirik-roots-medication",
+            "title": "Lirik Roots Medication",
             "category": "Album - Critical Fire",
             "image": "/asset_gambar/default.jpg",
             "excerpt": ""
@@ -64,15 +64,15 @@ const sairootsDB = {
             "excerpt": ""
         },
         {
-            "id": "lirik-jamaican-sound",
-            "title": "Lirik Jamaican Sound",
+            "id": "lirik-irama-hidup",
+            "title": "Lirik Irama Hidup",
             "category": "Album - Critical Fire",
             "image": "/asset_gambar/default.jpg",
             "excerpt": ""
         },
         {
-            "id": "lirik-irama-hidup",
-            "title": "Lirik Irama Hidup",
+            "id": "lirik-jamaican-sound",
+            "title": "Lirik Jamaican Sound",
             "category": "Album - Critical Fire",
             "image": "/asset_gambar/default.jpg",
             "excerpt": ""
