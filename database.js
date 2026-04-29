@@ -143,6 +143,14 @@ const sairootsDB = {
     ],
     "discography": [
         {
+            "id": "senandung-manis",
+            "title": "Senandung Manis",
+            "category": "Single",
+            "image": "/asset_gambar/senandung-manis.jpg",
+            "excerpt": "",
+            "audio": "/discography/senandung-manis.mp3"
+        },
+        {
             "id": "drama-klenik",
             "title": "Drama Klenik",
             "category": "",
