@@ -32,7 +32,7 @@ const sairootsDB = {
             "id": "lirik-kasih-mengalun",
             "title": "Lirik Kasih Mengalun",
             "category": "Single",
-            "image": "/asset_gambar/kasih-mengalun.jpg",
+            "image": "/asset_gambar/art-kasih-mengalun.jpg",
             "excerpt": ""
         },
         {
