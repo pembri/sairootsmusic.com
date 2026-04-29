@@ -143,6 +143,14 @@ const sairootsDB = {
     ],
     "discography": [
         {
+            "id": "babylon-burn",
+            "title": "Babylon Burn",
+            "category": "Album Critical Fire",
+            "image": "/asset_gambar/art-critical-fire.jpg",
+            "excerpt": "",
+            "audio": "/discography/babylon-burn.mp3"
+        },
+        {
             "id": "bayang-singgasana",
             "title": "Bayang Singgasana",
             "category": "Album Critical Fire",
