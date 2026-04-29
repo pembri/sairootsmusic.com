@@ -72,7 +72,10 @@
         
         <div class="p-5 border-b border-zinc-800 flex justify-between items-center bg-[#111]">
             <h3 id="modalTitle" class="font-black text-yellow-500 uppercase tracking-tighter">Editor</h3>
-            <button onclick="closeModal()" class="text-zinc-500 hover:text-white transition"><i class="fas fa-times text-xl"></i></button>
+            <div class="flex items-center gap-4">
+                <button id="deleteBtn" onclick="deleteData()" class="text-zinc-700 hover:text-red-600 transition hidden"><i class="fas fa-trash-alt"></i></button>
+                <button onclick="closeModal()" class="text-zinc-500 hover:text-white transition"><i class="fas fa-times text-xl"></i></button>
+            </div>
         </div>
         
         <div class="p-6 space-y-5 max-h-[65vh] overflow-y-auto">
@@ -121,7 +124,6 @@ let currentSha = '';
 let rawFileContent = '';
 let editingId = null;
 
-// LOGIN & FETCH DATA
 async function login() {
     const token = document.getElementById('ghToken').value;
     const status = document.getElementById('loginStatus');
@@ -146,7 +148,6 @@ async function login() {
     } catch (e) { status.innerText = "Error Koneksi!"; }
 }
 
-// PARSE TEXT JS TO JSON OBJECT
 function parseDB(content) {
     try {
         const start = content.indexOf('const sairootsDB = {');
@@ -158,7 +159,6 @@ function parseDB(content) {
     }
 }
 
-// UI NAVIGATION
 function switchTab(tab) {
     currentTab = tab;
     document.querySelectorAll('.tab-btn').forEach(b => b.classList.remove('active'));
@@ -175,22 +175,44 @@ function renderList() {
         return;
     }
 
-    db[currentTab].forEach(item => {
+    db[currentTab].forEach((item, index) => {
         const div = document.createElement('div');
-        div.className = "p-4 bg-zinc-950 border border-zinc-900 rounded-2xl hover:border-red-600 transition flex justify-between items-center group cursor-pointer shadow-sm";
+        div.className = "p-4 bg-zinc-950 border border-zinc-900 rounded-2xl hover:border-red-600 transition flex justify-between items-center group shadow-sm";
         div.innerHTML = `
-            <div class="overflow-hidden">
-                <div class="font-bold text-zinc-300 group-hover:text-red-500 transition truncate text-sm">${item.title}</div>
-                <div class="text-[9px] text-zinc-600 tracking-widest uppercase mt-1 italic">${item.id}</div>
+            <div class="flex items-center gap-4 overflow-hidden">
+                <div class="flex flex-col gap-1">
+                    <button onclick="moveItem(${index}, 'up')" class="text-zinc-800 hover:text-yellow-500 transition text-xs"><i class="fas fa-chevron-up"></i></button>
+                    <button onclick="moveItem(${index}, 'down')" class="text-zinc-800 hover:text-yellow-500 transition text-xs"><i class="fas fa-chevron-down"></i></button>
+                </div>
+                <div class="overflow-hidden cursor-pointer" onclick="loadToEditorById('${item.id}')">
+                    <div class="font-bold text-zinc-300 group-hover:text-red-500 transition truncate text-sm">${item.title}</div>
+                    <div class="text-[9px] text-zinc-600 tracking-widest uppercase mt-1 italic">${item.id}</div>
+                </div>
             </div>
-            <i class="fas fa-edit text-zinc-800 group-hover:text-white transition"></i>
+            <i class="fas fa-edit text-zinc-800 group-hover:text-white transition cursor-pointer" onclick="loadToEditorById('${item.id}')"></i>
         `;
-        div.onclick = () => loadToEditor(item);
         container.appendChild(div);
     });
 }
 
-// MODAL CONTROLS
+// Fitur Geser Posisi
+async function moveItem(index, direction) {
+    const arr = db[currentTab];
+    if (direction === 'up' && index > 0) {
+        [arr[index], arr[index - 1]] = [arr[index - 1], arr[index]];
+    } else if (direction === 'down' && index < arr.length - 1) {
+        [arr[index], arr[index + 1]] = [arr[index + 1], arr[index]];
+    } else {
+        return;
+    }
+    
+    // Tampilkan perubahan di UI dulu agar responsif
+    renderList();
+    
+    // Auto-save ke GitHub agar posisi di database.js berubah
+    await silentPush();
+}
+
 function openModal() {
     document.getElementById('modalEditor').classList.remove('hidden');
     document.body.classList.add('modal-open');
@@ -199,6 +221,12 @@ function openModal() {
 function closeModal() {
     document.getElementById('modalEditor').classList.add('hidden');
     document.body.classList.remove('modal-open');
+}
+
+// Helper untuk render modal via ID
+function loadToEditorById(id) {
+    const item = db[currentTab].find(i => i.id === id);
+    if(item) loadToEditor(item);
 }
 
 function loadToEditor(item) {
@@ -210,6 +238,7 @@ function loadToEditor(item) {
     document.getElementById('f_image').value = item.image;
     document.getElementById('f_excerpt').value = item.excerpt || "";
     
+    document.getElementById('deleteBtn').classList.remove('hidden');
     const audioGrp = document.getElementById('audioGroup');
     if(currentTab === 'discography') {
         audioGrp.classList.remove('hidden');
@@ -229,6 +258,7 @@ function prepareNew() {
     document.getElementById('f_image').value = "/asset_gambar/default.jpg";
     document.getElementById('f_excerpt').value = "";
     
+    document.getElementById('deleteBtn').classList.add('hidden');
     const audioGrp = document.getElementById('audioGroup');
     if(currentTab === 'discography') {
         audioGrp.classList.remove('hidden');
@@ -239,7 +269,50 @@ function prepareNew() {
     openModal();
 }
 
-// SAVE TO GITHUB (NO RELOAD VERSION)
+// Fitur Hapus Data
+async function deleteData() {
+    if(!confirm("Yakin mau hapus data ini dari database SAI Roots?")) return;
+    
+    const btn = document.getElementById('saveBtn');
+    btn.disabled = true;
+    
+    db[currentTab] = db[currentTab].filter(i => i.id !== editingId);
+    
+    await silentPush("Hapus data");
+    closeModal();
+    renderList();
+}
+
+// Fungsi Push Internal (Tanpa Reload)
+async function silentPush(msg = "Update Database") {
+    const token = document.getElementById('ghToken').value;
+    const dbString = `const sairootsDB = ${JSON.stringify(db, null, 4)};`;
+    const startAnchor = "// === PUSAT DATA SAI ROOTS ===";
+    const endAnchor = "// === DATA PENCARIAN GLOBAL (FUSE.JS) ===";
+    const partsTail = rawFileContent.split(endAnchor);
+    const finalFileContent = `${startAnchor}\n// File ini akan di-update otomatis oleh admin_post.html\n\n${dbString}\n\n${endAnchor}${partsTail[1]}`;
+
+    try {
+        const res = await fetch(`https://api.github.com/repos/${CONFIG.owner}/${CONFIG.repo}/contents/${CONFIG.path}`, {
+            method: 'PUT',
+            headers: { 'Authorization': `token ${token}`, 'Content-Type': 'application/json' },
+            body: JSON.stringify({
+                message: msg,
+                content: btoa(unescape(encodeURIComponent(finalFileContent))),
+                sha: currentSha
+            })
+        });
+
+        if(res.ok) {
+            const result = await res.json();
+            currentSha = result.content.sha;
+            rawFileContent = finalFileContent;
+            return true;
+        }
+    } catch (e) { console.error("Sync failed"); }
+    return false;
+}
+
 async function saveData() {
     const token = document.getElementById('ghToken').value;
     const btn = document.getElementById('saveBtn');
@@ -259,47 +332,21 @@ async function saveData() {
     };
     if(currentTab === 'discography') itemData.audio = document.getElementById('f_audio').value;
 
-    // Create a working copy of the DB
-    let tempDb = JSON.parse(JSON.stringify(db)); 
-        if(editingId === "NEW") {
-        tempDb[currentTab].unshift(itemData);
+    if(editingId === "NEW") {
+        db[currentTab].unshift(itemData);
     } else {
-        const idx = tempDb[currentTab].findIndex(i => i.id === editingId);
-        tempDb[currentTab][idx] = itemData;
+        const idx = db[currentTab].findIndex(i => i.id === editingId);
+        db[currentTab][idx] = itemData;
     }
 
-    // Assemble file content
-    const dbString = `const sairootsDB = ${JSON.stringify(tempDb, null, 4)};`;
-    const startAnchor = "// === PUSAT DATA SAI ROOTS ===";
-    const endAnchor = "// === DATA PENCARIAN GLOBAL (FUSE.JS) ===";
-    const partsTail = rawFileContent.split(endAnchor);
-
-    const finalFileContent = `${startAnchor}\n// File ini akan di-update otomatis oleh admin_post.html\n\n${dbString}\n\n${endAnchor}${partsTail[1]}`;
-
-    try {
-        const res = await fetch(`https://api.github.com/repos/${CONFIG.owner}/${CONFIG.repo}/contents/${CONFIG.path}`, {
-            method: 'PUT',
-            headers: { 'Authorization': `token ${token}`, 'Content-Type': 'application/json' },
-            body: JSON.stringify({
-                message: `Update ${currentTab}: ${itemData.title}`,
-                content: btoa(unescape(encodeURIComponent(finalFileContent))),
-                sha: currentSha
-            })
-        });
-
-        if(res.ok) {
-            const result = await res.json();
-            // UPDATE STATE INTERNALLY (NO RELOAD)
-            currentSha = result.content.sha; // Update SHA for next edit
-            rawFileContent = finalFileContent;
-            db = tempDb;
-            renderList();
-            closeModal();
-            alert("GAS! Data berhasil disimpan.");
-        } else {
-            alert("Gagal menyimpan. Cek Token atau SHA.");
-        }
-    } catch (e) { alert("Kesalahan Jaringan!"); }
+    const success = await silentPush(`Update ${currentTab}: ${itemData.title}`);
+    if(success) {
+        renderList();
+        closeModal();
+        alert("GAS! Data berhasil disimpan.");
+    } else {
+        alert("Gagal menyimpan. Cek Token atau SHA.");
+    }
     
     btn.disabled = false;
     btn.innerHTML = '<i class="fas fa-save"></i> Simpan';
