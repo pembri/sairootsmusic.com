@@ -57,15 +57,15 @@ const sairootsDB = {
             "excerpt": ""
         },
         {
-            "id": "lirik-jamaican-sound",
-            "title": "Lirik Jamaican Sound",
+            "id": "lirik-evaluasi-lagi",
+            "title": "Lirik Evaluasi Lagi",
             "category": "Album - Critical Fire",
             "image": "/asset_gambar/default.jpg",
             "excerpt": ""
         },
         {
-            "id": "lirik-evaluasi-lagi",
-            "title": "Lirik Evaluasi Lagi",
+            "id": "lirik-jamaican-sound",
+            "title": "Lirik Jamaican Sound",
             "category": "Album - Critical Fire",
             "image": "/asset_gambar/default.jpg",
             "excerpt": ""
