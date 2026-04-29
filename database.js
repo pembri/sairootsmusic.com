@@ -143,6 +143,14 @@ const sairootsDB = {
     ],
     "discography": [
         {
+            "id": "evaluasi-lagi",
+            "title": "Evaluasi Lagi",
+            "category": "Album Critical Fire",
+            "image": "/asset_gambar/art-critical-fire.jpg",
+            "excerpt": "",
+            "audio": "/discography/evaluasi-lagi.mp3"
+        },
+        {
             "id": "irama-hidup",
             "title": "Irama Hidup",
             "category": "Album Critical Fire",
