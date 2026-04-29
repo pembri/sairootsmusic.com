@@ -53,7 +53,7 @@ const sairootsDB = {
             "id": "lirik-eksploitasi",
             "title": "Lirik Eksploitasi",
             "category": "Single",
-            "image": "/asset_gambar/default.jpg",
+            "image": "/asset_gambar/eksploitasi.jpg",
             "excerpt": ""
         },
         {
