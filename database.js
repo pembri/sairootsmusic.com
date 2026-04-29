@@ -15,15 +15,15 @@ const sairootsDB = {
     ],
     "lyrics": [
         {
-            "id": "lirik-propaganda",
-            "title": "Lirik Propaganda",
+            "id": "babylon-burn",
+            "title": "Lirik Babylon Burn",
             "category": "Album - Critical Fire",
             "image": "/asset_gambar/default.jpg",
             "excerpt": ""
         },
         {
-            "id": "babylon-burn",
-            "title": "Lirik Babylon Burn",
+            "id": "lirik-propaganda",
+            "title": "Lirik Propaganda",
             "category": "Album - Critical Fire",
             "image": "/asset_gambar/default.jpg",
             "excerpt": ""
@@ -64,15 +64,15 @@ const sairootsDB = {
             "excerpt": ""
         },
         {
-            "id": "lirik-irama-hidup",
-            "title": "Lirik Irama Hidup",
+            "id": "lirik-evaluasi-lagi",
+            "title": "Lirik Evaluasi Lagi",
             "category": "Album - Critical Fire",
             "image": "/asset_gambar/default.jpg",
             "excerpt": ""
         },
         {
-            "id": "lirik-evaluasi-lagi",
-            "title": "Lirik Evaluasi Lagi",
+            "id": "lirik-irama-hidup",
+            "title": "Lirik Irama Hidup",
             "category": "Album - Critical Fire",
             "image": "/asset_gambar/default.jpg",
             "excerpt": ""
