@@ -85,6 +85,13 @@ const sairootsDB = {
             "excerpt": ""
         },
         {
+            "id": "lirik-jurus-liar",
+            "title": "Lirik Jurus Liar",
+            "category": "Single",
+            "image": "/asset_gambar/default.jpg",
+            "excerpt": ""
+        },
+        {
             "id": "lirik-propaganda",
             "title": "Lirik Propaganda",
             "category": "Album - Critical Fire",
@@ -96,13 +103,6 @@ const sairootsDB = {
             "title": "Lirik Roots Medication",
             "category": "Album - Critical Fire",
             "image": "/asset_gambar/art-critical-fire.jpg",
-            "excerpt": ""
-        },
-        {
-            "id": "lirik-jurus-liar",
-            "title": "Lirik Jurus Liar",
-            "category": "Single",
-            "image": "/asset_gambar/default.jpg",
             "excerpt": ""
         },
         {
