@@ -22,15 +22,15 @@ const sairootsDB = {
             "excerpt": ""
         },
         {
-            "id": "lirik-drama-klenik",
-            "title": "Lirik Drama Klenik",
+            "id": "lirik-eksploitasi",
+            "title": "Lirik Eksploitasi",
             "category": "Single",
             "image": "/asset_gambar/default.jpg",
             "excerpt": ""
         },
         {
-            "id": "lirik-eksploitasi",
-            "title": "Lirik Eksploitasi",
+            "id": "lirik-drama-klenik",
+            "title": "Lirik Drama Klenik",
             "category": "Single",
             "image": "/asset_gambar/default.jpg",
             "excerpt": ""
