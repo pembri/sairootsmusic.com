@@ -29,15 +29,15 @@ const sairootsDB = {
             "excerpt": ""
         },
         {
-            "id": "lirik-senandung-manis",
-            "title": "Lirik Senandung Manis",
+            "id": "lirik-dari-jauh",
+            "title": "Lirik Dari Jauh",
             "category": "Single",
             "image": "/asset_gambar/default.jpg",
             "excerpt": ""
         },
         {
-            "id": "lirik-dari-jauh",
-            "title": "Lirik Dari Jauh",
+            "id": "lirik-senandung-manis",
+            "title": "Lirik Senandung Manis",
             "category": "Single",
             "image": "/asset_gambar/default.jpg",
             "excerpt": ""
