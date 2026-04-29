@@ -143,6 +143,14 @@ const sairootsDB = {
     ],
     "discography": [
         {
+            "id": "jamaican-sound",
+            "title": "Jamaican Sound",
+            "category": "Album Critical Fire",
+            "image": "/asset_gambar/art-critical-fire.jpg",
+            "excerpt": "",
+            "audio": "/discography/jamaican-sound.mp3"
+        },
+        {
             "id": "ormas-tipu-tipu",
             "title": "Ormas Tipu-tipu",
             "category": "Album Critical Fire",
