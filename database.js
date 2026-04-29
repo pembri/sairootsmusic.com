@@ -106,17 +106,17 @@ const sairootsDB = {
             "excerpt": ""
         },
         {
-            "id": "lirik-roots-medication",
-            "title": "Lirik Roots Medication",
-            "category": "Album - Critical Fire",
-            "image": "/asset_gambar/art-critical-fire.jpg",
-            "excerpt": ""
-        },
-        {
             "id": "lirik-kasih-mengalun",
             "title": "Lirik Kasih Mengalun",
             "category": "Single",
             "image": "/asset_gambar/default.jpg",
+            "excerpt": ""
+        },
+        {
+            "id": "lirik-roots-medication",
+            "title": "Lirik Roots Medication",
+            "category": "Album - Critical Fire",
+            "image": "/asset_gambar/art-critical-fire.jpg",
             "excerpt": ""
         },
         {
