@@ -36,15 +36,15 @@ const sairootsDB = {
             "excerpt": ""
         },
         {
-            "id": "lirik-drama-klenik",
-            "title": "Lirik Drama Klenik",
+            "id": "lirik-dari-jauh",
+            "title": "Lirik Dari Jauh",
             "category": "Single",
             "image": "/asset_gambar/default.jpg",
             "excerpt": ""
         },
         {
-            "id": "lirik-dari-jauh",
-            "title": "Lirik Dari Jauh",
+            "id": "lirik-drama-klenik",
+            "title": "Lirik Drama Klenik",
             "category": "Single",
             "image": "/asset_gambar/default.jpg",
             "excerpt": ""
