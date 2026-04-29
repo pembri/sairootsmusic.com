@@ -29,15 +29,15 @@ const sairootsDB = {
             "excerpt": ""
         },
         {
-            "id": "lirik-bayang-singgasana",
-            "title": "Lirik Bayang Singgasana",
+            "id": "babylon-burn",
+            "title": "Lirik Babylon Burn",
             "category": "Album - Critical Fire",
             "image": "/asset_gambar/default.jpg",
             "excerpt": ""
         },
         {
-            "id": "babylon-burn",
-            "title": "Lirik Babylon Burn",
+            "id": "lirik-bayang-singgasana",
+            "title": "Lirik Bayang Singgasana",
             "category": "Album - Critical Fire",
             "image": "/asset_gambar/default.jpg",
             "excerpt": ""
