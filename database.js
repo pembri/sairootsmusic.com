@@ -22,15 +22,15 @@ const sairootsDB = {
             "excerpt": ""
         },
         {
-            "id": "lirik-senandung-manis",
-            "title": "Lirik Senandung Manis",
+            "id": "lirik-jurus-liar",
+            "title": "Lirik Jurus Liar",
             "category": "Single",
             "image": "/asset_gambar/default.jpg",
             "excerpt": ""
         },
         {
-            "id": "lirik-jurus-liar",
-            "title": "Lirik Jurus Liar",
+            "id": "lirik-senandung-manis",
+            "title": "Lirik Senandung Manis",
             "category": "Single",
             "image": "/asset_gambar/default.jpg",
             "excerpt": ""
