@@ -143,6 +143,14 @@ const sairootsDB = {
     ],
     "discography": [
         {
+            "id": "irama-hidup",
+            "title": "Irama Hidup",
+            "category": "Album Critical Fire",
+            "image": "/asset_gambar/art-critical-fire.jpg",
+            "excerpt": "",
+            "audio": "/discography/irama-hidup.mp3"
+        },
+        {
             "id": "jamaican-sound",
             "title": "Jamaican Sound",
             "category": "Album Critical Fire",
