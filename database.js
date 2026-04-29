@@ -71,17 +71,17 @@ const sairootsDB = {
             "excerpt": ""
         },
         {
-            "id": "lirik-blaze-it-up",
-            "title": "Lirik Blaze It Up",
-            "category": "Album - Critical Fire",
-            "image": "/asset_gambar/art-critical-fire.jpg",
-            "excerpt": ""
-        },
-        {
             "id": "lirik-genjer-hijau",
             "title": "Lirik Genjer Hijau",
             "category": "Single",
             "image": "/asset_gambar/default.jpg",
+            "excerpt": ""
+        },
+        {
+            "id": "lirik-blaze-it-up",
+            "title": "Lirik Blaze It Up",
+            "category": "Album - Critical Fire",
+            "image": "/asset_gambar/art-critical-fire.jpg",
             "excerpt": ""
         },
         {
