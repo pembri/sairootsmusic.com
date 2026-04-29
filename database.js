@@ -99,6 +99,13 @@ const sairootsDB = {
             "excerpt": ""
         },
         {
+            "id": "lirik-drama-klenik",
+            "title": "Lirik Drama Klenik",
+            "category": "Single",
+            "image": "/asset_gambar/default.jpg",
+            "excerpt": ""
+        },
+        {
             "id": "lirik-kasih-mengalun",
             "title": "Lirik Kasih Mengalun",
             "category": "Single",
@@ -108,13 +115,6 @@ const sairootsDB = {
         {
             "id": "lirik-dari-jauh",
             "title": "Lirik Dari Jauh",
-            "category": "Single",
-            "image": "/asset_gambar/default.jpg",
-            "excerpt": ""
-        },
-        {
-            "id": "lirik-drama-klenik",
-            "title": "Lirik Drama Klenik",
             "category": "Single",
             "image": "/asset_gambar/default.jpg",
             "excerpt": ""
