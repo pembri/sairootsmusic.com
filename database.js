@@ -36,6 +36,13 @@ const sairootsDB = {
             "excerpt": ""
         },
         {
+            "id": "lirik-genjer-hijau",
+            "title": "Lirik Genjer Hijau",
+            "category": "Single",
+            "image": "/asset_gambar/default.jpg",
+            "excerpt": ""
+        },
+        {
             "id": "lirik-eksploitasi",
             "title": "Lirik Eksploitasi",
             "category": "Single",
@@ -45,13 +52,6 @@ const sairootsDB = {
         {
             "id": "lirik-senandung-manis",
             "title": "Lirik Senandung Manis",
-            "category": "Single",
-            "image": "/asset_gambar/default.jpg",
-            "excerpt": ""
-        },
-        {
-            "id": "lirik-genjer-hijau",
-            "title": "Lirik Genjer Hijau",
             "category": "Single",
             "image": "/asset_gambar/default.jpg",
             "excerpt": ""
