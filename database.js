@@ -25,7 +25,7 @@ const sairootsDB = {
             "id": "lirik-propaganda",
             "title": "Lirik Propaganda",
             "category": "Album - Critical Fire",
-            "image": "/asset_gambar/default.jpg",
+            "image": "/asset_gambar/art-critical-fire.jpg",
             "excerpt": ""
         },
         {
