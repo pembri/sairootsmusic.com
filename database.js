@@ -57,17 +57,17 @@ const sairootsDB = {
             "excerpt": ""
         },
         {
-            "id": "lirik-ormas-tipu-tipu",
-            "title": "Lirik Ormas Tipu-tipu",
-            "category": "Album - Critical Fire",
-            "image": "/asset_gambar/art-critical-fire.jpg",
-            "excerpt": ""
-        },
-        {
             "id": "lirik-drama-klenik",
             "title": "Lirik Drama Klenik",
             "category": "Single",
             "image": "/asset_gambar/default.jpg",
+            "excerpt": ""
+        },
+        {
+            "id": "lirik-ormas-tipu-tipu",
+            "title": "Lirik Ormas Tipu-tipu",
+            "category": "Album - Critical Fire",
+            "image": "/asset_gambar/art-critical-fire.jpg",
             "excerpt": ""
         },
         {
