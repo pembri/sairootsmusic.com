@@ -15,15 +15,15 @@ const sairootsDB = {
     ],
     "lyrics": [
         {
-            "id": "lirik-senandung-manis",
-            "title": "Lirik Senandung Manis",
+            "id": "lirik-eksploitasi",
+            "title": "Lirik Eksploitasi",
             "category": "Single",
             "image": "/asset_gambar/default.jpg",
             "excerpt": ""
         },
         {
-            "id": "lirik-eksploitasi",
-            "title": "Lirik Eksploitasi",
+            "id": "lirik-senandung-manis",
+            "title": "Lirik Senandung Manis",
             "category": "Single",
             "image": "/asset_gambar/default.jpg",
             "excerpt": ""
@@ -127,15 +127,15 @@ const sairootsDB = {
             "excerpt": ""
         },
         {
-            "id": "lirik-dari-jauh",
-            "title": "Lirik Dari Jauh",
+            "id": "lirik-jurus-liar",
+            "title": "Lirik Jurus Liar",
             "category": "Single",
             "image": "/asset_gambar/default.jpg",
             "excerpt": ""
         },
         {
-            "id": "lirik-jurus-liar",
-            "title": "Lirik Jurus Liar",
+            "id": "lirik-dari-jauh",
+            "title": "Lirik Dari Jauh",
             "category": "Single",
             "image": "/asset_gambar/default.jpg",
             "excerpt": ""
