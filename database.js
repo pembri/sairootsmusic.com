@@ -25,7 +25,7 @@ const sairootsDB = {
             "id": "lirik-genjer-hijau",
             "title": "Lirik Genjer Hijau",
             "category": "Single",
-            "image": "/asset_gambar/default.jpg",
+            "image": "/asset_gambar/genjer-hijau.jpg",
             "excerpt": ""
         },
         {
