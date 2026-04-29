@@ -85,15 +85,15 @@ const sairootsDB = {
             "excerpt": ""
         },
         {
-            "id": "lirik-timpang",
-            "title": "Lirik Timpang",
+            "id": "lirik-drama-klenik",
+            "title": "Lirik Drama Klenik",
             "category": "Single",
             "image": "/asset_gambar/default.jpg",
             "excerpt": ""
         },
         {
-            "id": "lirik-drama-klenik",
-            "title": "Lirik Drama Klenik",
+            "id": "lirik-timpang",
+            "title": "Lirik Timpang",
             "category": "Single",
             "image": "/asset_gambar/default.jpg",
             "excerpt": ""
