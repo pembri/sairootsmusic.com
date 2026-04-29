@@ -15,15 +15,15 @@ const sairootsDB = {
     ],
     "lyrics": [
         {
-            "id": "lirik-blaze-it-up",
-            "title": "Lirik Blaze It Up",
+            "id": "lirik-propaganda",
+            "title": "Lirik Propaganda",
             "category": "Album - Critical Fire",
             "image": "/asset_gambar/default.jpg",
             "excerpt": ""
         },
         {
-            "id": "lirik-propaganda",
-            "title": "Lirik Propaganda",
+            "id": "lirik-blaze-it-up",
+            "title": "Lirik Blaze It Up",
             "category": "Album - Critical Fire",
             "image": "/asset_gambar/default.jpg",
             "excerpt": ""
