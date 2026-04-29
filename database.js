@@ -170,7 +170,7 @@ const sairootsDB = {
             "id": "dari-jauh",
             "title": "Dari Jauh",
             "category": "Single",
-            "image": "/asset_gambar/dari-jauh.png",
+            "image": "/asset_gambar/art-dari-jauh.png",
             "excerpt": "",
             "audio": "/discography/art-dari-jauh.mp3"
         },
