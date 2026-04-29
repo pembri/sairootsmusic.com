@@ -39,7 +39,7 @@ const sairootsDB = {
             "id": "lirik-evaluasi-lagi",
             "title": "Lirik Evaluasi Lagi",
             "category": "Album - Critical Fire",
-            "image": "/asset_gambar/default.jpg",
+            "image": "/asset_gambar/art-critical-fire.jpg",
             "excerpt": ""
         },
         {
