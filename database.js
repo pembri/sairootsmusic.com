@@ -186,7 +186,7 @@ const sairootsDB = {
             "id": "eksploitasi",
             "title": "Eksploitasi",
             "category": "Single",
-            "image": "/asset_gambar/eksploitasi.jpg",
+            "image": "/asset_gambar/art-eksploitasi.jpg",
             "excerpt": "",
             "audio": "/discography/eksploitasi.mp3"
         },
