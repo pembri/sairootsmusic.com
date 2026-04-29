@@ -22,15 +22,15 @@ const sairootsDB = {
             "excerpt": ""
         },
         {
-            "id": "lirik-blaze-it-up",
-            "title": "Lirik Blaze It Up",
+            "id": "babylon-burn",
+            "title": "Lirik Babylon Burn",
             "category": "Album - Critical Fire",
             "image": "/asset_gambar/default.jpg",
             "excerpt": ""
         },
         {
-            "id": "babylon-burn",
-            "title": "Lirik Babylon Burn",
+            "id": "lirik-blaze-it-up",
+            "title": "Lirik Blaze It Up",
             "category": "Album - Critical Fire",
             "image": "/asset_gambar/default.jpg",
             "excerpt": ""
