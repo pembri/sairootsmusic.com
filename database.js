@@ -18,7 +18,7 @@ const sairootsDB = {
             "id": "lirik-timpang",
             "title": "Lirik Timpang",
             "category": "Single",
-            "image": "/asset_gambar/timpang.jpg",
+            "image": "/asset_gambar/art-timpang.png",
             "excerpt": ""
         },
         {
