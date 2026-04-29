@@ -29,15 +29,15 @@ const sairootsDB = {
             "excerpt": ""
         },
         {
-            "id": "lirik-propaganda",
-            "title": "Lirik Propaganda",
+            "id": "lirik-blaze-it-up",
+            "title": "Lirik Blaze It Up",
             "category": "Album - Critical Fire",
             "image": "/asset_gambar/art-critical-fire.jpg",
             "excerpt": ""
         },
         {
-            "id": "lirik-blaze-it-up",
-            "title": "Lirik Blaze It Up",
+            "id": "lirik-propaganda",
+            "title": "Lirik Propaganda",
             "category": "Album - Critical Fire",
             "image": "/asset_gambar/art-critical-fire.jpg",
             "excerpt": ""
