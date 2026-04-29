@@ -143,6 +143,14 @@ const sairootsDB = {
     ],
     "discography": [
         {
+            "id": "kasih-mengalun",
+            "title": "Kasih Mengalun",
+            "category": "Single",
+            "image": "/asset_gambar/kasih-mengalun.jpg",
+            "excerpt": "",
+            "audio": "/discography/kasih-mengalun.mp3"
+        },
+        {
             "id": "dari-jauh",
             "title": "Dari Jauh",
             "category": "",
