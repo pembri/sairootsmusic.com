@@ -43,6 +43,13 @@ const sairootsDB = {
             "excerpt": ""
         },
         {
+            "id": "lirik-dari-jauh",
+            "title": "Lirik Dari Jauh",
+            "category": "Single",
+            "image": "/asset_gambar/default.jpg",
+            "excerpt": ""
+        },
+        {
             "id": "babylon-burn",
             "title": "Lirik Babylon Burn",
             "category": "Album - Critical Fire",
@@ -54,13 +61,6 @@ const sairootsDB = {
             "title": "Lirik Bayang Singgasana",
             "category": "Album - Critical Fire",
             "image": "/asset_gambar/art-critical-fire.jpg",
-            "excerpt": ""
-        },
-        {
-            "id": "lirik-dari-jauh",
-            "title": "Lirik Dari Jauh",
-            "category": "Single",
-            "image": "/asset_gambar/default.jpg",
             "excerpt": ""
         },
         {
