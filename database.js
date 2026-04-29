@@ -64,6 +64,13 @@ const sairootsDB = {
             "excerpt": ""
         },
         {
+            "id": "lirik-eksploitasi",
+            "title": "Lirik Eksploitasi",
+            "category": "Single",
+            "image": "/asset_gambar/default.jpg",
+            "excerpt": ""
+        },
+        {
             "id": "lirik-jamaican-sound",
             "title": "Lirik Jamaican Sound",
             "category": "Album - Critical Fire",
@@ -75,13 +82,6 @@ const sairootsDB = {
             "title": "Lirik Ormas Tipu-tipu",
             "category": "Album - Critical Fire",
             "image": "/asset_gambar/art-critical-fire.jpg",
-            "excerpt": ""
-        },
-        {
-            "id": "lirik-eksploitasi",
-            "title": "Lirik Eksploitasi",
-            "category": "Single",
-            "image": "/asset_gambar/default.jpg",
             "excerpt": ""
         },
         {
