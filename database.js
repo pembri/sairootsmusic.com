@@ -92,15 +92,15 @@ const sairootsDB = {
             "excerpt": ""
         },
         {
-            "id": "lirik-genjer-hijau",
-            "title": "Lirik Genjer Hijau",
+            "id": "lirik-drama-klenik",
+            "title": "Lirik Drama Klenik",
             "category": "Single",
             "image": "/asset_gambar/default.jpg",
             "excerpt": ""
         },
         {
-            "id": "lirik-drama-klenik",
-            "title": "Lirik Drama Klenik",
+            "id": "lirik-genjer-hijau",
+            "title": "Lirik Genjer Hijau",
             "category": "Single",
             "image": "/asset_gambar/default.jpg",
             "excerpt": ""
