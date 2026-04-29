@@ -113,15 +113,15 @@ const sairootsDB = {
             "excerpt": ""
         },
         {
-            "id": "lirik-kasih-mengalun",
-            "title": "Lirik Kasih Mengalun",
+            "id": "lirik-eksploitasi",
+            "title": "Lirik Eksploitasi",
             "category": "Single",
             "image": "/asset_gambar/default.jpg",
             "excerpt": ""
         },
         {
-            "id": "lirik-eksploitasi",
-            "title": "Lirik Eksploitasi",
+            "id": "lirik-kasih-mengalun",
+            "title": "Lirik Kasih Mengalun",
             "category": "Single",
             "image": "/asset_gambar/default.jpg",
             "excerpt": ""
