@@ -50,15 +50,15 @@ const sairootsDB = {
             "excerpt": ""
         },
         {
-            "id": "lirik-irama-hidup",
-            "title": "Lirik Irama Hidup",
+            "id": "lirik-propaganda",
+            "title": "Lirik Propaganda",
             "category": "Album - Critical Fire",
             "image": "/asset_gambar/default.jpg",
             "excerpt": ""
         },
         {
-            "id": "lirik-propaganda",
-            "title": "Lirik Propaganda",
+            "id": "lirik-irama-hidup",
+            "title": "Lirik Irama Hidup",
             "category": "Album - Critical Fire",
             "image": "/asset_gambar/default.jpg",
             "excerpt": ""
