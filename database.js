@@ -143,6 +143,14 @@ const sairootsDB = {
     ],
     "discography": [
         {
+            "id": "timpang",
+            "title": "Timpang",
+            "category": "Single",
+            "image": "/asset_gambar/timpang.jpg",
+            "excerpt": "",
+            "audio": "/discography/timpang.mp3"
+        },
+        {
             "id": "genjer-hijau",
             "title": "Genjer Hijau",
             "category": "Single",
