@@ -29,15 +29,15 @@ const sairootsDB = {
             "excerpt": ""
         },
         {
-            "id": "lirik-jurus-liar",
-            "title": "Lirik Jurus Liar",
+            "id": "lirik-genjer-hijau",
+            "title": "Lirik Genjer Hijau",
             "category": "Single",
             "image": "/asset_gambar/default.jpg",
             "excerpt": ""
         },
         {
-            "id": "lirik-genjer-hijau",
-            "title": "Lirik Genjer Hijau",
+            "id": "lirik-jurus-liar",
+            "title": "Lirik Jurus Liar",
             "category": "Single",
             "image": "/asset_gambar/default.jpg",
             "excerpt": ""
