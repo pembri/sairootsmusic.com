@@ -143,6 +143,14 @@ const sairootsDB = {
     ],
     "discography": [
         {
+            "id": "ormas-tipu-tipu",
+            "title": "Ormas Tipu-tipu",
+            "category": "Album Critical Fire",
+            "image": "/asset_gambar/art-critical-fire.jpg",
+            "excerpt": "",
+            "audio": "/discography/ormas-tipu-tipu.mp3"
+        },
+        {
             "id": "propaganda",
             "title": "Propaganda",
             "category": "Album Critical Fire",
