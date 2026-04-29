@@ -106,6 +106,13 @@ const sairootsDB = {
             "excerpt": ""
         },
         {
+            "id": "lirik-dari-jauh",
+            "title": "Lirik Dari Jauh",
+            "category": "Single",
+            "image": "/asset_gambar/default.jpg",
+            "excerpt": ""
+        },
+        {
             "id": "lirik-skank-patrol",
             "title": "Lirik Skank Patrol",
             "category": "Album - Critical Fire",
@@ -115,13 +122,6 @@ const sairootsDB = {
         {
             "id": "lirik-timpang",
             "title": "Lirik Timpang",
-            "category": "Single",
-            "image": "/asset_gambar/default.jpg",
-            "excerpt": ""
-        },
-        {
-            "id": "lirik-dari-jauh",
-            "title": "Lirik Dari Jauh",
             "category": "Single",
             "image": "/asset_gambar/default.jpg",
             "excerpt": ""
