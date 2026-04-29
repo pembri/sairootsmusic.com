@@ -153,7 +153,7 @@ const sairootsDB = {
         {
             "id": "drama-klenik",
             "title": "Drama Klenik",
-            "category": "",
+            "category": "Single",
             "image": "/asset_gambar/drama-klenik.jpg",
             "excerpt": "",
             "audio": "/discography/drama-klenik.mp3"
