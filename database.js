@@ -50,15 +50,15 @@ const sairootsDB = {
             "excerpt": ""
         },
         {
-            "id": "lirik-ormas-tipu-tipu",
-            "title": "Lirik Ormas Tipu-tipu",
+            "id": "lirik-evaluasi-lagi",
+            "title": "Lirik Evaluasi Lagi",
             "category": "Album - Critical Fire",
             "image": "/asset_gambar/default.jpg",
             "excerpt": ""
         },
         {
-            "id": "lirik-evaluasi-lagi",
-            "title": "Lirik Evaluasi Lagi",
+            "id": "lirik-ormas-tipu-tipu",
+            "title": "Lirik Ormas Tipu-tipu",
             "category": "Album - Critical Fire",
             "image": "/asset_gambar/default.jpg",
             "excerpt": ""
