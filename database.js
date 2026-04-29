@@ -18,7 +18,7 @@ const sairootsDB = {
             "id": "babylon-burn",
             "title": "Lirik Babylon Burn",
             "category": "Album - Critical Fire",
-            "image": "/asset_gambar/default.jpg",
+            "image": "/asset_gambar/art-critical-fire.jpg",
             "excerpt": ""
         },
         {
