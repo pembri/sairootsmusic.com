@@ -143,6 +143,14 @@ const sairootsDB = {
     ],
     "discography": [
         {
+            "id": "bayang-singgasana",
+            "title": "Bayang Singgasana",
+            "category": "Album Critical Fire",
+            "image": "/asset_gambar/art-critical-fire.jpg",
+            "excerpt": "",
+            "audio": "/discography/bayang-singgasana.mp3"
+        },
+        {
             "id": "blaze-it-up",
             "title": "Blaze It Up",
             "category": "Album Critical Fire",
