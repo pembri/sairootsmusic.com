@@ -178,7 +178,7 @@ const sairootsDB = {
             "id": "jurus-liar",
             "title": "Jurus Liar",
             "category": "Single",
-            "image": "/asset_gambar/jurus-liar.jpg",
+            "image": "/asset_gambar/art-jurus-liar.jpg",
             "excerpt": "",
             "audio": "/discography/jurus-liar.mp3"
         },
