@@ -43,15 +43,15 @@ const sairootsDB = {
             "excerpt": ""
         },
         {
-            "id": "lirik-irama-hidup",
-            "title": "Lirik Irama Hidup",
+            "id": "lirik-blaze-it-up",
+            "title": "Lirik Blaze It Up",
             "category": "Album - Critical Fire",
             "image": "/asset_gambar/default.jpg",
             "excerpt": ""
         },
         {
-            "id": "lirik-blaze-it-up",
-            "title": "Lirik Blaze It Up",
+            "id": "lirik-irama-hidup",
+            "title": "Lirik Irama Hidup",
             "category": "Album - Critical Fire",
             "image": "/asset_gambar/default.jpg",
             "excerpt": ""
