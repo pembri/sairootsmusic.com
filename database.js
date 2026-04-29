@@ -120,15 +120,15 @@ const sairootsDB = {
             "excerpt": ""
         },
         {
-            "id": "lirik-genjer-hijau",
-            "title": "Lirik Genjer Hijau",
+            "id": "lirik-dari-jauh",
+            "title": "Lirik Dari Jauh",
             "category": "Single",
             "image": "/asset_gambar/default.jpg",
             "excerpt": ""
         },
         {
-            "id": "lirik-dari-jauh",
-            "title": "Lirik Dari Jauh",
+            "id": "lirik-genjer-hijau",
+            "title": "Lirik Genjer Hijau",
             "category": "Single",
             "image": "/asset_gambar/default.jpg",
             "excerpt": ""
