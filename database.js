@@ -143,6 +143,14 @@ const sairootsDB = {
     ],
     "discography": [
         {
+            "id": "dari-jauh",
+            "title": "Dari Jauh",
+            "category": "",
+            "image": "/asset_gambar/dari-jauh.png",
+            "excerpt": "",
+            "audio": "/discography/dari-jauh.mp3"
+        },
+        {
             "id": "jurus-liar",
             "title": "Jurus Liar",
             "category": "Single",
