@@ -46,7 +46,7 @@ const sairootsDB = {
             "id": "lirik-jurus-liar",
             "title": "Lirik Jurus Liar",
             "category": "Single",
-            "image": "/asset_gambar/default.jpg",
+            "image": "/asset_gambar/jurus-liar.jpg",
             "excerpt": ""
         },
         {
