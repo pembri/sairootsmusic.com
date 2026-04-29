@@ -60,7 +60,7 @@ const sairootsDB = {
             "id": "lirik-ormas-tipu-tipu",
             "title": "Lirik Ormas Tipu-tipu",
             "category": "Album - Critical Fire",
-            "image": "/asset_gambar/default.jpg",
+            "image": "/asset_gambar/art-critical-fire.jpg",
             "excerpt": ""
         },
         {
