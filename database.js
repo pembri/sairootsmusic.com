@@ -50,15 +50,15 @@ const sairootsDB = {
             "excerpt": ""
         },
         {
-            "id": "lirik-jamaican-sound",
-            "title": "Lirik Jamaican Sound",
+            "id": "babylon-burn",
+            "title": "Lirik Babylon Burn",
             "category": "Album - Critical Fire",
             "image": "/asset_gambar/default.jpg",
             "excerpt": ""
         },
         {
-            "id": "babylon-burn",
-            "title": "Lirik Babylon Burn",
+            "id": "lirik-jamaican-sound",
+            "title": "Lirik Jamaican Sound",
             "category": "Album - Critical Fire",
             "image": "/asset_gambar/default.jpg",
             "excerpt": ""
