@@ -113,15 +113,15 @@ const sairootsDB = {
             "excerpt": ""
         },
         {
-            "id": "lirik-jurus-liar",
-            "title": "Lirik Jurus Liar",
+            "id": "lirik-drama-klenik",
+            "title": "Lirik Drama Klenik",
             "category": "Single",
             "image": "/asset_gambar/default.jpg",
             "excerpt": ""
         },
         {
-            "id": "lirik-drama-klenik",
-            "title": "Lirik Drama Klenik",
+            "id": "lirik-jurus-liar",
+            "title": "Lirik Jurus Liar",
             "category": "Single",
             "image": "/asset_gambar/default.jpg",
             "excerpt": ""
