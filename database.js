@@ -164,7 +164,7 @@ const sairootsDB = {
             "category": "Single",
             "image": "/asset_gambar/kasih-mengalun.jpg",
             "excerpt": "",
-            "audio": "/discography/kasih-mengalun.mp3"
+            "audio": "/discography/art-kasih-mengalun.mp3"
         },
         {
             "id": "dari-jauh",
