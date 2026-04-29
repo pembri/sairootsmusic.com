@@ -36,17 +36,17 @@ const sairootsDB = {
             "excerpt": ""
         },
         {
-            "id": "lirik-evaluasi-lagi",
-            "title": "Lirik Evaluasi Lagi",
-            "category": "Album - Critical Fire",
-            "image": "/asset_gambar/art-critical-fire.jpg",
-            "excerpt": ""
-        },
-        {
             "id": "lirik-drama-klenik",
             "title": "Lirik Drama Klenik",
             "category": "Single",
             "image": "/asset_gambar/default.jpg",
+            "excerpt": ""
+        },
+        {
+            "id": "lirik-evaluasi-lagi",
+            "title": "Lirik Evaluasi Lagi",
+            "category": "Album - Critical Fire",
+            "image": "/asset_gambar/art-critical-fire.jpg",
             "excerpt": ""
         },
         {
