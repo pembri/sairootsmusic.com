@@ -43,15 +43,15 @@ const sairootsDB = {
             "excerpt": ""
         },
         {
-            "id": "lirik-evaluasi-lagi",
-            "title": "Lirik Evaluasi Lagi",
+            "id": "lirik-bayang-singgasana",
+            "title": "Lirik Bayang Singgasana",
             "category": "Album - Critical Fire",
             "image": "/asset_gambar/default.jpg",
             "excerpt": ""
         },
         {
-            "id": "lirik-bayang-singgasana",
-            "title": "Lirik Bayang Singgasana",
+            "id": "lirik-evaluasi-lagi",
+            "title": "Lirik Evaluasi Lagi",
             "category": "Album - Critical Fire",
             "image": "/asset_gambar/default.jpg",
             "excerpt": ""
