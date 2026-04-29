@@ -15,15 +15,15 @@ const sairootsDB = {
     ],
     "lyrics": [
         {
-            "id": "lirik-roots-medication",
-            "title": "Lirik Roots Medication",
+            "id": "lirik-bayang-singgasana",
+            "title": "Lirik Bayang Singgasana",
             "category": "Album - Critical Fire",
             "image": "/asset_gambar/default.jpg",
             "excerpt": ""
         },
         {
-            "id": "lirik-bayang-singgasana",
-            "title": "Lirik Bayang Singgasana",
+            "id": "lirik-roots-medication",
+            "title": "Lirik Roots Medication",
             "category": "Album - Critical Fire",
             "image": "/asset_gambar/default.jpg",
             "excerpt": ""
