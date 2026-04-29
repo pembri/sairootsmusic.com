@@ -22,15 +22,15 @@ const sairootsDB = {
             "excerpt": ""
         },
         {
-            "id": "lirik-jurus-liar",
-            "title": "Lirik Jurus Liar",
+            "id": "lirik-kasih-mengalun",
+            "title": "Lirik Kasih Mengalun",
             "category": "Single",
             "image": "/asset_gambar/default.jpg",
             "excerpt": ""
         },
         {
-            "id": "lirik-kasih-mengalun",
-            "title": "Lirik Kasih Mengalun",
+            "id": "lirik-jurus-liar",
+            "title": "Lirik Jurus Liar",
             "category": "Single",
             "image": "/asset_gambar/default.jpg",
             "excerpt": ""
