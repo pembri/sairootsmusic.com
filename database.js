@@ -99,6 +99,13 @@ const sairootsDB = {
             "excerpt": ""
         },
         {
+            "id": "lirik-jurus-liar",
+            "title": "Lirik Jurus Liar",
+            "category": "Single",
+            "image": "/asset_gambar/default.jpg",
+            "excerpt": ""
+        },
+        {
             "id": "lirik-skank-patrol",
             "title": "Lirik Skank Patrol",
             "category": "Album - Critical Fire",
@@ -108,13 +115,6 @@ const sairootsDB = {
         {
             "id": "lirik-timpang",
             "title": "Lirik Timpang",
-            "category": "Single",
-            "image": "/asset_gambar/default.jpg",
-            "excerpt": ""
-        },
-        {
-            "id": "lirik-jurus-liar",
-            "title": "Lirik Jurus Liar",
             "category": "Single",
             "image": "/asset_gambar/default.jpg",
             "excerpt": ""
