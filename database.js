@@ -15,17 +15,17 @@ const sairootsDB = {
     ],
     "lyrics": [
         {
-            "id": "lirik-skank-patrol",
-            "title": "Lirik Skank Patrol",
-            "category": "Album - Critical Fire",
-            "image": "/asset_gambar/art-critical-fire.jpg",
-            "excerpt": ""
-        },
-        {
             "id": "lirik-roots-medication",
             "title": "Lirik Roots Medication",
             "category": "Album - Critical Fire",
             "image": "/asset_gambar/default.jpg",
+            "excerpt": ""
+        },
+        {
+            "id": "lirik-skank-patrol",
+            "title": "Lirik Skank Patrol",
+            "category": "Album - Critical Fire",
+            "image": "/asset_gambar/art-critical-fire.jpg",
             "excerpt": ""
         },
         {
