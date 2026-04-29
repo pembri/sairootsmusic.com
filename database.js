@@ -99,15 +99,15 @@ const sairootsDB = {
             "excerpt": ""
         },
         {
-            "id": "lirik-timpang",
-            "title": "Lirik Timpang",
+            "id": "lirik-eksploitasi",
+            "title": "Lirik Eksploitasi",
             "category": "Single",
             "image": "/asset_gambar/default.jpg",
             "excerpt": ""
         },
         {
-            "id": "lirik-eksploitasi",
-            "title": "Lirik Eksploitasi",
+            "id": "lirik-timpang",
+            "title": "Lirik Timpang",
             "category": "Single",
             "image": "/asset_gambar/default.jpg",
             "excerpt": ""
