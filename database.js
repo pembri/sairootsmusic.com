@@ -67,7 +67,7 @@ const sairootsDB = {
             "id": "lirik-drama-klenik",
             "title": "Lirik Drama Klenik",
             "category": "Single",
-            "image": "/asset_gambar/default.jpg",
+            "image": "/asset_gambar/drama-kelik.jpg",
             "excerpt": ""
         },
         {
