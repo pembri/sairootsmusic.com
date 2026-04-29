@@ -64,15 +64,15 @@ const sairootsDB = {
             "excerpt": ""
         },
         {
-            "id": "lirik-roots-medication",
-            "title": "Lirik Roots Medication",
+            "id": "lirik-ormas-tipu-tipu",
+            "title": "Lirik Ormas Tipu-tipu",
             "category": "Album - Critical Fire",
             "image": "/asset_gambar/default.jpg",
             "excerpt": ""
         },
         {
-            "id": "lirik-ormas-tipu-tipu",
-            "title": "Lirik Ormas Tipu-tipu",
+            "id": "lirik-roots-medication",
+            "title": "Lirik Roots Medication",
             "category": "Album - Critical Fire",
             "image": "/asset_gambar/default.jpg",
             "excerpt": ""
