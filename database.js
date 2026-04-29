@@ -127,15 +127,15 @@ const sairootsDB = {
             "excerpt": ""
         },
         {
-            "id": "lirik-senandung-manis",
-            "title": "Lirik Senandung Manis",
+            "id": "lirik-drama-klenik",
+            "title": "Lirik Drama Klenik",
             "category": "Single",
             "image": "/asset_gambar/default.jpg",
             "excerpt": ""
         },
         {
-            "id": "lirik-drama-klenik",
-            "title": "Lirik Drama Klenik",
+            "id": "lirik-senandung-manis",
+            "title": "Lirik Senandung Manis",
             "category": "Single",
             "image": "/asset_gambar/default.jpg",
             "excerpt": ""
