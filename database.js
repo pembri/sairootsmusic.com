@@ -143,6 +143,14 @@ const sairootsDB = {
     ],
     "discography": [
         {
+            "id": "propaganda",
+            "title": "Propaganda",
+            "category": "Album Critical Fire",
+            "image": "/asset_gambar/art-critical-fire.jpg",
+            "excerpt": "",
+            "audio": "/discography/propaganda.mp3"
+        },
+        {
             "id": "roots-medication",
             "title": "Roots Medication",
             "category": "Album Critical Fire",
