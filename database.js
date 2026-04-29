@@ -60,7 +60,7 @@ const sairootsDB = {
             "id": "lirik-senandung-manis",
             "title": "Lirik Senandung Manis",
             "category": "Single",
-            "image": "/asset_gambar/default.jpg",
+            "image": "/asset_gambar/senandung-manis.jpg",
             "excerpt": ""
         },
         {
