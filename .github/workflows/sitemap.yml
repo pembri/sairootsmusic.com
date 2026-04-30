@@ -34,6 +34,7 @@ jobs:
           const BASE_URL = 'https://sairootsmusic.com';
           const ROOT_DIR = '.';
 
+          // === DAFTAR HITAM (TIDAK ADA YANG DIUBAH) ===
           const BLACKLIST_FOLDERS = ['admin_pages', 'node_modules', '.git', '.github'];
           const BLACKLIST_FILES = ['404.html'];
 
@@ -50,34 +51,42 @@ jobs:
                 scanDir(fullPath);
               } else if (item.isFile() && item.name.endsWith('.html')) {
                 if (BLACKLIST_FILES.includes(item.name)) continue;
+                
                 let relativePath = path.relative(ROOT_DIR, fullPath).replace(/\\/g, '/');
-                relativePath = relativePath.replace(/\.html$/, '').replace(/\/index$/, '');
-                if (relativePath === 'index') relativePath = '';
-                const url = relativePath ? `${BASE_URL}/${relativePath}` : `${BASE_URL}/`;
-                urls.add(url);
+                let cleanPath = relativePath.replace(/\/index\.html$/, '/').replace(/\.html$/, '');
+                
+                if (cleanPath === 'index') {
+                  urls.add(BASE_URL + '/');
+                } else {
+                  urls.add(`${BASE_URL}/${cleanPath}`);
+                }
               }
             }
           }
 
-          // FIX: Fungsi slugify disamakan 100% dengan createSlug di website
           function slugify(text) {
-            return text
-              .toLowerCase()
-              .replace(/[^a-z0-9]+/g, '-')
-              .replace(/(^-|-$)+/g, '');
+            return text.toString().toLowerCase()
+              .replace(/\s+/g, '-')
+              .replace(/[^\w\-]+/g, '')
+              .replace(/\-\-+/g, '-')
+              .replace(/^-+/, '')
+              .replace(/-+$/, '');
           }
 
           function parseDiscography() {
-            const dbPath = path.join(ROOT_DIR, 'database.js');
-            if (!fs.existsSync(dbPath)) return [];
-            const content = fs.readFileSync(dbPath, 'utf-8');
-
-            // FIX: Regex lebih galak untuk nangkap "discography" dengan tanda kutip
-            const discographyMatch = content.match(/["']?discography["']?\s*:\s*\[([\s\S]*?)\]/);
-            if (!discographyMatch) return [];
-
-            const discographyBlock = discographyMatch[1];
-            // FIX: Regex judul juga harus nangkap "title" dengan tanda kutip
+            if (!fs.existsSync(path.join(ROOT_DIR, 'database.js'))) return [];
+            const dbContent = fs.readFileSync(path.join(ROOT_DIR, 'database.js'), 'utf8');
+            
+            const dbStart = dbContent.indexOf('const sairootsDB = {');
+            if (dbStart === -1) return [];
+            
+            const dbEnd = dbContent.indexOf('};', dbStart) + 2;
+            const dbString = dbContent.substring(dbStart, dbEnd);
+            
+            const discographyStart = dbString.indexOf('"discography":');
+            if (discographyStart === -1) return [];
+            
+            const discographyBlock = dbString.substring(discographyStart);
             const titleRegex = /["']?title["']?\s*:\s*["'`]([^"'`]+)["'`]/g;
             const titles = [];
             let match;
@@ -87,13 +96,43 @@ jobs:
             return titles;
           }
 
+          // === FUNGSI BARU UNTUK MENGAMBIL SLUG VIDEO COVER ===
+          function parseCovers() {
+            if (!fs.existsSync(path.join(ROOT_DIR, 'database.js'))) return [];
+            const dbContent = fs.readFileSync(path.join(ROOT_DIR, 'database.js'), 'utf8');
+            
+            const cvStart = dbContent.indexOf('const coverVideos = [');
+            if (cvStart === -1) return [];
+            
+            const cvEnd = dbContent.indexOf('];', cvStart) + 2;
+            const cvString = dbContent.substring(cvStart, cvEnd);
+            
+            const slugRegex = /["']?slug["']?\s*:\s*["'`]([^"'`]+)["'`]/g;
+            const slugs = [];
+            let match;
+            while ((match = slugRegex.exec(cvString)) !== null) {
+              slugs.push(match[1]);
+            }
+            return slugs;
+          }
+
+          // 1. Eksekusi Scan File HTML Statis
           scanDir(ROOT_DIR);
+          
+          // 2. Eksekusi Pencarian URL Discography
           const tracks = parseDiscography();
           tracks.forEach(title => {
             const slug = slugify(title);
             urls.add(`${BASE_URL}/discography?track=${slug}`);
           });
 
+          // 3. Eksekusi Pencarian URL YouTube Covers
+          const covers = parseCovers();
+          covers.forEach(slug => {
+            urls.add(`${BASE_URL}/cover/${slug}`);
+          });
+
+          // Generate XML String
           let xml = '<?xml version="1.0" encoding="UTF-8"?>\n';
           xml += '<urlset xmlns="http://www.sitemaps.org/schemas/sitemap/0.9">\n';
           [...urls].sort().forEach(url => {
@@ -102,7 +141,7 @@ jobs:
           xml += '</urlset>\n';
 
           fs.writeFileSync('sitemap.xml', xml);
-          console.log('Sitemap Berhasil! Track Ditemukan: ' + tracks.length);
+          console.log('Sitemap Berhasil! Track Ditemukan: ' + tracks.length + ' | Cover Ditemukan: ' + covers.length);
           EOF
 
           node generate-sitemap.js
@@ -112,9 +151,5 @@ jobs:
           git config --local user.name "github-actions[bot]"
           git config --local user.email "github-actions[bot]@users.noreply.github.com"
           git add sitemap.xml
-          if git diff --staged --quiet; then
-            echo "No changes"
-          else
-            git commit -m "chore: auto-update sitemap.xml [skip ci]"
-            git push
-          fi
+          git diff --staged --quiet || git commit -m "Auto-update sitemap.xml [skip ci]"
+          git push
