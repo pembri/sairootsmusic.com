@@ -129,43 +129,40 @@
         searchInput.addEventListener('click', e => e.stopPropagation());
 
         try {
-    var fuse = new Fuse(searchData, { 
-        keys: ['title', 'excerpt', 'category', 'type'], 
-        threshold: 0.3 
-    });
-
+    var fuse = new Fuse(searchData, { keys: ['title', 'excerpt', 'category', 'type'], threshold: 0.3 });
+    
     function showSearchResults(query) {
         var container = document.getElementById('search-results');
         var nav = document.getElementById('main-nav');
-
+        
         if (query.length < 2) { 
             container.classList.add('hidden'); 
             nav.classList.remove('hidden'); 
             return; 
         }
-
+        
         var results = fuse.search(query);
         nav.classList.add('hidden'); 
         container.classList.remove('hidden'); 
         container.innerHTML = '';
-
+        
         if (results.length === 0) {
             container.innerHTML = '<div class="text-center py-10"><p class="text-gray-400 text-lg">Tidak ada hasil untuk "<span class="text-white">' + query + '</span>"</p><p class="text-gray-600 text-sm mt-2">Coba kata kunci lain.</p></div>'; 
             return;
         }
-
+        
         var html = '<div class="flex flex-col space-y-3 w-full pb-6">';
         results.forEach(function(result) {
             var item = result.item;
             var colorClass = 'text-gray-400 border-gray-400';
-
-            // Logika Warna Badge (Gaya Manual - No $)
+            
+            // LOGIKA WARNA BADGE (GAYA MANUAL - NO $)
             if (item.type === 'Article') colorClass = 'text-rasta-green border-rasta-green';
             else if (item.type === 'Discography') colorClass = 'text-rasta-yellow border-rasta-yellow';
             else if (item.type === 'Lyric') colorClass = 'text-rasta-red border-rasta-red';
-            else if (item.type === 'Cover') colorClass = 'text-white border-white';
+            else if (item.type === 'Cover') colorClass = 'text-white border-white'; // Tambahan biar Cover muncul
 
-            // Merakit HTML Pakai Tanda Tambah (Aman buat Generator)
+            // MERAKIT HTML PAKAI TANDA TAMBAH (AMAN BUAT ADMIN)
             html += '<a href="' + item.url + '" class="block bg-white/5 border border-white/10 p-4 hover:bg-white/10 hover:border-white/30 transition-all text-left">' +
                         '<div class="flex justify-between items-start mb-2">' +
                             '<span class="text-[10px] uppercase tracking-widest px-2 py-0.5 border ' + colorClass + '">' + item.type + '</span>' +
@@ -178,11 +175,10 @@
         html += '</div>'; 
         container.innerHTML = html;
     }
-
+    
     searchInput.addEventListener('input', function(e) { 
         showSearchResults(e.target.value.trim()); 
     });
-
 } catch (error) { 
     console.warn("Menunggu database.js...", error); 
 }
