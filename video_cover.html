@@ -1,0 +1,404 @@
+<!DOCTYPE html>
+<html lang="id">
+<head>
+    <link rel="icon" type="image/x-icon" href="/favicon.ico">
+    <link rel="shortcut icon" type="image/x-icon" href="/favicon.ico">
+    <link rel="icon" type="image/png" sizes="32x32" href="/favicon-32x32.png">
+    <link rel="icon" type="image/png" sizes="16x16" href="/favicon-16x16.png">
+    <link rel="apple-touch-icon" sizes="180x180" href="/apple-touch-icon.png">
+    <link rel="icon" type="image/png" sizes="192x192" href="/android-chrome-192x192.png">
+    <link rel="icon" type="image/png" sizes="512x512" href="/android-chrome-512x512.png">
+    <link rel="manifest" href="/site.webmanifest">
+    <link rel="canonical" href="https://sairootsmusic.com/cover">
+
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no">
+    <title>Cover Playlist | SAI Roots</title>
+
+    <meta name="description" content="Kumpulan video cover dari SAI Roots.">
+    <meta property="og:title" content="Cover Playlist | SAI Roots">
+    <meta property="og:site_name" content="SAI Roots Music">
+
+    <script src="https://cdn.tailwindcss.com"></script>
+    <script src="https://cdn.jsdelivr.net/npm/fuse.js@7.0.0/dist/fuse.min.js"></script>
+    <script src="https://www.youtube.com/iframe_api"></script>
+
+    <link href="https://fonts.googleapis.com/css2?family=Anton&family=Inter:wght@300;400;600&display=swap" rel="stylesheet">
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.5.1/css/all.min.css">
+
+    <script>
+        tailwind.config = {
+            theme: {
+                extend: {
+                    colors: {
+                        rasta: { green: '#2D8659', yellow: '#FBBF24', red: '#DC2626' },
+                        neutral: { 950: '#050505' }
+                    },
+                    fontFamily: {
+                        sans: ['Inter', 'sans-serif'],
+                        display: ['Anton', 'sans-serif']
+                    }
+                }
+            }
+        }
+    </script>
+
+    <style>
+        body { background-color: #050505; color: #f0f0f0; }
+        .glass { background: rgba(5, 5, 5, 0.85); backdrop-filter: blur(12px); border-bottom: 1px solid rgba(255,255,255,0.03); }
+        .rasta-stripe { height: 3px; background: linear-gradient(90deg, #2D8659 0%, #FBBF24 50%, #DC2626 100%); width: 100%; position: fixed; top: 0; z-index: 60; }
+        #mobile-menu { transition: transform 0.4s cubic-bezier(0.4, 0, 0.2, 1); overflow-y: auto; }
+        .menu-open { transform: translateX(0) !important; }
+        .line-clamp-3 { display: -webkit-box; -webkit-line-clamp: 3; -webkit-box-orient: vertical; overflow: hidden; }
+        
+        /* YouTube iframe container aspect ratio */
+        .video-container { position: relative; padding-bottom: 56.25%; height: 0; overflow: hidden; max-width: 100%; background: #000; border: 1px solid rgba(255,255,255,0.1); }
+        .video-container iframe { position: absolute; top: 0; left: 0; width: 100%; height: 100%; border: 0; }
+    </style>
+</head>
+
+<body class="overflow-x-hidden pt-1">
+
+<div class="rasta-stripe"></div>
+
+<header class="fixed top-[3px] w-full z-50 glass">
+    <div class="container mx-auto px-6 py-4 flex justify-between items-center">
+        <div class="text-3xl font-display uppercase tracking-wider">
+            <a href="/" class="flex items-center gap-3 hover:text-rasta-yellow transition-colors duration-300">
+                <img src="/android-chrome-192x192.png"
+                     alt="Logo SAI Roots" class="w-10 h-10 rounded-full object-cover border border-white/10">
+                <span>SAI <span class="text-rasta-green">Roots</span></span>
+            </a>
+        </div>
+
+        <button id="menu-btn" class="focus:outline-none z-50 p-2 rounded-full hover:bg-white/5 transition">
+            <svg id="hamburger-icon" class="w-7 h-7 text-white" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M4 6h16M4 12h16m-7 6h7"></path>
+            </svg>
+        </button>
+    </div>
+</header>
+
+<div id="mobile-menu" class="fixed inset-0 z-40 bg-neutral-950 translate-x-full flex flex-col items-center pt-28 pb-12 p-6 border-l border-white/5">
+    <div class="w-full max-w-md relative mb-8 shrink-0">
+        <input type="text" id="search-input" placeholder="Cari artikel, lirik, atau lagu..."
+               class="w-full bg-white/5 border border-white/10 rounded-none py-4 px-6 focus:outline-none focus:border-rasta-yellow transition-all text-white text-lg">
+        <span class="absolute right-5 top-1/2 -translate-y-1/2 text-gray-500">⏎</span>
+    </div>
+
+    <div id="search-results" class="w-full max-w-md flex-1 overflow-y-auto hidden"></div>
+
+    <nav id="main-nav" class="flex flex-col space-y-6 text-center uppercase tracking-widest w-full max-w-md">
+        <a href="/" class="text-3xl font-display hover:text-rasta-green transition duration-300">Home</a>
+        <a href="/discography" class="text-3xl font-display hover:text-rasta-yellow transition duration-300">Discography</a>
+        <a href="/lyric" class="text-3xl font-display hover:text-rasta-red transition duration-300">Lyric</a>
+        <a href="/video_cover.html" class="text-3xl font-display text-rasta-yellow hover:text-rasta-yellow transition duration-300">Covers</a>
+        <a href="/about" class="hover:text-rasta-green transition duration-300 text-base font-sans mt-4">About</a>
+        <a href="/privacy" class="hover:text-rasta-yellow transition duration-300 text-base font-sans">Privacy Policy</a>
+        <a href="/contact" class="hover:text-rasta-red transition duration-300 text-base font-sans">Contact Us</a>
+    </nav>
+</div>
+
+<main class="pt-32 pb-20 container mx-auto px-6 min-h-screen" id="app-container">
+    </main>
+
+<footer id="footer" class="border-t border-white/5 py-12 bg-black">
+    <div class="container mx-auto px-6 text-center">
+        <p class="text-gray-600 text-[10px] tracking-[0.3em] uppercase mb-6">Stream Our Music</p>
+
+        <div class="flex flex-wrap justify-center gap-7 mb-10 text-gray-400">
+            <a href="https://www.youtube.com/@sairoots" target="_blank" class="hover:text-[#ff0000]"><i class="fab fa-youtube text-2xl"></i></a>
+            <a href="https://open.spotify.com/artist/0xOPCtZvhXVd9RTbU1aYTr" target="_blank" class="hover:text-[#1DB954]"><i class="fab fa-spotify text-2xl"></i></a>
+            <a href="https://music.apple.com/id/artist/sai-roots/1892187423?l=id" target="_blank" class="hover:text-white"><i class="fab fa-apple text-2xl"></i></a>
+            <a href="https://m.soundcloud.com/sairoots" target="_blank" class="hover:text-[#ff5500]"><i class="fab fa-soundcloud text-2xl"></i></a>
+            <a href="https://link.deezer.com/s/3366qh6efN8QoSqSPCEsB" target="_blank" class="hover:text-white"><i class="fab fa-deezer text-2xl"></i></a>
+            <a href="https://music.amazon.com/artists/B0GTFWNC32/sai-roots" target="_blank" class="hover:text-[#00a8e1]"><i class="fab fa-amazon text-2xl"></i></a>
+        </div>
+
+        <div class="flex justify-center space-x-8 mb-10 text-gray-500">
+            <a href="https://instagram.com/ahmadsupembri" target="_blank" class="hover:text-white"><i class="fab fa-instagram text-xl"></i></a>
+            <a href="https://tiktok.com/@ahmadsupembri" target="_blank" class="hover:text-white"><i class="fab fa-tiktok text-xl"></i></a>
+            <a href="https://facebook.com/ahmadsupembri" target="_blank" class="hover:text-[#1877F2]"><i class="fab fa-facebook-f text-xl"></i></a>
+        </div>
+
+        <div class="border-t border-white/5 pt-8">
+            <p class="text-gray-600 text-[11px] tracking-[0.2em] uppercase">© 2026 <span class="text-white font-medium">SAI Roots Music</span>. All Rights Reserved.</p>
+            <p class="text-gray-800 text-[9px] mt-2 tracking-[0.4em] uppercase italic">Roots • Reggae • Rap</p>
+        </div>
+    </div>
+</footer>
+
+<script src="./database.js"></script>
+
+<script>
+// --- KONFIGURASI MENU & SEARCH (Sama seperti about.html) ---
+const menuBtn = document.getElementById('menu-btn');
+const mobileMenu = document.getElementById('mobile-menu');
+const hamburgerIcon = document.getElementById('hamburger-icon');
+const searchInput = document.getElementById('search-input');
+
+function toggleMenu() {
+    const isOpen = mobileMenu.classList.toggle('menu-open');
+    if (isOpen) {
+        hamburgerIcon.innerHTML = `<path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M6 18L18 6M6 6l12 12"></path>`;
+        hamburgerIcon.classList.add('text-rasta-yellow');
+        document.body.style.overflow = 'hidden';
+    } else {
+        hamburgerIcon.innerHTML = `<path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M4 6h16M4 12h16m-7 6h7"></path>`;
+        hamburgerIcon.classList.remove('text-rasta-yellow');
+        document.body.style.overflow = 'auto';
+        searchInput.value = '';
+        document.getElementById('search-results').classList.add('hidden');
+        document.getElementById('main-nav').classList.remove('hidden');
+    }
+}
+
+menuBtn.addEventListener('click', toggleMenu);
+searchInput.addEventListener('click', e => e.stopPropagation());
+
+try {
+    const fuse = new Fuse(typeof searchData !== 'undefined' ? searchData : [], {
+        keys: ['title', 'excerpt', 'category', 'type'], threshold: 0.3
+    });
+
+    function showSearchResults(query) {
+        const container = document.getElementById('search-results');
+        const nav = document.getElementById('main-nav');
+
+        if (query.length < 2) {
+            container.classList.add('hidden');
+            nav.classList.remove('hidden');
+            return;
+        }
+
+        const results = fuse.search(query);
+        nav.classList.add('hidden');
+        container.classList.remove('hidden');
+        container.innerHTML = '';
+
+        if (results.length === 0) {
+            container.innerHTML = `
+                <div class="text-center py-10">
+                    <p class="text-gray-400 text-lg">Tidak ada hasil untuk "<span class="text-white">${query}</span>"</p>
+                    <p class="text-gray-600 text-sm mt-2">Coba kata kunci lain.</p>
+                </div>`;
+            return;
+        }
+
+        let html = '<div class="flex flex-col space-y-3 w-full pb-6">';
+        results.forEach(result => {
+            const item = result.item;
+            let colorClass = 'text-gray-400 border-gray-400';
+            if (item.type === 'Article') colorClass = 'text-rasta-green border-rasta-green';
+            else if (item.type === 'Discography') colorClass = 'text-rasta-yellow border-rasta-yellow';
+            else if (item.type === 'Lyric') colorClass = 'text-rasta-red border-rasta-red';
+
+            html += `
+                <a href="${item.url}" class="block bg-white/5 border border-white/10 p-4 hover:bg-white/10 hover:border-white/30 transition-all text-left">
+                    <div class="flex justify-between items-start mb-2">
+                        <span class="text-[10px] uppercase tracking-widest px-2 py-0.5 border ${colorClass}">${item.type}</span>
+                        <span class="text-xs text-gray-500">${item.category}</span>
+                    </div>
+                    <h4 class="text-xl font-display text-white mb-1 tracking-wide">${item.title}</h4>
+                    <p class="text-sm text-gray-400 line-clamp-2 font-light">${item.excerpt}</p>
+                </a>
+            `;
+        });
+        html += '</div>';
+        container.innerHTML = html;
+    }
+    searchInput.addEventListener('input', (e) => showSearchResults(e.target.value.trim()));
+} catch(error) {
+    console.warn("Menunggu database.js untuk fitur pencarian...", error);
+}
+
+// --- LOGIKA APLIKASI SINGLE PAGE (VIDEO COVERS) ---
+
+// Fallback data sementara jika database.js belum memuat coverVideos
+if (typeof coverVideos === 'undefined') {
+    window.coverVideos = []; 
+}
+
+const appContainer = document.getElementById('app-container');
+let ytPlayer = null;
+let currentVideoIndex = -1;
+
+// Render Halaman Utama (Daftar Video)
+function renderListView() {
+    document.title = "Cover Playlist | SAI Roots";
+    let html = `
+        <div class="text-center md:text-left mb-12">
+            <h1 class="font-display text-5xl md:text-7xl mb-4 tracking-tight uppercase leading-none">
+                <span class="text-white">SAI ROOTS</span> <span class="text-rasta-yellow">COVERS</span>
+            </h1>
+            <p class="text-gray-400 max-w-2xl text-lg font-light">Eksplorasi Roots Reggae & Rap melalui lagu-lagu cover pilihan.</p>
+        </div>
+    `;
+
+    if (coverVideos.length === 0) {
+        html += `<div class="text-center py-20 text-gray-500 border border-white/10 bg-white/5">Belum ada video cover yang disinkronkan.</div>`;
+    } else {
+        html += `<div class="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-8">`;
+        coverVideos.forEach((video, index) => {
+            html += `
+                <div class="bg-white/5 border border-white/10 group cursor-pointer hover:border-rasta-green transition-all duration-300" onclick="navigateToVideo('${video.slug}')">
+                    <div class="relative overflow-hidden aspect-video">
+                        <img src="${video.thumbnail}" alt="${video.title}" class="w-full h-full object-cover group-hover:scale-105 transition-transform duration-500">
+                        <div class="absolute inset-0 bg-black/40 group-hover:bg-transparent transition-colors flex items-center justify-center">
+                            <i class="fas fa-play-circle text-4xl text-white/70 group-hover:text-rasta-yellow transition-colors drop-shadow-lg"></i>
+                        </div>
+                    </div>
+                    <div class="p-5">
+                        <h3 class="font-display text-xl text-white mb-2 line-clamp-2 tracking-wide">${video.title}</h3>
+                        <p class="text-sm text-gray-400 font-light line-clamp-3">${video.description}</p>
+                    </div>
+                </div>
+            `;
+        });
+        html += `</div>`;
+    }
+    appContainer.innerHTML = html;
+}
+
+// Render Halaman Player Video
+function renderPlayerView(videoSlug) {
+    currentVideoIndex = coverVideos.findIndex(v => v.slug === videoSlug);
+    
+    if (currentVideoIndex === -1) {
+        renderListView(); // Jika tidak ketemu, balik ke awal
+        return;
+    }
+
+    const video = coverVideos[currentVideoIndex];
+    document.title = `${video.title} | SAI Roots`;
+    window.scrollTo(0, 0);
+
+    let html = `
+        <div class="mb-6">
+            <button onclick="navigateToList()" class="text-gray-400 hover:text-white transition flex items-center gap-2 text-sm uppercase tracking-widest">
+                <i class="fas fa-arrow-left"></i> Kembali ke Daftar
+            </button>
+        </div>
+        
+        <div class="flex flex-col lg:flex-row gap-8">
+            <div class="lg:w-2/3">
+                <div class="video-container mb-6" id="player-wrapper">
+                    <div id="yt-player"></div>
+                </div>
+                <h1 class="font-display text-3xl md:text-4xl text-white mb-4 tracking-wide">${video.title}</h1>
+                <div class="bg-white/5 border border-white/10 p-6 rounded-sm">
+                    <p class="text-gray-300 font-light whitespace-pre-wrap text-sm leading-relaxed">${video.description}</p>
+                </div>
+            </div>
+
+            <div class="lg:w-1/3">
+                <h3 class="font-display text-xl text-rasta-yellow uppercase tracking-widest mb-4 border-b border-white/10 pb-2">Cover Lainnya</h3>
+                <div class="flex flex-col gap-4 overflow-y-auto max-h-[600px] pr-2 custom-scrollbar">
+    `;
+
+    // Render video lain selain yang sedang diputar
+    coverVideos.forEach((v, idx) => {
+        if (v.slug !== videoSlug) {
+            html += `
+                <div class="flex gap-3 cursor-pointer group" onclick="navigateToVideo('${v.slug}')">
+                    <div class="w-32 shrink-0 aspect-video relative overflow-hidden border border-white/10">
+                        <img src="${v.thumbnail}" class="w-full h-full object-cover group-hover:scale-110 transition duration-300">
+                    </div>
+                    <div class="flex flex-col justify-center">
+                        <h4 class="text-sm font-bold text-white group-hover:text-rasta-green transition line-clamp-2">${v.title}</h4>
+                        <span class="text-xs text-gray-500 mt-1">Playlist Cover</span>
+                    </div>
+                </div>
+            `;
+        }
+    });
+
+    html += `
+                </div>
+            </div>
+        </div>
+    `;
+
+    appContainer.innerHTML = html;
+
+    // Inisialisasi atau Update YouTube Player
+    if (typeof YT !== 'undefined' && YT.Player) {
+        if (ytPlayer) {
+            ytPlayer.destroy();
+        }
+        ytPlayer = new YT.Player('yt-player', {
+            videoId: video.videoId,
+            playerVars: { 'autoplay': 1, 'rel': 0 },
+            events: {
+                'onStateChange': onPlayerStateChange
+            }
+        });
+    }
+}
+
+// Fungsi Pemicu YouTube API
+function onYouTubeIframeAPIReady() {
+    // Jika halaman diload dengan URL video, player akan diinit di renderPlayerView
+    checkRoute();
+}
+
+// Deteksi Video Selesai -> Auto Play Next
+function onPlayerStateChange(event) {
+    if (event.data === YT.PlayerState.ENDED) {
+        playNextVideo();
+    }
+}
+
+function playNextVideo() {
+    if (currentVideoIndex !== -1 && coverVideos.length > 0) {
+        let nextIndex = currentVideoIndex + 1;
+        // Loop balik ke awal jika sudah di akhir playlist
+        if (nextIndex >= coverVideos.length) {
+            nextIndex = 0;
+        }
+        navigateToVideo(coverVideos[nextIndex].slug);
+    }
+}
+
+// Fungsi Navigasi SPA
+function navigateToVideo(slug) {
+    history.pushState({ view: 'player', slug: slug }, '', '/cover/' + slug);
+    renderPlayerView(slug);
+}
+
+function navigateToList() {
+    history.pushState({ view: 'list' }, '', '/video_cover.html');
+    renderListView();
+}
+
+// Router untuk mengecek URL saat halaman dimuat atau tombol back ditekan
+function checkRoute() {
+    const path = window.location.pathname;
+    
+    // Mengecek apakah path mengandung '/cover/'
+    if (path.includes('/cover/')) {
+        const slug = path.split('/cover/')[1].replace(/\/$/, ""); // Ambil slug bersih
+        if (slug) {
+            renderPlayerView(slug);
+            return;
+        }
+    }
+    // Default tampilkan list
+    renderListView();
+}
+
+// Event listener untuk tombol Back/Forward di browser
+window.addEventListener('popstate', (event) => {
+    checkRoute();
+});
+
+// Inisialisasi awal jika API YouTube terlambat atau sudah siap
+document.addEventListener('DOMContentLoaded', () => {
+    // Tunggu sedikit untuk memastikan data database.js termuat
+    setTimeout(checkRoute, 100);
+});
+
+</script>
+
+</body>
+</html>
