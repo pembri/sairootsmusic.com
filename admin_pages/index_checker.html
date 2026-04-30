@@ -1,189 +1,1024 @@
 <!DOCTYPE html>
-<html lang="en">
+<html lang="id">
 <head>
-<meta charset="UTF-8">
-<meta name="viewport" content="width=device-width, initial-scale=1.0">
-<title>SEO Index Mobile</title>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>SEO Index Checker</title>
+  <style>
+    * {
+      box-sizing: border-box;
+      margin: 0;
+      padding: 0;
+    }
 
-<style>
-body {
-  font-family: Arial, sans-serif;
-  background: #020617;
-  color: #e2e8f0;
-  padding: 15px;
-  font-size: 20px; /* BESAR */
-}
+    :root {
+      --bg-primary: #0d1117;
+      --bg-secondary: #161b22;
+      --bg-card: #1c2128;
+      --bg-card-hover: #21262d;
+      --border-color: #30363d;
+      --text-primary: #e6edf3;
+      --text-secondary: #8b949e;
+      --text-muted: #6e7681;
+      --accent-blue: #388bfd;
+      --accent-blue-hover: #58a6ff;
+      --green: #3fb950;
+      --green-bg: rgba(63, 185, 80, 0.1);
+      --red: #f85149;
+      --red-bg: rgba(248, 81, 73, 0.1);
+      --yellow: #d29922;
+      --yellow-bg: rgba(210, 153, 34, 0.1);
+      --shadow: 0 4px 16px rgba(0, 0, 0, 0.4);
+    }
 
-h1 {
-  font-size: 26px;
-  margin-bottom: 10px;
-}
+    body {
+      background-color: var(--bg-primary);
+      color: var(--text-primary);
+      font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, sans-serif;
+      font-size: 18px;
+      line-height: 1.6;
+      min-height: 100vh;
+    }
 
-button {
-  width: 100%;
-  padding: 14px;
-  font-size: 18px;
-  margin-bottom: 10px;
-  border: none;
-  border-radius: 10px;
-}
+    /* ── HEADER ── */
+    .header {
+      background: linear-gradient(135deg, #161b22 0%, #0d1117 100%);
+      border-bottom: 1px solid var(--border-color);
+      padding: 20px 16px 16px;
+      position: sticky;
+      top: 0;
+      z-index: 100;
+      backdrop-filter: blur(8px);
+    }
 
-.primary { background: #22c55e; color: black; }
-.filter { background: #334155; color: white; }
+    .header-top {
+      display: flex;
+      align-items: center;
+      gap: 12px;
+      margin-bottom: 14px;
+    }
 
-input {
-  width: 100%;
-  padding: 14px;
-  font-size: 18px;
-  border-radius: 10px;
-  border: none;
-  margin-bottom: 10px;
-}
+    .header-icon {
+      font-size: 28px;
+      line-height: 1;
+    }
 
-.stats {
-  font-size: 18px;
-  margin-bottom: 10px;
-}
+    .header-title {
+      font-size: 22px;
+      font-weight: 700;
+      color: var(--text-primary);
+      letter-spacing: -0.3px;
+    }
 
-.card {
-  background: #0f172a;
-  padding: 18px;
-  margin-bottom: 14px;
-  border-radius: 14px;
-}
+    .header-sub {
+      font-size: 13px;
+      color: var(--text-muted);
+      margin-top: 2px;
+    }
 
-.indexed { border-left: 8px solid #22c55e; }
-.not { border-left: 8px solid #ef4444; }
-.checking { border-left: 8px solid #facc15; }
+    /* ── SITEMAP INPUT ── */
+    .sitemap-row {
+      display: flex;
+      gap: 8px;
+      align-items: stretch;
+    }
 
-.url {
-  font-size: 18px;
-  word-break: break-word;
-}
+    .sitemap-input {
+      flex: 1;
+      background: var(--bg-card);
+      border: 1px solid var(--border-color);
+      border-radius: 10px;
+      color: var(--text-primary);
+      font-size: 15px;
+      padding: 12px 14px;
+      outline: none;
+      transition: border-color 0.2s;
+      min-width: 0;
+    }
 
-.status {
-  font-size: 17px;
-  margin-top: 6px;
-}
+    .sitemap-input:focus {
+      border-color: var(--accent-blue);
+    }
 
-.actions a {
-  display: block;
-  font-size: 16px;
-  margin-top: 6px;
-  color: #38bdf8;
-  text-decoration: none;
-}
-</style>
+    .btn-fetch {
+      background: var(--accent-blue);
+      border: none;
+      border-radius: 10px;
+      color: #fff;
+      cursor: pointer;
+      font-size: 15px;
+      font-weight: 600;
+      padding: 12px 18px;
+      white-space: nowrap;
+      transition: background 0.2s, transform 0.1s;
+      touch-action: manipulation;
+    }
+
+    .btn-fetch:active {
+      background: var(--accent-blue-hover);
+      transform: scale(0.97);
+    }
+
+    .btn-fetch:disabled {
+      opacity: 0.5;
+      cursor: not-allowed;
+    }
+
+    /* ── MAIN ── */
+    .main {
+      padding: 16px;
+      max-width: 720px;
+      margin: 0 auto;
+    }
+
+    /* ── STATS ── */
+    .stats-grid {
+      display: grid;
+      grid-template-columns: repeat(3, 1fr);
+      gap: 10px;
+      margin-bottom: 16px;
+    }
+
+    .stat-card {
+      background: var(--bg-card);
+      border: 1px solid var(--border-color);
+      border-radius: 12px;
+      padding: 14px 10px;
+      text-align: center;
+    }
+
+    .stat-value {
+      font-size: 26px;
+      font-weight: 700;
+      line-height: 1.1;
+    }
+
+    .stat-label {
+      font-size: 12px;
+      color: var(--text-muted);
+      margin-top: 4px;
+      text-transform: uppercase;
+      letter-spacing: 0.5px;
+    }
+
+    .stat-card.total .stat-value  { color: var(--accent-blue-hover); }
+    .stat-card.indexed .stat-value { color: var(--green); }
+    .stat-card.notindexed .stat-value { color: var(--red); }
+
+    /* ── PROGRESS BAR ── */
+    .progress-wrap {
+      background: var(--bg-card);
+      border: 1px solid var(--border-color);
+      border-radius: 12px;
+      padding: 14px 16px;
+      margin-bottom: 16px;
+      display: none;
+    }
+
+    .progress-wrap.visible { display: block; }
+
+    .progress-label {
+      display: flex;
+      justify-content: space-between;
+      font-size: 14px;
+      color: var(--text-secondary);
+      margin-bottom: 10px;
+    }
+
+    .progress-bar-track {
+      background: var(--border-color);
+      border-radius: 99px;
+      height: 8px;
+      overflow: hidden;
+    }
+
+    .progress-bar-fill {
+      background: linear-gradient(90deg, var(--accent-blue), #79c0ff);
+      border-radius: 99px;
+      height: 100%;
+      width: 0%;
+      transition: width 0.3s ease;
+    }
+
+    /* ── CONTROLS ── */
+    .controls {
+      display: flex;
+      flex-direction: column;
+      gap: 10px;
+      margin-bottom: 16px;
+    }
+
+    .search-input {
+      background: var(--bg-card);
+      border: 1px solid var(--border-color);
+      border-radius: 10px;
+      color: var(--text-primary);
+      font-size: 16px;
+      padding: 13px 16px;
+      outline: none;
+      width: 100%;
+      transition: border-color 0.2s;
+    }
+
+    .search-input:focus {
+      border-color: var(--accent-blue);
+    }
+
+    .filter-row {
+      display: flex;
+      gap: 8px;
+    }
+
+    .filter-btn {
+      flex: 1;
+      background: var(--bg-card);
+      border: 1px solid var(--border-color);
+      border-radius: 10px;
+      color: var(--text-secondary);
+      cursor: pointer;
+      font-size: 14px;
+      font-weight: 500;
+      padding: 11px 8px;
+      text-align: center;
+      transition: all 0.2s;
+      touch-action: manipulation;
+    }
+
+    .filter-btn.active {
+      border-color: var(--accent-blue);
+      color: var(--accent-blue-hover);
+      background: rgba(56, 139, 253, 0.1);
+    }
+
+    .filter-btn:active { transform: scale(0.97); }
+
+    /* ── BULK ACTIONS ── */
+    .bulk-actions {
+      display: flex;
+      gap: 8px;
+      margin-bottom: 16px;
+    }
+
+    .btn-check-all {
+      flex: 1;
+      background: var(--bg-card);
+      border: 1px solid var(--accent-blue);
+      border-radius: 10px;
+      color: var(--accent-blue-hover);
+      cursor: pointer;
+      font-size: 15px;
+      font-weight: 600;
+      padding: 13px;
+      transition: all 0.2s;
+      touch-action: manipulation;
+    }
+
+    .btn-check-all:active {
+      background: rgba(56, 139, 253, 0.1);
+      transform: scale(0.97);
+    }
+
+    .btn-check-all:disabled {
+      opacity: 0.4;
+      cursor: not-allowed;
+    }
+
+    .btn-stop {
+      background: var(--bg-card);
+      border: 1px solid var(--red);
+      border-radius: 10px;
+      color: var(--red);
+      cursor: pointer;
+      font-size: 15px;
+      font-weight: 600;
+      padding: 13px 18px;
+      transition: all 0.2s;
+      touch-action: manipulation;
+      display: none;
+    }
+
+    .btn-stop.visible { display: block; }
+    .btn-stop:active { transform: scale(0.97); }
+
+    /* ── URL CARDS ── */
+    .url-list {
+      display: flex;
+      flex-direction: column;
+      gap: 12px;
+    }
+
+    .url-card {
+      background: var(--bg-card);
+      border: 1px solid var(--border-color);
+      border-left: 4px solid var(--border-color);
+      border-radius: 12px;
+      padding: 16px;
+      transition: background 0.2s, border-color 0.2s;
+    }
+
+    .url-card.indexed {
+      border-left-color: var(--green);
+      background: var(--green-bg);
+    }
+
+    .url-card.not-indexed {
+      border-left-color: var(--red);
+      background: var(--red-bg);
+    }
+
+    .url-card.checking {
+      border-left-color: var(--yellow);
+      background: var(--yellow-bg);
+    }
+
+    .url-card-top {
+      display: flex;
+      justify-content: space-between;
+      align-items: flex-start;
+      gap: 10px;
+      margin-bottom: 12px;
+    }
+
+    .url-path {
+      font-size: 16px;
+      font-weight: 600;
+      color: var(--text-primary);
+      word-break: break-all;
+      flex: 1;
+      line-height: 1.4;
+    }
+
+    .url-path.root-path {
+      color: var(--accent-blue-hover);
+    }
+
+    .status-badge {
+      display: inline-flex;
+      align-items: center;
+      gap: 5px;
+      border-radius: 20px;
+      font-size: 13px;
+      font-weight: 600;
+      padding: 5px 12px;
+      white-space: nowrap;
+      flex-shrink: 0;
+    }
+
+    .status-badge.indexed {
+      background: var(--green-bg);
+      border: 1px solid rgba(63, 185, 80, 0.4);
+      color: var(--green);
+    }
+
+    .status-badge.not-indexed {
+      background: var(--red-bg);
+      border: 1px solid rgba(248, 81, 73, 0.4);
+      color: var(--red);
+    }
+
+    .status-badge.checking {
+      background: var(--yellow-bg);
+      border: 1px solid rgba(210, 153, 34, 0.4);
+      color: var(--yellow);
+    }
+
+    .status-badge.pending {
+      background: rgba(110, 118, 129, 0.15);
+      border: 1px solid rgba(110, 118, 129, 0.3);
+      color: var(--text-muted);
+    }
+
+    .url-full {
+      font-size: 13px;
+      color: var(--text-muted);
+      margin-bottom: 12px;
+      word-break: break-all;
+    }
+
+    .card-actions {
+      display: flex;
+      gap: 8px;
+      flex-wrap: wrap;
+    }
+
+    .btn-action {
+      background: var(--bg-secondary);
+      border: 1px solid var(--border-color);
+      border-radius: 8px;
+      color: var(--text-secondary);
+      cursor: pointer;
+      font-size: 13px;
+      font-weight: 500;
+      padding: 9px 12px;
+      text-decoration: none;
+      display: inline-flex;
+      align-items: center;
+      gap: 5px;
+      transition: all 0.2s;
+      touch-action: manipulation;
+    }
+
+    .btn-action:active {
+      transform: scale(0.95);
+    }
+
+    .btn-action.google:hover, .btn-action.google:active {
+      border-color: #4285f4;
+      color: #4285f4;
+    }
+
+    .btn-action.inspect:hover, .btn-action.inspect:active {
+      border-color: var(--yellow);
+      color: var(--yellow);
+    }
+
+    .btn-action.open:hover, .btn-action.open:active {
+      border-color: var(--accent-blue-hover);
+      color: var(--accent-blue-hover);
+    }
+
+    .btn-action.check-single {
+      margin-left: auto;
+    }
+
+    .btn-action.check-single:hover, .btn-action.check-single:active {
+      border-color: var(--green);
+      color: var(--green);
+    }
+
+    /* ── EMPTY / ERROR STATES ── */
+    .empty-state {
+      text-align: center;
+      padding: 48px 24px;
+      color: var(--text-muted);
+    }
+
+    .empty-state .icon {
+      font-size: 48px;
+      margin-bottom: 16px;
+    }
+
+    .empty-state p {
+      font-size: 16px;
+    }
+
+    .toast {
+      position: fixed;
+      bottom: 24px;
+      left: 50%;
+      transform: translateX(-50%) translateY(80px);
+      background: var(--bg-card);
+      border: 1px solid var(--border-color);
+      border-radius: 10px;
+      color: var(--text-primary);
+      font-size: 15px;
+      padding: 13px 20px;
+      box-shadow: var(--shadow);
+      z-index: 999;
+      transition: transform 0.3s ease;
+      white-space: nowrap;
+      max-width: calc(100vw - 32px);
+    }
+
+    .toast.show {
+      transform: translateX(-50%) translateY(0);
+    }
+
+    /* ── SPINNER ── */
+    @keyframes spin {
+      to { transform: rotate(360deg); }
+    }
+
+    .spinner {
+      display: inline-block;
+      width: 14px;
+      height: 14px;
+      border: 2px solid rgba(210, 153, 34, 0.3);
+      border-top-color: var(--yellow);
+      border-radius: 50%;
+      animation: spin 0.7s linear infinite;
+    }
+
+    /* ── RESULT COUNT ── */
+    .result-count {
+      font-size: 14px;
+      color: var(--text-muted);
+      margin-bottom: 12px;
+    }
+
+    /* ── DELAY NOTE ── */
+    .delay-note {
+      background: rgba(210, 153, 34, 0.08);
+      border: 1px solid rgba(210, 153, 34, 0.25);
+      border-radius: 10px;
+      color: var(--yellow);
+      font-size: 14px;
+      padding: 12px 14px;
+      margin-bottom: 16px;
+      display: none;
+      line-height: 1.5;
+    }
+
+    .delay-note.visible { display: block; }
+  </style>
 </head>
-
 <body>
 
-<h1>Index Checker</h1>
-
-<button class="primary" onclick="loadSitemap()">Load Sitemap</button>
-
-<button class="filter" onclick="setFilter('all')">All</button>
-<button class="filter" onclick="setFilter('indexed')">Indexed</button>
-<button class="filter" onclick="setFilter('not')">Not Indexed</button>
-
-<input type="text" id="search" placeholder="Cari URL..." oninput="render()">
-
-<div class="stats" id="stats"></div>
-
-<div id="results"></div>
-
-<script>
-const DOMAIN = "https://sairootsmusic.com";
-const SITEMAP = DOMAIN + "/sitemap.xml";
-
-let dataList = [];
-let filterMode = "all";
-
-async function loadSitemap() {
-  let res = await fetch(SITEMAP);
-  let text = await res.text();
-
-  let xml = new DOMParser().parseFromString(text, "text/xml");
-  let urls = [...xml.getElementsByTagName("loc")].map(x => x.textContent);
-
-  dataList = urls.map(u => ({ url: u, status: "checking" }));
-
-  render();
-  urls.forEach((url, i) => checkIndex(url, i));
-}
-
-function setFilter(mode) {
-  filterMode = mode;
-  render();
-}
-
-function render() {
-  let container = document.getElementById("results");
-  let keyword = document.getElementById("search").value.toLowerCase();
-
-  container.innerHTML = "";
-
-  let filtered = dataList.filter(item => {
-    if (filterMode === "indexed" && item.status !== "indexed") return false;
-    if (filterMode === "not" && item.status !== "not") return false;
-    if (!item.url.toLowerCase().includes(keyword)) return false;
-    return true;
-  });
-
-  filtered.forEach(item => {
-    let div = document.createElement("div");
-    div.className = `card ${item.status}`;
-
-    let shortUrl = item.url.replace(DOMAIN, "");
-
-    let searchUrl = "https://www.google.com/search?q=site:" + encodeURIComponent(item.url);
-    let inspectUrl = "https://search.google.com/search-console/inspect?resource_id=" + DOMAIN + "&url=" + encodeURIComponent(item.url);
-
-    let statusText =
-      item.status === "indexed" ? "🟢 Indexed" :
-      item.status === "not" ? "🔴 Not Indexed" :
-      "🟡 Checking";
-
-    div.innerHTML = `
-      <div class="url">${shortUrl}</div>
-      <div class="status">${statusText}</div>
-      <div class="actions">
-        <a href="${searchUrl}" target="_blank">🔍 Lihat di Google</a>
-        <a href="${inspectUrl}" target="_blank">⚙️ Inspect</a>
-        <a href="${item.url}" target="_blank">🌐 Buka Halaman</a>
+  <!-- HEADER -->
+  <div class="header">
+    <div class="header-top">
+      <span class="header-icon">🔍</span>
+      <div>
+        <div class="header-title">SEO Index Checker</div>
+        <div class="header-sub">Cek status index Google via sitemap</div>
       </div>
-    `;
+    </div>
+    <div class="sitemap-row">
+      <input
+        class="sitemap-input"
+        id="sitemapUrl"
+        type="url"
+        value="https://sairootsmusic.com/sitemap.xml"
+        placeholder="URL sitemap.xml..."
+      />
+      <button class="btn-fetch" id="btnFetch" onclick="fetchSitemap()">
+        Muat
+      </button>
+    </div>
+  </div>
 
-    container.appendChild(div);
-  });
+  <!-- MAIN -->
+  <div class="main">
 
-  updateStats();
-}
+    <!-- STATS -->
+    <div class="stats-grid">
+      <div class="stat-card total">
+        <div class="stat-value" id="statTotal">0</div>
+        <div class="stat-label">Total URL</div>
+      </div>
+      <div class="stat-card indexed">
+        <div class="stat-value" id="statIndexed">0</div>
+        <div class="stat-label">Indexed</div>
+      </div>
+      <div class="stat-card notindexed">
+        <div class="stat-value" id="statNotIndexed">0</div>
+        <div class="stat-label">Not Indexed</div>
+      </div>
+    </div>
 
-function updateStats() {
-  let total = dataList.length;
-  let indexed = dataList.filter(i => i.status === "indexed").length;
-  let not = dataList.filter(i => i.status === "not").length;
+    <!-- PROGRESS -->
+    <div class="progress-wrap" id="progressWrap">
+      <div class="progress-label">
+        <span id="progressText">Mengecek...</span>
+        <span id="progressCount">0 / 0</span>
+      </div>
+      <div class="progress-bar-track">
+        <div class="progress-bar-fill" id="progressBar"></div>
+      </div>
+    </div>
 
-  document.getElementById("stats").innerText =
-    `Total: ${total} | Indexed: ${indexed} | Not: ${not}`;
-}
+    <!-- DELAY NOTE -->
+    <div class="delay-note" id="delayNote">
+      ⚠️ Pengecekan diberi jeda antar-request untuk menghindari rate-limit. Proses mungkin memerlukan beberapa menit tergantung jumlah URL.
+    </div>
 
-async function checkIndex(url, index) {
-  try {
-    let res = await fetch("https://api.allorigins.win/get?url=" +
-      encodeURIComponent("https://www.google.com/search?q=site:" + url));
+    <!-- CONTROLS -->
+    <div class="controls" id="controls" style="display:none">
+      <input
+        class="search-input"
+        id="searchInput"
+        type="search"
+        placeholder="🔎  Cari URL..."
+        oninput="applyFilter()"
+      />
+      <div class="filter-row">
+        <button class="filter-btn active" data-filter="all" onclick="setFilter('all', this)">Semua</button>
+        <button class="filter-btn" data-filter="indexed" onclick="setFilter('indexed', this)">🟢 Indexed</button>
+        <button class="filter-btn" data-filter="not-indexed" onclick="setFilter('not-indexed', this)">🔴 Not Indexed</button>
+      </div>
+    </div>
 
-    let data = await res.json();
+    <!-- BULK ACTIONS -->
+    <div class="bulk-actions" id="bulkActions" style="display:none">
+      <button class="btn-check-all" id="btnCheckAll" onclick="checkAll()">
+        ▶️  Cek Semua URL
+      </button>
+      <button class="btn-stop visible" id="btnStop" onclick="stopChecking()" style="display:none">
+        ⏹ Stop
+      </button>
+    </div>
 
-    dataList[index].status = data.contents.includes(url) ? "indexed" : "not";
-  } catch {
-    dataList[index].status = "not";
-  }
+    <!-- RESULT COUNT -->
+    <div class="result-count" id="resultCount"></div>
 
-  render();
-}
-</script>
+    <!-- URL LIST -->
+    <div class="url-list" id="urlList">
+      <div class="empty-state">
+        <div class="icon">🌐</div>
+        <p>Masukkan URL sitemap lalu klik <strong>Muat</strong> untuk memulai.</p>
+      </div>
+    </div>
 
+  </div>
+
+  <!-- TOAST -->
+  <div class="toast" id="toast"></div>
+
+  <script>
+    /* ─────────────────────────────────────────
+       STATE
+    ───────────────────────────────────────── */
+    let allUrls = [];           // { url, status: 'pending'|'checking'|'indexed'|'not-indexed' }
+    let currentFilter = 'all';
+    let isChecking = false;
+    let stopFlag = false;
+    let checkQueue = [];
+
+    /* ─────────────────────────────────────────
+       FETCH SITEMAP
+    ───────────────────────────────────────── */
+    async function fetchSitemap() {
+      const sitemapUrl = document.getElementById('sitemapUrl').value.trim();
+      if (!sitemapUrl) { showToast('❗ Masukkan URL sitemap terlebih dahulu.'); return; }
+
+      const btn = document.getElementById('btnFetch');
+      btn.disabled = true;
+      btn.textContent = '⏳';
+
+      try {
+        // Gunakan allorigins sebagai proxy CORS
+        const proxyUrl = `https://api.allorigins.win/get?url=${encodeURIComponent(sitemapUrl)}`;
+        const res = await fetch(proxyUrl);
+        if (!res.ok) throw new Error('Gagal mengambil sitemap');
+        const data = await res.json();
+
+        const xmlText = data.contents;
+        if (!xmlText) throw new Error('Konten sitemap kosong');
+
+        const parser = new DOMParser();
+        const xmlDoc = parser.parseFromString(xmlText, 'application/xml');
+
+        // Cek error parsing
+        const parseError = xmlDoc.querySelector('parsererror');
+        if (parseError) throw new Error('Gagal parse XML sitemap');
+
+        // Ambil semua <loc>
+        const locs = Array.from(xmlDoc.querySelectorAll('loc'));
+        if (locs.length === 0) throw new Error('Tidak ada URL ditemukan di sitemap');
+
+        allUrls = locs.map(loc => ({
+          url: loc.textContent.trim(),
+          status: 'pending'
+        }));
+
+        renderAll();
+        updateStats();
+        document.getElementById('controls').style.display = 'flex';
+        document.getElementById('bulkActions').style.display = 'flex';
+        showToast(`✅ ${allUrls.length} URL ditemukan dari sitemap`);
+
+      } catch (err) {
+        showToast('❌ Error: ' + err.message);
+        console.error(err);
+      } finally {
+        btn.disabled = false;
+        btn.textContent = 'Muat';
+      }
+    }
+
+    /* ─────────────────────────────────────────
+       CHECK INDEX STATUS
+    ───────────────────────────────────────── */
+    async function checkIndexStatus(urlObj) {
+      urlObj.status = 'checking';
+      updateCard(urlObj);
+      updateStats();
+
+      try {
+        // Query Google: site:URL
+        const googleQuery = `https://www.google.com/search?q=site:${encodeURIComponent(urlObj.url)}`;
+        // Gunakan allorigins untuk bypass CORS
+        const proxyUrl = `https://api.allorigins.win/get?url=${encodeURIComponent(googleQuery)}`;
+
+        const res = await fetch(proxyUrl, { signal: AbortSignal.timeout(15000) });
+        if (!res.ok) throw new Error('Network error');
+
+        const data = await res.json();
+        const html = data.contents || '';
+
+        // Deteksi apakah URL ditemukan di hasil pencarian Google
+        const isIndexed = detectIndexed(html, urlObj.url);
+        urlObj.status = isIndexed ? 'indexed' : 'not-indexed';
+
+      } catch (err) {
+        // Jika timeout atau error lain, anggap tidak terindex
+        urlObj.status = 'not-indexed';
+        console.warn('Check error for', urlObj.url, err.message);
+      }
+
+      updateCard(urlObj);
+      updateStats();
+    }
+
+    function detectIndexed(html, targetUrl) {
+      if (!html || html.length < 100) return false;
+
+      const lowerHtml = html.toLowerCase();
+
+      // Cek apakah ada tanda "did not match any documents" (tidak terindex)
+      const noResultPhrases = [
+        'did not match any documents',
+        'no results found',
+        'your search did not match',
+        'tidak cocok dengan dokumen apapun',
+      ];
+      for (const phrase of noResultPhrases) {
+        if (lowerHtml.includes(phrase)) return false;
+      }
+
+      // Ekstrak domain dan path dari URL target
+      let targetDomain = '';
+      let targetPath = '';
+      try {
+        const parsed = new URL(targetUrl);
+        targetDomain = parsed.hostname.toLowerCase();
+        targetPath = parsed.pathname.toLowerCase();
+      } catch (_) {
+        return false;
+      }
+
+      // Cek apakah domain muncul dalam konteks hasil pencarian
+      const domainInResult = lowerHtml.includes(targetDomain);
+
+      // Cek apakah ada result count (Google menampilkan "About X results")
+      const hasResults =
+        lowerHtml.includes('result') ||
+        lowerHtml.includes('About') ||
+        lowerHtml.includes('about');
+
+      // Cek kehadiran elemen khas hasil pencarian Google
+      const hasSearchResults =
+        lowerHtml.includes('data-sokoban-feature') ||
+        lowerHtml.includes('class="g"') ||
+        lowerHtml.includes('class="tF2Cxc"') ||
+        lowerHtml.includes('class="yuRUbf"') ||
+        lowerHtml.includes('jscontroller') ||
+        lowerHtml.includes('id="search"') ||
+        lowerHtml.includes('id="rso"');
+
+      // Cek apakah path juga muncul (untuk kepastian lebih tinggi)
+      const pathInResult = targetPath.length > 1 ? lowerHtml.includes(targetPath) : true;
+
+      return domainInResult && pathInResult && (hasSearchResults || hasResults);
+    }
+
+    /* ─────────────────────────────────────────
+       CHECK ALL
+    ───────────────────────────────────────── */
+    async function checkAll() {
+      if (isChecking) return;
+      isChecking = true;
+      stopFlag = false;
+
+      document.getElementById('btnCheckAll').disabled = true;
+      document.getElementById('btnStop').style.display = 'block';
+      document.getElementById('progressWrap').classList.add('visible');
+      document.getElementById('delayNote').classList.add('visible');
+
+      // Reset semua pending
+      allUrls.forEach(u => {
+        if (u.status !== 'indexed' && u.status !== 'not-indexed') {
+          u.status = 'pending';
+        }
+      });
+
+      const toCheck = allUrls.filter(u => u.status === 'pending' || u.status === 'not-indexed');
+      let done = 0;
+      const total = toCheck.length;
+
+      updateProgress(done, total, 'Memulai pengecekan...');
+
+      for (let i = 0; i < toCheck.length; i++) {
+        if (stopFlag) break;
+
+        const urlObj = toCheck[i];
+        updateProgress(done, total, `Mengecek: ${getPath(urlObj.url)}`);
+
+        await checkIndexStatus(urlObj);
+        done++;
+        updateProgress(done, total, done < total ? `Mengecek URL ${done + 1} dari ${total}...` : 'Selesai!');
+
+        applyFilter(); // re-render filter
+
+        // Jeda antar request (1.5 - 2.5 detik) untuk menghindari rate-limit
+        if (i < toCheck.length - 1 && !stopFlag) {
+          const delay = 1500 + Math.random() * 1000;
+          await sleep(delay);
+        }
+      }
+
+      isChecking = false;
+      stopFlag = false;
+      document.getElementById('btnCheckAll').disabled = false;
+      document.getElementById('btnStop').style.display = 'none';
+
+      if (done >= total) {
+        document.getElementById('delayNote').classList.remove('visible');
+        showToast(`✅ Selesai! ${done} URL telah dicek.`);
+      } else {
+        showToast('⏹ Pengecekan dihentikan.');
+      }
+    }
+
+    function stopChecking() {
+      stopFlag = true;
+      showToast('⏳ Menghentikan...');
+    }
+
+    async function checkSingle(url) {
+      const urlObj = allUrls.find(u => u.url === url);
+      if (!urlObj) return;
+      await checkIndexStatus(urlObj);
+      applyFilter();
+    }
+
+    /* ─────────────────────────────────────────
+       RENDER
+    ───────────────────────────────────────── */
+    function renderAll() {
+      applyFilter();
+    }
+
+    function applyFilter() {
+      const search = document.getElementById('searchInput')?.value?.toLowerCase() || '';
+      let filtered = allUrls;
+
+      if (currentFilter === 'indexed') {
+        filtered = filtered.filter(u => u.status === 'indexed');
+      } else if (currentFilter === 'not-indexed') {
+        filtered = filtered.filter(u => u.status === 'not-indexed');
+      }
+
+      if (search) {
+        filtered = filtered.filter(u => u.url.toLowerCase().includes(search));
+      }
+
+      const list = document.getElementById('urlList');
+
+      if (filtered.length === 0) {
+        list.innerHTML = `
+          <div class="empty-state">
+            <div class="icon">🔎</div>
+            <p>Tidak ada URL yang cocok.</p>
+          </div>`;
+        document.getElementById('resultCount').textContent = '';
+        return;
+      }
+
+      document.getElementById('resultCount').textContent =
+        `Menampilkan ${filtered.length} dari ${allUrls.length} URL`;
+
+      list.innerHTML = filtered.map(u => createCardHTML(u)).join('');
+    }
+
+        function createCardHTML(urlObj) {
+      const path = getPath(urlObj.url);
+      const isRoot = path === '/';
+      const statusClass = urlObj.status === 'indexed' ? 'indexed'
+        : urlObj.status === 'not-indexed' ? 'not-indexed'
+        : urlObj.status === 'checking' ? 'checking'
+        : '';
+
+      const badgeHTML = getBadgeHTML(urlObj.status);
+      const googleSearchUrl = `https://www.google.com/search?q=site:${encodeURIComponent(urlObj.url)}`;
+      const inspectUrl = `https://search.google.com/search-console/inspect?resource_id=${encodeURIComponent(urlObj.url)}`;
+
+      return `
+        <div class="url-card ${statusClass}" id="card-${btoa(urlObj.url).replace(/[^a-zA-Z0-9]/g, '')}">
+          <div class="url-card-top">
+            <div class="url-path ${isRoot ? 'root-path' : ''}">${escapeHtml(path)}</div>
+            ${badgeHTML}
+          </div>
+          <div class="url-full">${escapeHtml(urlObj.url)}</div>
+          <div class="card-actions">
+            <a class="btn-action google" href="${googleSearchUrl}" target="_blank" rel="noopener">
+              🔍 Lihat di Google
+            </a>
+            <a class="btn-action inspect" href="${inspectUrl}" target="_blank" rel="noopener">
+              ⚙️ Inspect
+            </a>
+            <a class="btn-action open" href="${urlObj.url}" target="_blank" rel="noopener">
+              🌐 Buka
+            </a>
+            <button class="btn-action check-single" onclick="checkSingle('${escapeAttr(urlObj.url)}')">
+              🔄 Cek
+            </button>
+          </div>
+        </div>`;
+    }
+
+    function getBadgeHTML(status) {
+      if (status === 'indexed') {
+        return `<span class="status-badge indexed">🟢 Indexed</span>`;
+      } else if (status === 'not-indexed') {
+        return `<span class="status-badge not-indexed">🔴 Not Indexed</span>`;
+      } else if (status === 'checking') {
+        return `<span class="status-badge checking"><span class="spinner"></span> Checking</span>`;
+      } else {
+        return `<span class="status-badge pending">⚪ Pending</span>`;
+      }
+    }
+
+    function updateCard(urlObj) {
+      const id = `card-${btoa(urlObj.url).replace(/[^a-zA-Z0-9]/g, '')}`;
+      const card = document.getElementById(id);
+      if (!card) return;
+
+      // Update border & background class
+      card.className = 'url-card';
+      if (urlObj.status === 'indexed') card.classList.add('indexed');
+      else if (urlObj.status === 'not-indexed') card.classList.add('not-indexed');
+      else if (urlObj.status === 'checking') card.classList.add('checking');
+
+      // Update badge
+      const top = card.querySelector('.url-card-top');
+      const oldBadge = top.querySelector('.status-badge');
+      if (oldBadge) oldBadge.outerHTML = getBadgeHTML(urlObj.status);
+      else top.insertAdjacentHTML('beforeend', getBadgeHTML(urlObj.status));
+    }
+
+    /* ─────────────────────────────────────────
+       STATS & PROGRESS
+    ───────────────────────────────────────── */
+    function updateStats() {
+      const total = allUrls.length;
+      const indexed = allUrls.filter(u => u.status === 'indexed').length;
+      const notIndexed = allUrls.filter(u => u.status === 'not-indexed').length;
+
+      document.getElementById('statTotal').textContent = total;
+      document.getElementById('statIndexed').textContent = indexed;
+      document.getElementById('statNotIndexed').textContent = notIndexed;
+    }
+
+    function updateProgress(done, total, text) {
+      const pct = total > 0 ? Math.round((done / total) * 100) : 0;
+      document.getElementById('progressBar').style.width = pct + '%';
+      document.getElementById('progressText').textContent = text;
+      document.getElementById('progressCount').textContent = `${done} / ${total}`;
+    }
+
+    /* ─────────────────────────────────────────
+       FILTER
+    ───────────────────────────────────────── */
+    function setFilter(filter, btn) {
+      currentFilter = filter;
+      document.querySelectorAll('.filter-btn').forEach(b => b.classList.remove('active'));
+      btn.classList.add('active');
+      applyFilter();
+    }
+
+    /* ─────────────────────────────────────────
+       HELPERS
+    ───────────────────────────────────────── */
+    function getPath(url) {
+      try {
+        const parsed = new URL(url);
+        const path = parsed.pathname + (parsed.search || '') + (parsed.hash || '');
+        return path || '/';
+      } catch (_) {
+        return url;
+      }
+    }
+
+    function escapeHtml(str) {
+      return str
+        .replace(/&/g, '&amp;')
+        .replace(/</g, '&lt;')
+        .replace(/>/g, '&gt;')
+        .replace(/"/g, '&quot;');
+    }
+
+    function escapeAttr(str) {
+      return str.replace(/'/g, "\\'").replace(/"/g, '&quot;');
+    }
+
+    function sleep(ms) {
+      return new Promise(resolve => setTimeout(resolve, ms));
+    }
+
+    /* ─────────────────────────────────────────
+       TOAST
+    ───────────────────────────────────────── */
+    let toastTimer = null;
+    function showToast(msg) {
+      const toast = document.getElementById('toast');
+      toast.textContent = msg;
+      toast.classList.add('show');
+      if (toastTimer) clearTimeout(toastTimer);
+      toastTimer = setTimeout(() => toast.classList.remove('show'), 3200);
+    }
+
+  </script>
 </body>
 </html>
+
