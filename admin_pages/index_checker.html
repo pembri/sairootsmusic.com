@@ -3,231 +3,224 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Index Checker - SEO Tools</title>
+    <title>SEO Index Checker - SAI Roots</title>
     <style>
         :root {
-            --bg-color: #0f172a;
-            --card-bg: #1e293b;
-            --text-primary: #f8fafc;
-            --text-secondary: #94a3b8;
-            --accent-blue: #38bdf8;
+            --bg-color: #0b1120;
+            --card-bg: #161e31;
+            --text-main: #f8fafc;
+            --text-dim: #94a3b8;
+            --accent: #38bdf8;
             --success: #22c55e;
             --danger: #ef4444;
             --warning: #f59e0b;
-            --border: #334155;
+            --border: #1e293b;
         }
 
-        * { margin: 0; padding: 0; box-sizing: border-box; font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif; }
-        body { background-color: var(--bg-color); color: var(--text-primary); padding: 20px; line-height: 1.6; }
-        .container { max-width: 1000px; margin: 0 auto; }
+        * { margin: 0; padding: 0; box-sizing: border-box; font-family: 'Inter', sans-serif; }
+        body { background-color: var(--bg-color); color: var(--text-main); padding: 15px; }
+        .container { max-width: 600px; margin: 0 auto; }
 
-        header { margin-bottom: 30px; text-align: center; }
-        header h1 { font-size: 2rem; color: var(--accent-blue); margin-bottom: 5px; }
-        header p { color: var(--text-secondary); }
+        /* Header Area */
+        .header { text-align: center; margin-bottom: 25px; }
+        .header h1 { color: var(--accent); font-size: 1.5rem; display: flex; align-items: center; justify-content: center; gap: 10px; }
+        .header p { color: var(--text-dim); font-size: 0.85rem; margin-top: 5px; }
 
-        /* Stats Section */
-        .stats-grid { display: grid; grid-template-columns: repeat(auto-fit, minmax(200px, 1fr)); gap: 15px; margin-bottom: 25px; }
-        .stat-card { background: var(--card-bg); padding: 20px; border-radius: 12px; border: 1px solid var(--border); text-align: center; }
-        .stat-card h3 { font-size: 0.9rem; color: var(--text-secondary); text-transform: uppercase; margin-bottom: 10px; }
-        .stat-card p { font-size: 1.8rem; font-weight: bold; }
-        #total-urls { color: var(--accent-blue); }
-        #indexed-count { color: var(--success); }
-        #not-indexed-count { color: var(--danger); }
+        /* Stats Grid */
+        .stats-grid { display: grid; grid-template-columns: repeat(4, 1fr); gap: 10px; margin-bottom: 20px; }
+        .stat-box { background: var(--card-bg); padding: 15px 5px; border-radius: 12px; text-align: center; border: 1px solid var(--border); }
+        .stat-box span { display: block; font-size: 0.7rem; color: var(--text-dim); text-transform: uppercase; margin-bottom: 5px; }
+        .stat-box strong { font-size: 1.2rem; }
+        .t-total { color: var(--accent); }
+        .t-indexed { color: var(--success); }
+        .t-not { color: var(--danger); }
+        .t-pending { color: var(--warning); }
 
-        /* Controls */
-        .controls { display: flex; gap: 10px; margin-bottom: 20px; justify-content: center; }
-        button { 
-            padding: 10px 20px; border: none; border-radius: 8px; cursor: pointer; font-weight: bold; 
-            transition: all 0.3s ease; font-size: 0.9rem;
-        }
-        .btn-load { background: var(--border); color: white; }
-        .btn-start { background: var(--accent-blue); color: var(--bg-color); }
-        button:disabled { opacity: 0.5; cursor: not-allowed; }
-        button:hover:not(:disabled) { transform: translateY(-2px); filter: brightness(1.1); }
-
-        /* Table Section */
-        .table-container { background: var(--card-bg); border-radius: 12px; border: 1px solid var(--border); overflow: hidden; }
-        table { width: 100%; border-collapse: collapse; text-align: left; }
-        th { background: rgba(0,0,0,0.2); padding: 15px; color: var(--text-secondary); font-size: 0.85rem; text-transform: uppercase; }
-        td { padding: 15px; border-top: 1px solid var(--border); font-size: 0.9rem; vertical-align: middle; }
-        .url-text { color: var(--text-secondary); word-break: break-all; }
+        /* Search & Filter */
+        .search-box { background: var(--card-bg); border: 1px solid var(--border); border-radius: 10px; padding: 12px; margin-bottom: 15px; display: flex; align-items: center; }
+        .search-box input { background: transparent; border: none; color: white; width: 100%; outline: none; margin-left: 10px; }
         
-        .badge { padding: 4px 10px; border-radius: 20px; font-size: 0.75rem; font-weight: bold; display: inline-block; }
-        .badge-pending { background: #334155; color: #cbd5e1; }
-        .badge-checking { background: var(--warning); color: #451a03; animation: pulse 1.5s infinite; }
-        .badge-indexed { background: var(--success); color: #052e16; }
-        .badge-failed { background: var(--danger); color: #450a0a; }
+        .filter-btns { display: grid; grid-template-columns: repeat(3, 1fr); gap: 10px; margin-bottom: 20px; }
+        .f-btn { background: var(--card-bg); border: 1px solid var(--border); color: var(--text-dim); padding: 10px; border-radius: 8px; cursor: pointer; font-size: 0.85rem; }
+        .f-btn.active { border-color: var(--accent); color: var(--accent); background: rgba(56, 189, 248, 0.1); }
 
-        @keyframes pulse { 0% { opacity: 1; } 50% { opacity: 0.6; } 100% { opacity: 1; } }
+        /* Main Button */
+        .btn-main { background: var(--success); color: #052e16; width: 100%; padding: 15px; border: none; border-radius: 10px; font-weight: bold; cursor: pointer; margin-bottom: 10px; font-size: 1rem; display: flex; align-items: center; justify-content: center; gap: 10px; }
 
-        .log-container { margin-top: 15px; font-size: 0.8rem; color: var(--text-secondary); text-align: center; }
+        /* Card Item */
+        .url-card { background: var(--card-bg); border-radius: 15px; padding: 20px; margin-bottom: 15px; border: 1px solid var(--border); position: relative; }
+        .card-header { display: flex; justify-content: space-between; align-items: flex-start; margin-bottom: 10px; }
+        .card-header h3 { font-size: 1rem; color: var(--text-main); }
+        .url-link { color: var(--text-dim); font-size: 0.8rem; word-break: break-all; margin-bottom: 15px; display: block; }
+        
+        .status-badge { padding: 5px 15px; border-radius: 20px; font-size: 0.75rem; font-weight: bold; }
+        .status-pending { background: #334155; color: #cbd5e1; }
+        .status-checking { background: var(--warning); color: #451a03; }
+        .status-indexed { background: var(--success); color: #052e16; }
+        .status-not_indexed { background: var(--danger); color: #fecaca; }
+
+        .card-actions { display: grid; grid-template-columns: repeat(3, 1fr); gap: 8px; }
+        .action-btn { background: #1e293b; color: var(--text-main); border: 1px solid var(--border); padding: 8px; border-radius: 6px; font-size: 0.75rem; cursor: pointer; text-align: center; text-decoration: none; }
+        .action-btn:hover { background: #334155; }
+        .btn-retry { background: transparent; color: var(--accent); border: 1px solid var(--accent); margin-top: 10px; width: 100%; padding: 8px; border-radius: 6px; font-size: 0.75rem; }
+
+        .hidden { display: none; }
     </style>
 </head>
 <body>
 
 <div class="container">
-    <header>
-        <h1>Index Checker</h1>
-        <p>Monitoring Google Indexing Status via Cloudflare Workers</p>
-    </header>
+    <div class="header">
+        <h1>🔍 SEO Index Checker</h1>
+        <p id="sitemap-url-text">https://sairootsmusic.com/sitemap.xml</p>
+    </div>
 
     <div class="stats-grid">
-        <div class="stat-card">
-            <h3>Total URL</h3>
-            <p id="total-urls">0</p>
-        </div>
-        <div class="stat-card">
-            <h3>Terindeks</h3>
-            <p id="indexed-count">0</p>
-        </div>
-        <div class="stat-card">
-            <h3>Belum Terindeks</h3>
-            <p id="not-indexed-count">0</p>
-        </div>
+        <div class="stat-box"><span class="t-total">Total</span><strong id="stat-total">0</strong></div>
+        <div class="stat-box"><span class="t-indexed">Indexed</span><strong id="stat-indexed">0</strong></div>
+        <div class="stat-box"><span class="t-not">Not Indexed</span><strong id="stat-not">0</strong></div>
+        <div class="stat-box"><span class="t-pending">Pending</span><strong id="stat-pending">0</strong></div>
     </div>
 
-    <div class="controls">
-        <button id="btn-load-sitemap" class="btn-load">Muat Sitemap.xml</button>
-        <button id="btn-start-scan" class="btn-start" disabled>Mulai Scanning</button>
+    <div class="search-box">
+        <span>🔎</span>
+        <input type="text" id="search-input" placeholder="Cari URL...">
     </div>
 
-    <div class="table-container">
-        <table>
-            <thead>
-                <tr>
-                    <th style="width: 70%;">URL Halaman</th>
-                    <th style="width: 30%; text-align: center;">Status Index</th>
-                </tr>
-            </thead>
-            <tbody id="url-list">
-                </tbody>
-        </table>
+    <div class="filter-btns">
+        <button class="f-btn active" onclick="filterData('all')">Semua</button>
+        <button class="f-btn" onclick="filterData('indexed')">🟢 Indexed</button>
+        <button class="f-btn" onclick="filterData('not_indexed')">🔴 Not Indexed</button>
     </div>
 
-    <div id="status-log" class="log-container">Silakan klik "Muat Sitemap" untuk memulai.</div>
+    <button id="btn-run" class="btn-main">▶️ Cek Semua URL</button>
+    
+    <div id="url-container">
+        </div>
 </div>
 
 <script>
-    // KONFIGURASI
     const WORKER_URL = "https://worker-crimson-smoke-71e0.pembriahmad526.workers.dev/check?url=";
-    const SITEMAP_PATH = "./sitemap.xml";
-    const SCAN_DELAY = 5000; // Jeda 5 detik antar URL agar aman dari block
+    // PENTING: Gunakan /sitemap.xml agar selalu ambil dari root domain
+    const SITEMAP_PATH = "/sitemap.xml"; 
+    const DELAY = 5000;
 
-    let urlQueue = [];
-    let isScanning = false;
-    let counts = { total: 0, indexed: 0, failed: 0 };
+    let allData = [];
+    let isRunning = false;
 
-    const btnLoad = document.getElementById('btn-load-sitemap');
-    const btnStart = document.getElementById('btn-start-scan');
-    const urlListBody = document.getElementById('url-list');
-    const logContainer = document.getElementById('status-log');
-
-    // 1. Fungsi Ambil Sitemap
-    btnLoad.addEventListener('click', async () => {
+    // Load Data Otomatis saat buka
+    window.onload = async () => {
         try {
-            logContainer.innerText = "Membaca sitemap...";
-            const response = await fetch(SITEMAP_PATH);
-            if (!response.ok) throw new Error("File sitemap.xml tidak ditemukan!");
-            
-            const xmlText = await response.text();
+            const res = await fetch(SITEMAP_PATH);
+            if(!res.ok) throw new Error("Gagal load sitemap");
+            const xml = await res.text();
             const parser = new DOMParser();
-            const xmlDoc = parser.parseFromString(xmlText, "text/xml");
-            const locations = xmlDoc.getElementsByTagName("loc");
+            const xmlDoc = parser.parseFromString(xml, "text/xml");
+            const locs = xmlDoc.getElementsByTagName("loc");
 
-            urlQueue = [];
-            urlListBody.innerHTML = "";
-            counts = { total: 0, indexed: 0, failed: 0 };
-
-            for (let i = 0; i < locations.length; i++) {
-                const url = locations[i].textContent;
-                urlQueue.push(url);
-                renderRow(url, i);
+            for(let i=0; i<locs.length; i++) {
+                const url = locs[i].textContent;
+                const pathName = new URL(url).pathname;
+                allData.push({
+                    url: url,
+                    path: pathName === "/" ? "/" : pathName,
+                    status: 'pending',
+                    id: i
+                });
             }
-
-            counts.total = urlQueue.length;
-            updateStats();
-            
-            btnStart.disabled = false;
-            logContainer.innerText = `Berhasil memuat ${counts.total} URL. Siap scan.`;
-        } catch (err) {
-            logContainer.innerText = "Error: " + err.message;
-            alert(err.message);
+            updateUI();
+        } catch(e) {
+            alert("File sitemap.xml tidak ditemukan di root! Pastikan ada di https://sairootsmusic.com/sitemap.xml");
         }
-    });
+    };
 
-    // 2. Fungsi Render Baris Tabel
-    function renderRow(url, index) {
-        const row = document.createElement('tr');
-        row.innerHTML = `
-            <td><span class="url-text">${url}</span></td>
-            <td style="text-align: center;">
-                <span id="status-${index}" class="badge badge-pending">Pending</span>
-            </td>
-        `;
-        urlListBody.appendChild(row);
+    function updateUI() {
+        const container = document.getElementById('url-container');
+        container.innerHTML = '';
+        
+        let indexed = 0, not = 0, pending = 0;
+
+        allData.forEach(item => {
+            if(item.status === 'indexed') indexed++;
+            else if(item.status === 'not_indexed') not++;
+            else pending++;
+
+            const card = document.createElement('div');
+            card.className = `url-card item-status-${item.status}`;
+            card.id = `card-${item.id}`;
+            card.innerHTML = `
+                <div class="card-header">
+                    <h3>${item.path}</h3>
+                    <span id="badge-${item.id}" class="status-badge status-${item.status}">${item.status.toUpperCase()}</span>
+                </div>
+                <span class="url-link">${item.url}</span>
+                <div class="card-actions">
+                    <a href="https://www.google.com/search?q=site:${item.url}" target="_blank" class="action-btn">🔍 Google</a>
+                    <a href="https://search.google.com/search-console/inspect?resource_id=https://sairootsmusic.com/&url=${item.url}" target="_blank" class="action-btn">⚙️ Inspect</a>
+                    <a href="${item.url}" target="_blank" class="action-btn">🌐 Buka</a>
+                </div>
+                <button class="btn-retry" onclick="checkSingle(${item.id})">🔄 Cek Ulang</button>
+            `;
+            container.appendChild(card);
+        });
+
+        document.getElementById('stat-total').innerText = allData.length;
+        document.getElementById('stat-indexed').innerText = indexed;
+        document.getElementById('stat-not').innerText = not;
+        document.getElementById('stat-pending').innerText = pending;
     }
 
-    // 3. Fungsi Jalankan Scan (Sequential Queue)
-    btnStart.addEventListener('click', async () => {
-        if (isScanning) return;
-        isScanning = true;
-        btnStart.disabled = true;
-        btnLoad.disabled = true;
+    document.getElementById('btn-run').onclick = async () => {
+        if(isRunning) return;
+        isRunning = true;
+        document.getElementById('btn-run').innerText = "⏳ Sedang Memproses...";
 
-        for (let i = 0; i < urlQueue.length; i++) {
-            const currentUrl = urlQueue[i];
-            const statusBadge = document.getElementById(`status-${i}`);
-            
-            statusBadge.innerText = "Checking...";
-            statusBadge.className = "badge badge-checking";
-            logContainer.innerText = `Memproses (${i + 1}/${counts.total}): ${currentUrl}`;
-
-            try {
-                const result = await checkIndex(currentUrl);
-                
-                if (result.indexed) {
-                    statusBadge.innerText = "Indexed";
-                    statusBadge.className = "badge badge-indexed";
-                    counts.indexed++;
-                } else {
-                    statusBadge.innerText = "Not Indexed";
-                    statusBadge.className = "badge badge-failed";
-                    counts.failed++;
-                }
-            } catch (error) {
-                statusBadge.innerText = "Error";
-                statusBadge.className = "badge badge-failed";
-                counts.failed++;
-            }
-
-            updateStats();
-            
-            // Beri jeda kecuali URL terakhir
-            if (i < urlQueue.length - 1) {
-                await new Promise(resolve => setTimeout(resolve, SCAN_DELAY));
-            }
+        for(let i=0; i<allData.length; i++) {
+            if(allData[i].status !== 'pending') continue;
+            await checkSingle(i);
+            await new Promise(r => setTimeout(r, DELAY));
         }
 
-        isScanning = false;
-        btnLoad.disabled = false;
-        logContainer.innerText = "Scanning Selesai!";
-    });
+        isRunning = false;
+        document.getElementById('btn-run').innerText = "▶️ Cek Semua URL";
+    };
 
-    // 4. Hit ke Cloudflare Worker
-    async function checkIndex(url) {
-        const target = WORKER_URL + encodeURIComponent(url);
-        const response = await fetch(target);
-        if (!response.ok) throw new Error("Worker Error");
-        return await response.json();
+    async function checkSingle(id) {
+        const badge = document.getElementById(`badge-${id}`);
+        badge.innerText = "CHECKING...";
+        badge.className = "status-badge status-checking";
+
+        try {
+            const res = await fetch(WORKER_URL + encodeURIComponent(allData[id].url));
+            const json = await res.json();
+            
+            allData[id].status = json.indexed ? 'indexed' : 'not_indexed';
+        } catch(e) {
+            allData[id].status = 'not_indexed';
+        }
+        updateUI();
     }
 
-    // 5. Update UI Statistik
-    function updateStats() {
-        document.getElementById('total-urls').innerText = counts.total;
-        document.getElementById('indexed-count').innerText = counts.indexed;
-        document.getElementById('not-indexed-count').innerText = counts.failed;
+    // Filter Logic
+    function filterData(type) {
+        document.querySelectorAll('.f-btn').forEach(b => b.classList.remove('active'));
+        event.target.classList.add('active');
+        
+        document.querySelectorAll('.url-card').forEach(card => {
+            if(type === 'all') card.classList.remove('hidden');
+            else if(!card.classList.contains(`item-status-${type}`)) card.classList.add('hidden');
+            else card.classList.remove('hidden');
+        });
     }
+
+    // Search Logic
+    document.getElementById('search-input').oninput = (e) => {
+        const val = e.target.value.toLowerCase();
+        document.querySelectorAll('.url-card').forEach(card => {
+            const text = card.querySelector('h3').innerText.toLowerCase();
+            card.classList.toggle('hidden', !text.includes(val));
+        });
+    };
 </script>
-
 </body>
 </html>
