@@ -12,19 +12,18 @@ body {
   padding: 20px;
 }
 
-h2 { margin-bottom: 10px; }
-
 button {
-  padding: 10px 15px;
+  padding: 8px 12px;
+  margin: 5px;
   border: none;
-  background: #22c55e;
-  color: black;
-  cursor: pointer;
   border-radius: 6px;
-  margin-bottom: 15px;
+  cursor: pointer;
 }
 
-.url-box {
+.primary { background: #22c55e; color: black; }
+.filter { background: #334155; color: white; }
+
+.box {
   padding: 12px;
   margin: 8px 0;
   border-radius: 8px;
@@ -35,86 +34,111 @@ button {
 .not-indexed { border-left: 6px solid #ef4444; }
 .checking { border-left: 6px solid #facc15; }
 
-.actions {
-  margin-top: 6px;
+.stats {
+  margin: 10px 0;
 }
-
 a {
   color: #38bdf8;
   margin-right: 10px;
   font-size: 13px;
-  text-decoration: none;
 }
 </style>
-
 </head>
+
 <body>
 
-<h2>Index Checker Pro+</h2>
+<h2>Index Checker Dashboard</h2>
 
-<button onclick="loadSitemap()">Load & Check</button>
+<button class="primary" onclick="loadSitemap()">Load Sitemap</button>
+<button class="filter" onclick="filterView('all')">All</button>
+<button class="filter" onclick="filterView('indexed')">Indexed</button>
+<button class="filter" onclick="filterView('not')">Not Indexed</button>
 
+<div class="stats" id="stats"></div>
 <div id="results"></div>
 
 <script>
 const DOMAIN = "https://sairootsmusic.com";
-const SITEMAP_URL = DOMAIN + "/sitemap.xml";
+const SITEMAP = DOMAIN + "/sitemap.xml";
+
+let dataList = [];
 
 async function loadSitemap() {
-  const res = await fetch(SITEMAP_URL);
+  const res = await fetch(SITEMAP);
   const text = await res.text();
 
-  const parser = new DOMParser();
-  const xml = parser.parseFromString(text, "text/xml");
+  const xml = new DOMParser().parseFromString(text, "text/xml");
+  const urls = [...xml.getElementsByTagName("loc")].map(e => e.textContent);
 
-  const urls = [...xml.getElementsByTagName("loc")].map(el => el.textContent);
+  dataList = urls.map(u => ({ url: u, status: "checking" }));
 
+  render();
+  urls.forEach((u, i) => checkIndex(u, i));
+}
+
+function render(filter="all") {
   const container = document.getElementById("results");
   container.innerHTML = "";
 
-  for (let url of urls) {
+  let filtered = dataList.filter(item => {
+    if (filter === "indexed") return item.status === "indexed";
+    if (filter === "not") return item.status === "not";
+    return true;
+  });
+
+  filtered.forEach(item => {
     let div = document.createElement("div");
-    div.className = "url-box checking";
+    div.className = `box ${item.status}`;
+
+    let search = "https://www.google.com/search?q=site:" + encodeURIComponent(item.url);
+    let inspect = "https://search.google.com/search-console/inspect?resource_id=" + DOMAIN + "&url=" + encodeURIComponent(item.url);
+
     div.innerHTML = `
-      <strong>${url}</strong>
-      <small>Checking...</small>
-      <div class="actions"></div>
+      <strong>${item.url}</strong><br>
+      <small>${item.status.toUpperCase()}</small>
+      <div>
+        <a href="${search}" target="_blank">🔍 Google</a>
+        <a href="${inspect}" target="_blank">⚙️ Inspect</a>
+        <a href="${item.url}" target="_blank">🌐 Open</a>
+      </div>
     `;
     container.appendChild(div);
+  });
 
-    checkIndex(url, div);
-  }
+  updateStats();
 }
 
-async function checkIndex(url, element) {
-  let searchUrl = "https://www.google.com/search?q=site:" + encodeURIComponent(url);
-  let inspectUrl = "https://search.google.com/search-console/inspect?resource_id=" + DOMAIN + "&url=" + encodeURIComponent(url);
+function filterView(type) {
+  render(type);
+}
 
+function updateStats() {
+  let total = dataList.length;
+  let indexed = dataList.filter(i => i.status === "indexed").length;
+  let not = dataList.filter(i => i.status === "not").length;
+
+  document.getElementById("stats").innerHTML =
+    `Total: ${total} | Indexed: ${indexed} | Not Indexed: ${not}`;
+}
+
+async function checkIndex(url, index) {
   try {
-    let res = await fetch("https://api.allorigins.win/get?url=" + encodeURIComponent(searchUrl));
+    let res = await fetch("https://api.allorigins.win/get?url=" +
+      encodeURIComponent("https://www.google.com/search?q=site:" + url));
+
     let data = await res.json();
 
-    let isIndexed = data.contents.includes(url);
-
-    if (isIndexed) {
-      element.className = "url-box indexed";
-      element.querySelector("small").innerText = "Indexed";
+    if (data.contents.includes(url)) {
+      dataList[index].status = "indexed";
     } else {
-      element.className = "url-box not-indexed";
-      element.querySelector("small").innerText = "Not Indexed";
+      dataList[index].status = "not";
     }
 
-  } catch (e) {
-    element.className = "url-box not-indexed";
-    element.querySelector("small").innerText = "Check failed";
+  } catch {
+    dataList[index].status = "not";
   }
 
-  // tambah tombol aksi
-  element.querySelector(".actions").innerHTML = `
-    <a href="${searchUrl}" target="_blank">🔍 Lihat di Google</a>
-    <a href="${inspectUrl}" target="_blank">⚙️ Inspect</a>
-    <a href="${url}" target="_blank">🌐 Buka Halaman</a>
-  `;
+  render();
 }
 </script>
 
