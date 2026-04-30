@@ -1,0 +1,339 @@
+<!DOCTYPE html>
+<html lang="id">
+<head>
+    <link rel="icon" type="image/x-icon" href="/favicon.ico">
+    <link rel="shortcut icon" type="image/x-icon" href="/favicon.ico">
+    <link rel="icon" type="image/png" sizes="32x32" href="/favicon-32x32.png">
+    <link rel="icon" type="image/png" sizes="16x16" href="/favicon-16x16.png">
+    <link rel="apple-touch-icon" sizes="180x180" href="/apple-touch-icon.png">
+    <link rel="icon" type="image/png" sizes="192x192" href="/android-chrome-192x192.png">
+    <link rel="icon" type="image/png" sizes="512x512" href="/android-chrome-512x512.png">
+    <link rel="manifest" href="/site.webmanifest">
+    <meta name="robots" content="noindex, nofollow"> <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no">
+    <title>Admin Update Video | SAI Roots</title>
+
+    <script src="https://cdn.tailwindcss.com"></script>
+    <link href="https://fonts.googleapis.com/css2?family=Anton&family=Inter:wght@300;400;600&display=swap" rel="stylesheet">
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.5.1/css/all.min.css">
+
+    <script>
+        tailwind.config = {
+            theme: {
+                extend: {
+                    colors: {
+                        rasta: { green: '#2D8659', yellow: '#FBBF24', red: '#DC2626' },
+                        neutral: { 950: '#050505' }
+                    },
+                    fontFamily: {
+                        sans: ['Inter', 'sans-serif'],
+                        display: ['Anton', 'sans-serif']
+                    }
+                }
+            }
+        }
+    </script>
+
+    <style>
+        body { background-color: #050505; color: #f0f0f0; }
+        .glass { background: rgba(5, 5, 5, 0.85); backdrop-filter: blur(12px); border-bottom: 1px solid rgba(255,255,255,0.03); }
+        .rasta-stripe { height: 3px; background: linear-gradient(90deg, #2D8659 0%, #FBBF24 50%, #DC2626 100%); width: 100%; position: fixed; top: 0; z-index: 60; }
+        #mobile-menu { transition: transform 0.4s cubic-bezier(0.4, 0, 0.2, 1); overflow-y: auto; }
+        .menu-open { transform: translateX(0) !important; }
+        .custom-scrollbar::-webkit-scrollbar { width: 6px; }
+        .custom-scrollbar::-webkit-scrollbar-track { background: rgba(255,255,255,0.05); }
+        .custom-scrollbar::-webkit-scrollbar-thumb { background: rgba(255,255,255,0.2); border-radius: 10px; }
+    </style>
+</head>
+
+<body class="overflow-x-hidden pt-1">
+
+<div class="rasta-stripe"></div>
+
+<header class="fixed top-[3px] w-full z-50 glass">
+    <div class="container mx-auto px-6 py-4 flex justify-between items-center">
+        <div class="text-3xl font-display uppercase tracking-wider">
+            <a href="/" class="flex items-center gap-3 hover:text-rasta-yellow transition-colors duration-300">
+                <img src="/android-chrome-192x192.png" alt="Logo SAI Roots" class="w-10 h-10 rounded-full object-cover border border-white/10">
+                <span>SAI <span class="text-rasta-green">Roots</span></span>
+            </a>
+        </div>
+
+        <button id="menu-btn" class="focus:outline-none z-50 p-2 rounded-full hover:bg-white/5 transition">
+            <svg id="hamburger-icon" class="w-7 h-7 text-white" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M4 6h16M4 12h16m-7 6h7"></path>
+            </svg>
+        </button>
+    </div>
+</header>
+
+<div id="mobile-menu" class="fixed inset-0 z-40 bg-neutral-950 translate-x-full flex flex-col items-center pt-28 pb-12 p-6 border-l border-white/5">
+    <nav id="main-nav" class="flex flex-col space-y-6 text-center uppercase tracking-widest w-full max-w-md">
+        <a href="/" class="text-3xl font-display hover:text-rasta-green transition duration-300">Home</a>
+        <a href="/discography" class="text-3xl font-display hover:text-rasta-yellow transition duration-300">Discography</a>
+        <a href="/lyric" class="text-3xl font-display hover:text-rasta-red transition duration-300">Lyric</a>
+        <a href="/video_cover.html" class="text-3xl font-display hover:text-rasta-yellow transition duration-300">Covers</a>
+        <a href="/about" class="hover:text-rasta-green transition duration-300 text-base font-sans mt-4">About</a>
+        <a href="/privacy" class="hover:text-rasta-yellow transition duration-300 text-base font-sans">Privacy Policy</a>
+        <a href="/contact" class="hover:text-rasta-red transition duration-300 text-base font-sans">Contact Us</a>
+    </nav>
+</div>
+
+<main class="pt-32 pb-20 container mx-auto px-6 min-h-screen">
+    <div class="max-w-3xl mx-auto">
+        <div class="text-center mb-10">
+            <h1 class="font-display text-4xl md:text-5xl mb-2 tracking-tight uppercase"><span class="text-white">Admin</span> <span class="text-rasta-red">Sync</span></h1>
+            <p class="text-gray-400 font-light text-sm">Panel pembaruan otomatis untuk menarik data dari YouTube Playlist ke GitHub.</p>
+        </div>
+
+        <div class="bg-white/5 border border-white/10 p-6 md:p-8 rounded-sm shadow-2xl mb-8">
+            <div class="grid grid-cols-1 md:grid-cols-2 gap-6 mb-6">
+                <div>
+                    <label class="block text-xs uppercase tracking-widest text-gray-500 mb-2">YouTube API Key</label>
+                    <input type="password" id="yt-api-key" class="w-full bg-black/50 border border-white/10 rounded-sm py-3 px-4 focus:outline-none focus:border-rasta-red transition-all text-white text-sm" placeholder="AIzaSy...">
+                </div>
+                <div>
+                    <label class="block text-xs uppercase tracking-widest text-gray-500 mb-2">GitHub Personal Token</label>
+                    <input type="password" id="gh-token" class="w-full bg-black/50 border border-white/10 rounded-sm py-3 px-4 focus:outline-none focus:border-rasta-green transition-all text-white text-sm" placeholder="ghp_...">
+                </div>
+                <div>
+                    <label class="block text-xs uppercase tracking-widest text-gray-500 mb-2">GitHub Username / Owner</label>
+                    <input type="text" id="gh-owner" class="w-full bg-black/50 border border-white/10 rounded-sm py-3 px-4 focus:outline-none focus:border-white/50 transition-all text-white text-sm" placeholder="contoh: sairoots">
+                </div>
+                <div>
+                    <label class="block text-xs uppercase tracking-widest text-gray-500 mb-2">Repository Name</label>
+                    <input type="text" id="gh-repo" class="w-full bg-black/50 border border-white/10 rounded-sm py-3 px-4 focus:outline-none focus:border-white/50 transition-all text-white text-sm" placeholder="contoh: sairoots.github.io">
+                </div>
+            </div>
+
+            <div class="flex items-center gap-4 border-t border-white/10 pt-6">
+                <button id="btn-sync" onclick="startSync()" class="bg-rasta-green hover:bg-green-700 text-white font-bold py-3 px-8 rounded-sm transition duration-300 uppercase tracking-widest text-sm flex-1 md:flex-none">
+                    <i class="fas fa-sync-alt mr-2"></i> Tarik & Update
+                </button>
+                <div class="flex items-center gap-2">
+                    <input type="checkbox" id="save-cred" class="accent-rasta-yellow w-4 h-4" checked>
+                    <label for="save-cred" class="text-xs text-gray-400 cursor-pointer">Simpan kredensial di browser</label>
+                </div>
+            </div>
+        </div>
+
+        <div class="bg-black border border-white/10 rounded-sm overflow-hidden">
+            <div class="bg-white/10 px-4 py-2 border-b border-white/10 flex items-center justify-between">
+                <span class="text-xs uppercase tracking-widest text-gray-400">System Log</span>
+                <span class="flex gap-2">
+                    <div class="w-3 h-3 rounded-full bg-rasta-red"></div>
+                    <div class="w-3 h-3 rounded-full bg-rasta-yellow"></div>
+                    <div class="w-3 h-3 rounded-full bg-rasta-green"></div>
+                </span>
+            </div>
+            <div id="terminal-log" class="p-4 h-64 overflow-y-auto font-mono text-xs text-gray-300 custom-scrollbar leading-relaxed">
+                > Sistem siap. Menunggu perintah...
+            </div>
+        </div>
+    </div>
+</main>
+
+<footer id="footer" class="border-t border-white/5 py-12 bg-black mt-auto">
+    <div class="container mx-auto px-6 text-center">
+        <p class="text-gray-600 text-[10px] tracking-[0.3em] uppercase mb-6">Stream Our Music</p>
+        <div class="flex flex-wrap justify-center gap-7 mb-10 text-gray-400">
+            <a href="https://www.youtube.com/@sairoots" target="_blank" class="hover:text-[#ff0000]"><i class="fab fa-youtube text-2xl"></i></a>
+            <a href="https://open.spotify.com/artist/0xOPCtZvhXVd9RTbU1aYTr" target="_blank" class="hover:text-[#1DB954]"><i class="fab fa-spotify text-2xl"></i></a>
+            <a href="https://music.apple.com/id/artist/sai-roots/1892187423?l=id" target="_blank" class="hover:text-white"><i class="fab fa-apple text-2xl"></i></a>
+            <a href="https://m.soundcloud.com/sairoots" target="_blank" class="hover:text-[#ff5500]"><i class="fab fa-soundcloud text-2xl"></i></a>
+            <a href="https://link.deezer.com/s/3366qh6efN8QoSqSPCEsB" target="_blank" class="hover:text-white"><i class="fab fa-deezer text-2xl"></i></a>
+            <a href="https://music.amazon.com/artists/B0GTFWNC32/sai-roots" target="_blank" class="hover:text-[#00a8e1]"><i class="fab fa-amazon text-2xl"></i></a>
+        </div>
+        <div class="flex justify-center space-x-8 mb-10 text-gray-500">
+            <a href="https://instagram.com/ahmadsupembri" target="_blank" class="hover:text-white"><i class="fab fa-instagram text-xl"></i></a>
+            <a href="https://tiktok.com/@ahmadsupembri" target="_blank" class="hover:text-white"><i class="fab fa-tiktok text-xl"></i></a>
+            <a href="https://facebook.com/ahmadsupembri" target="_blank" class="hover:text-[#1877F2]"><i class="fab fa-facebook-f text-xl"></i></a>
+        </div>
+        <div class="border-t border-white/5 pt-8">
+            <p class="text-gray-600 text-[11px] tracking-[0.2em] uppercase">© 2026 <span class="text-white font-medium">SAI Roots Music</span>. All Rights Reserved.</p>
+            <p class="text-gray-800 text-[9px] mt-2 tracking-[0.4em] uppercase italic">Roots • Reggae • Rap</p>
+        </div>
+    </div>
+</footer>
+
+<script>
+// --- KONFIGURASI MENU ---
+const menuBtn = document.getElementById('menu-btn');
+const mobileMenu = document.getElementById('mobile-menu');
+const hamburgerIcon = document.getElementById('hamburger-icon');
+
+function toggleMenu() {
+    const isOpen = mobileMenu.classList.toggle('menu-open');
+    if (isOpen) {
+        hamburgerIcon.innerHTML = `<path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M6 18L18 6M6 6l12 12"></path>`;
+        hamburgerIcon.classList.add('text-rasta-yellow');
+        document.body.style.overflow = 'hidden';
+    } else {
+        hamburgerIcon.innerHTML = `<path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M4 6h16M4 12h16m-7 6h7"></path>`;
+        hamburgerIcon.classList.remove('text-rasta-yellow');
+        document.body.style.overflow = 'auto';
+    }
+}
+menuBtn.addEventListener('click', toggleMenu);
+
+// --- LOGIKA SINKRONISASI ---
+const terminal = document.getElementById('terminal-log');
+const PLAYLIST_ID = 'PL29NQfo2Ox_DkGY9khBqL8vat09CbkI4K'; // ID Playlist Cover
+const FILE_PATH = 'database.js'; // Target file di GitHub
+
+function logMsg(msg, isError = false) {
+    const time = new Date().toLocaleTimeString();
+    const color = isError ? 'text-rasta-red' : 'text-rasta-green';
+    terminal.innerHTML += `<br><span class="text-gray-500">[${time}]</span> <span class="${color}">${msg}</span>`;
+    terminal.scrollTop = terminal.scrollHeight;
+}
+
+// Unicode safe Base64 encoding/decoding untuk Github API
+function utoa(str) { return window.btoa(unescape(encodeURIComponent(str))); }
+function atou(str) { return decodeURIComponent(escape(window.atob(str))); }
+
+function createSlug(title) {
+    return title.toLowerCase()
+        .replace(/[^\w\s-]/g, '') // Hapus karakter spesial
+        .replace(/[\s_-]+/g, '-') // Ganti spasi dengan strip
+        .replace(/^-+|-+$/g, ''); // Hapus strip di awal/akhir
+}
+
+// Load Kredensial Tersimpan
+window.onload = () => {
+    if (localStorage.getItem('ytKey')) document.getElementById('yt-api-key').value = localStorage.getItem('ytKey');
+    if (localStorage.getItem('ghToken')) document.getElementById('gh-token').value = localStorage.getItem('ghToken');
+    if (localStorage.getItem('ghOwner')) document.getElementById('gh-owner').value = localStorage.getItem('ghOwner');
+    if (localStorage.getItem('ghRepo')) document.getElementById('gh-repo').value = localStorage.getItem('ghRepo');
+};
+
+async function startSync() {
+    const ytKey = document.getElementById('yt-api-key').value.trim();
+    const ghToken = document.getElementById('gh-token').value.trim();
+    const ghOwner = document.getElementById('gh-owner').value.trim();
+    const ghRepo = document.getElementById('gh-repo').value.trim();
+    const saveCred = document.getElementById('save-cred').checked;
+    const btn = document.getElementById('btn-sync');
+
+    if (!ytKey || !ghToken || !ghOwner || !ghRepo) {
+        logMsg("GAGAL: Harap isi semua kolom kredensial!", true);
+        return;
+    }
+
+    if (saveCred) {
+        localStorage.setItem('ytKey', ytKey);
+        localStorage.setItem('ghToken', ghToken);
+        localStorage.setItem('ghOwner', ghOwner);
+        localStorage.setItem('ghRepo', ghRepo);
+    } else {
+        localStorage.clear();
+    }
+
+    btn.disabled = true;
+    btn.innerHTML = `<i class="fas fa-spinner fa-spin mr-2"></i> Memproses...`;
+    btn.classList.replace('bg-rasta-green', 'bg-gray-600');
+    
+    terminal.innerHTML = '> Memulai proses sinkronisasi...';
+
+    try {
+        // 1. Fetch YouTube API
+        logMsg(`Mengambil data dari Playlist YouTube (${PLAYLIST_ID})...`);
+        let videoData = [];
+        let nextPageToken = '';
+        
+        do {
+            const ytUrl = `https://www.googleapis.com/youtube/v3/playlistItems?part=snippet&maxResults=50&playlistId=${PLAYLIST_ID}&key=${ytKey}${nextPageToken ? '&pageToken=' + nextPageToken : ''}`;
+            const ytRes = await fetch(ytUrl);
+            const ytJson = await ytRes.json();
+
+            if (!ytRes.ok) throw new Error(ytJson.error.message || "Gagal menghubungi YouTube API");
+
+            ytJson.items.forEach(item => {
+                const snippet = item.snippet;
+                if (snippet.title !== "Private video" && snippet.title !== "Deleted video") {
+                    videoData.push({
+                        title: snippet.title,
+                        slug: createSlug(snippet.title),
+                        videoId: snippet.resourceId.videoId,
+                        thumbnail: snippet.thumbnails.maxres ? snippet.thumbnails.maxres.url : snippet.thumbnails.high.url,
+                        description: snippet.description
+                    });
+                }
+            });
+            nextPageToken = ytJson.nextPageToken;
+        } while (nextPageToken);
+
+        logMsg(`Sukses! ${videoData.length} video cover berhasil diekstrak.`);
+
+        // 2. Fetch Github File (database.js)
+        logMsg(`Memeriksa file ${FILE_PATH} di repositori GitHub...`);
+        const ghUrl = `https://api.github.com/repos/${ghOwner}/${ghRepo}/contents/${FILE_PATH}`;
+        const ghHeaders = {
+            'Authorization': `token ${ghToken}`,
+            'Accept': 'application/vnd.github.v3+json'
+        };
+
+        let sha = null;
+        let fileContent = "";
+        let newContent = "";
+
+        const ghRes = await fetch(ghUrl, { headers: ghHeaders });
+        
+        if (ghRes.status === 200) {
+            const ghJson = await ghRes.json();
+            sha = ghJson.sha;
+            fileContent = atou(ghJson.content);
+            logMsg(`File ditemukan. Bersiap memperbarui kode...`);
+
+            // Mencari dan mereplace `const coverVideos = [...]`
+            const coverRegex = /const\s+coverVideos\s*=\s*\[[\s\S]*?\];/;
+            const newVarString = `const coverVideos = ${JSON.stringify(videoData, null, 4)};`;
+
+            if (coverRegex.test(fileContent)) {
+                newContent = fileContent.replace(coverRegex, newVarString);
+            } else {
+                newContent = fileContent + `\n\n// Generated by Auto-Sync\n${newVarString}\n`;
+            }
+
+        } else if (ghRes.status === 404) {
+            logMsg(`File tidak ditemukan. Membuat file database.js baru...`);
+            newContent = `// File Database Utama SAI Roots\nconst searchData = [];\n\nconst coverVideos = ${JSON.stringify(videoData, null, 4)};\n`;
+        } else {
+            const errJson = await ghRes.json();
+            throw new Error(errJson.message || "Gagal mengakses GitHub API");
+        }
+
+        // 3. Commit dan Push ke Github
+        logMsg(`Mengirim (push) perubahan ke GitHub...`);
+        const commitBody = {
+            message: `Auto-sync: Memperbarui data video cover (${videoData.length} video)`,
+            content: utoa(newContent)
+        };
+        if (sha) commitBody.sha = sha;
+
+        const pushRes = await fetch(ghUrl, {
+            method: 'PUT',
+            headers: ghHeaders,
+            body: JSON.stringify(commitBody)
+        });
+
+        if (!pushRes.ok) {
+            const pushErr = await pushRes.json();
+            throw new Error(pushErr.message || "Gagal melakukan push");
+        }
+
+        logMsg(`✅ SINKRONISASI SELESAI! Perubahan berhasil di-push ke branch utama.`, false);
+        logMsg(`Catatan: Karena GitHub Pages, perubahan di web mungkin butuh waktu 1-3 menit untuk muncul.`, false);
+
+    } catch (error) {
+        logMsg(`ERROR: ${error.message}`, true);
+    } finally {
+        btn.disabled = false;
+        btn.innerHTML = `<i class="fas fa-sync-alt mr-2"></i> Tarik & Update`;
+        btn.classList.replace('bg-gray-600', 'bg-rasta-green');
+    }
+}
+</script>
+
+</body>
+</html>
