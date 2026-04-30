@@ -4,743 +4,187 @@
 <meta charset="UTF-8">
 <meta name="viewport" content="width=device-width, initial-scale=1.0">
 <title>SEO Index Checker</title>
+
 <style>
-  * { box-sizing: border-box; margin: 0; padding: 0; }
+body{margin:0;font-family:Arial;background:#0b1220;color:#fff}
+.container{padding:16px}
+.header{font-size:20px;font-weight:bold;margin-bottom:10px}
+.sub{font-size:12px;color:#94a3b8;margin-bottom:15px}
 
-  :root {
-    --bg: #020617;
-    --bg2: #0f172a;
-    --bg3: #1e293b;
-    --border: #334155;
-    --text: #e2e8f0;
-    --muted: #94a3b8;
-    --green: #22c55e;
-    --green-bg: rgba(34,197,94,0.08);
-    --red: #ef4444;
-    --red-bg: rgba(239,68,68,0.08);
-    --yellow: #facc15;
-    --yellow-bg: rgba(250,204,21,0.08);
-    --blue: #38bdf8;
-    --blue-bg: rgba(56,189,248,0.08);
-  }
+.grid{display:grid;grid-template-columns:repeat(4,1fr);gap:10px}
+.stat{background:#111827;padding:12px;border-radius:12px;text-align:center}
+.stat b{font-size:20px;display:block}
 
-  body {
-    background: var(--bg);
-    color: var(--text);
-    font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', sans-serif;
-    font-size: 18px;
-    min-height: 100vh;
-  }
+.search{margin:15px 0}
+.search input{
+width:100%;padding:12px;border-radius:10px;border:none;
+background:#111827;color:white
+}
 
-  /* HEADER */
-  .header {
-    background: var(--bg2);
-    border-bottom: 1px solid var(--border);
-    padding: 18px 16px 16px;
-    position: sticky;
-    top: 0;
-    z-index: 100;
-  }
+.filters{display:flex;gap:10px;margin-bottom:10px}
+.filters button{
+flex:1;padding:10px;border-radius:10px;border:none;
+background:#1e293b;color:white
+}
+.filters button.active{background:#2563eb}
 
-  .brand {
-    display: flex;
-    align-items: center;
-    gap: 12px;
-    margin-bottom: 4px;
-  }
+.main-btn{
+width:100%;padding:14px;border-radius:12px;border:none;
+background:#22c55e;color:white;font-size:16px;margin:10px 0
+}
 
-  .brand-icon {
-    width: 42px; height: 42px;
-    background: linear-gradient(135deg, #22c55e, #38bdf8);
-    border-radius: 10px;
-    display: flex; align-items: center; justify-content: center;
-    font-size: 22px;
-    flex-shrink: 0;
-  }
+.card{
+background:#111827;padding:12px;border-radius:12px;margin-top:10px
+}
 
-  .brand h1 { font-size: 21px; font-weight: 700; }
-  .brand p  { font-size: 13px; color: var(--muted); margin-top: 2px; }
+.status{
+float:right;padding:4px 10px;border-radius:999px;font-size:12px
+}
+.pending{background:#475569}
+.ok{background:#22c55e}
+.no{background:#ef4444}
 
-  /* MAIN */
-  .main { padding: 16px; max-width: 720px; margin: 0 auto; }
-
-  /* STATS */
-  .stats-grid {
-    display: grid;
-    grid-template-columns: repeat(4,1fr);
-    gap: 8px;
-    margin-bottom: 14px;
-  }
-
-  .stat-card {
-    background: var(--bg2);
-    border: 1px solid var(--border);
-    border-radius: 12px;
-    padding: 12px 6px;
-    text-align: center;
-  }
-
-  .stat-val { font-size: 24px; font-weight: 700; line-height: 1.1; }
-  .stat-lbl { font-size: 11px; color: var(--muted); margin-top: 3px; text-transform: uppercase; letter-spacing: 0.4px; }
-
-  .s-total .stat-val { color: var(--blue); }
-  .s-idx   .stat-val { color: var(--green); }
-  .s-not   .stat-val { color: var(--red); }
-  .s-pend  .stat-val { color: var(--yellow); }
-
-  /* PROGRESS */
-  .progress-box {
-    background: var(--bg2);
-    border: 1px solid var(--border);
-    border-radius: 12px;
-    padding: 14px 16px;
-    margin-bottom: 14px;
-    display: none;
-  }
-  .progress-box.show { display: block; }
-  .prog-top {
-    display: flex;
-    justify-content: space-between;
-    font-size: 13px;
-    color: var(--muted);
-    margin-bottom: 8px;
-  }
-  .prog-track { background: var(--border); border-radius: 99px; height: 7px; overflow: hidden; }
-  .prog-fill {
-    background: linear-gradient(90deg, #22c55e, #38bdf8);
-    border-radius: 99px; height: 100%; width: 0%;
-    transition: width 0.3s ease;
-  }
-
-  /* CONTROLS */
-  .controls { display: none; flex-direction: column; gap: 10px; margin-bottom: 14px; }
-  .controls.show { display: flex; }
-
-  .search-input {
-    width: 100%;
-    background: var(--bg2);
-    border: 1px solid var(--border);
-    border-radius: 10px;
-    color: var(--text);
-    font-size: 16px;
-    padding: 13px 16px;
-    outline: none;
-    transition: border-color 0.2s;
-  }
-  .search-input:focus { border-color: var(--blue); }
-
-  .filter-row { display: flex; gap: 8px; }
-
-  .f-btn {
-    flex: 1;
-    background: var(--bg2);
-    border: 1px solid var(--border);
-    border-radius: 10px;
-    color: var(--muted);
-    cursor: pointer;
-    font-size: 13px;
-    font-weight: 600;
-    padding: 10px 6px;
-    text-align: center;
-    transition: all 0.2s;
-    touch-action: manipulation;
-  }
-  .f-btn.active { border-color: var(--blue); color: var(--blue); background: var(--blue-bg); }
-  .f-btn:active { transform: scale(0.97); }
-
-  /* BULK ACTIONS */
-  .bulk-row { display: none; gap: 8px; margin-bottom: 14px; }
-  .bulk-row.show { display: flex; }
-
-  .btn-check-all {
-    flex: 1;
-    background: linear-gradient(135deg, #22c55e, #16a34a);
-    border: none;
-    border-radius: 10px;
-    color: #000;
-    cursor: pointer;
-    font-size: 15px;
-    font-weight: 700;
-    padding: 14px;
-    transition: all 0.2s;
-    touch-action: manipulation;
-  }
-  .btn-check-all:disabled { opacity: 0.45; cursor: not-allowed; }
-  .btn-check-all:active { transform: scale(0.97); }
-
-  .btn-stop {
-    background: var(--bg2);
-    border: 1px solid var(--red);
-    border-radius: 10px;
-    color: var(--red);
-    cursor: pointer;
-    font-size: 15px;
-    font-weight: 700;
-    padding: 14px 18px;
-    transition: all 0.2s;
-    touch-action: manipulation;
-    display: none;
-  }
-  .btn-stop.show { display: block; }
-  .btn-stop:active { transform: scale(0.97); }
-
-  /* RESULT COUNT */
-  .result-count { font-size: 13px; color: var(--muted); margin-bottom: 12px; }
-
-  /* CARDS */
-  .url-list { display: flex; flex-direction: column; gap: 12px; }
-
-  .url-card {
-    background: var(--bg2);
-    border: 1px solid var(--border);
-    border-left: 5px solid var(--border);
-    border-radius: 12px;
-    padding: 16px;
-    transition: border-color 0.2s, background 0.2s;
-  }
-  .url-card.indexed     { border-left-color: var(--green); background: var(--green-bg); }
-  .url-card.not         { border-left-color: var(--red);   background: var(--red-bg); }
-  .url-card.checking    { border-left-color: var(--yellow); background: var(--yellow-bg); }
-
-  .card-top {
-    display: flex;
-    justify-content: space-between;
-    align-items: flex-start;
-    gap: 10px;
-    margin-bottom: 6px;
-  }
-
-  .url-path {
-    font-size: 15px;
-    font-weight: 600;
-    color: var(--text);
-    word-break: break-all;
-    flex: 1;
-    line-height: 1.4;
-  }
-
-  .badge {
-    display: inline-flex;
-    align-items: center;
-    gap: 5px;
-    border-radius: 20px;
-    font-size: 12px;
-    font-weight: 700;
-    padding: 5px 11px;
-    white-space: nowrap;
-    flex-shrink: 0;
-  }
-  .badge.indexed  { background: var(--green-bg); border: 1px solid rgba(34,197,94,0.35); color: var(--green); }
-  .badge.not      { background: var(--red-bg);   border: 1px solid rgba(239,68,68,0.35); color: var(--red); }
-  .badge.checking { background: var(--yellow-bg); border: 1px solid rgba(250,204,21,0.35); color: var(--yellow); }
-  .badge.pending  { background: var(--bg3); border: 1px solid var(--border); color: var(--muted); }
-
-  .url-full { font-size: 12px; color: var(--muted); margin-bottom: 12px; word-break: break-all; }
-
-  .card-actions { display: flex; gap: 7px; flex-wrap: wrap; }
-
-  .btn-act {
-    background: var(--bg3);
-    border: 1px solid var(--border);
-    border-radius: 8px;
-    color: var(--muted);
-    cursor: pointer;
-    font-size: 13px;
-    font-weight: 500;
-    padding: 8px 12px;
-    text-decoration: none;
-    display: inline-flex;
-    align-items: center;
-    gap: 5px;
-    transition: all 0.2s;
-    touch-action: manipulation;
-  }
-  .btn-act:active { transform: scale(0.95); }
-  .btn-act.g:hover  { border-color: #4285f4; color: #4285f4; }
-  .btn-act.sc:hover { border-color: var(--yellow); color: var(--yellow); }
-  .btn-act.op:hover { border-color: var(--blue); color: var(--blue); }
-  .btn-act.re:hover { border-color: var(--green); color: var(--green); }
-  .btn-act.re { margin-left: auto; }
-
-  /* EMPTY */
-  .empty {
-    text-align: center;
-    padding: 52px 24px;
-    color: var(--muted);
-  }
-  .empty .ico { font-size: 52px; margin-bottom: 14px; }
-  .empty p { font-size: 16px; line-height: 1.6; }
-
-  /* SPINNER */
-  @keyframes spin { to { transform: rotate(360deg); } }
-  .spin {
-    display: inline-block;
-    width: 12px; height: 12px;
-    border: 2px solid rgba(250,204,21,0.3);
-    border-top-color: var(--yellow);
-    border-radius: 50%;
-    animation: spin 0.7s linear infinite;
-  }
-
-  /* TOAST */
-  .toast {
-    position: fixed;
-    bottom: 24px; left: 50%;
-    transform: translateX(-50%) translateY(70px);
-    background: var(--bg3);
-    border: 1px solid var(--border);
-    border-radius: 10px;
-    color: var(--text);
-    font-size: 15px;
-    padding: 12px 20px;
-    z-index: 999;
-    transition: transform 0.3s ease;
-    white-space: nowrap;
-    max-width: calc(100vw - 32px);
-    text-align: center;
-  }
-  .toast.show { transform: translateX(-50%) translateY(0); }
-
-  /* LOADING STATE */
-  .loading-wrap {
-    text-align: center;
-    padding: 32px;
-    color: var(--muted);
-    font-size: 16px;
-  }
+.actions{margin-top:10px;display:flex;flex-wrap:wrap;gap:8px}
+.actions button{
+flex:1;padding:8px;border-radius:8px;border:none;
+background:#1e293b;color:white;font-size:12px
+}
 </style>
 </head>
+
 <body>
+<div class="container">
 
-<!-- HEADER -->
-<div class="header">
-  <div class="brand">
-    <div class="brand-icon">🔍</div>
-    <div>
-      <h1>SEO Index Checker</h1>
-      <p id="sitemapLabel">Membaca sitemap...</p>
-    </div>
-  </div>
+<div class="header">🔍 SEO Index Checker</div>
+<div class="sub">/sitemap.xml</div>
+
+<div class="grid">
+  <div class="stat"><b id="total">0</b>TOTAL</div>
+  <div class="stat"><b id="indexed">0</b>INDEXED</div>
+  <div class="stat"><b id="not">0</b>NOT INDEXED</div>
+  <div class="stat"><b id="pending">0</b>PENDING</div>
 </div>
 
-<!-- MAIN -->
-<div class="main">
-
-  <!-- STATS -->
-  <div class="stats-grid">
-    <div class="stat-card s-total">
-      <div class="stat-val" id="stTotal">0</div>
-      <div class="stat-lbl">Total</div>
-    </div>
-    <div class="stat-card s-idx">
-      <div class="stat-val" id="stIdx">0</div>
-      <div class="stat-lbl">Indexed</div>
-    </div>
-    <div class="stat-card s-not">
-      <div class="stat-val" id="stNot">0</div>
-      <div class="stat-lbl">Not Indexed</div>
-    </div>
-    <div class="stat-card s-pend">
-      <div class="stat-val" id="stPend">0</div>
-      <div class="stat-lbl">Pending</div>
-    </div>
-  </div>
-
-  <!-- PROGRESS -->
-  <div class="progress-box" id="progBox">
-    <div class="prog-top">
-      <span id="progText">Mengecek...</span>
-      <span id="progCount">0 / 0</span>
-    </div>
-    <div class="prog-track">
-      <div class="prog-fill" id="progFill"></div>
-    </div>
-  </div>
-
-  <!-- CONTROLS -->
-  <div class="controls" id="controls">
-    <input class="search-input" id="searchInput" type="search"
-      placeholder="🔎  Cari URL..." oninput="applyFilter()" />
-    <div class="filter-row">
-      <button class="f-btn active" onclick="setFilter('all',this)">Semua</button>
-      <button class="f-btn" onclick="setFilter('indexed',this)">🟢 Indexed</button>
-      <button class="f-btn" onclick="setFilter('not',this)">🔴 Not Indexed</button>
-    </div>
-  </div>
-
-  <!-- BULK -->
-  <div class="bulk-row" id="bulkRow">
-    <button class="btn-check-all" id="btnCheckAll" onclick="checkAll()">
-      ▶️  Cek Semua URL
-    </button>
-    <button class="btn-stop" id="btnStop" onclick="doStop()">⏹ Stop</button>
-  </div>
-
-  <!-- RESULT COUNT -->
-  <div class="result-count" id="resultCount"></div>
-
-  <!-- LIST -->
-  <div class="url-list" id="urlList">
-    <div class="loading-wrap">
-      <div class="spin" style="width:24px;height:24px;border-width:3px;margin:0 auto 12px;"></div>
-      <p>Memuat sitemap...</p>
-    </div>
-  </div>
-
+<div class="search">
+  <input type="text" id="search" placeholder="Cari URL...">
 </div>
 
-<!-- TOAST -->
-<div class="toast" id="toast"></div>
+<div class="filters">
+  <button onclick="setFilter('all')" class="active">Semua</button>
+  <button onclick="setFilter('ok')">Indexed</button>
+  <button onclick="setFilter('no')">Not Indexed</button>
+</div>
+
+<button class="main-btn" onclick="checkAll()">▶ Cek Semua URL</button>
+
+<div id="list"></div>
+
+</div>
 
 <script>
-/* ═══════════════════════════════════════
-   STATE
-═══════════════════════════════════════ */
-let data      = [];   // { url, status: pending|checking|indexed|not }
-let filterMode = 'all';
-let isRunning  = false;
-let stopFlag   = false;
-let sitemapOrigin = '';
+const worker = "https://worker-crimson-smoke-71e0.pembriahmad526.workers.dev"
+let data = []
+let filter = "all"
 
-/* ═══════════════════════════════════════
-   INIT — baca sitemap otomatis
-═══════════════════════════════════════ */
-window.addEventListener('DOMContentLoaded', () => {
-  // Deteksi origin otomatis dari lokasi file
-  sitemapOrigin = window.location.origin;
-  const sitemapUrl = window.location.origin + '/sitemap.xml';
-  document.getElementById('sitemapLabel').textContent = sitemapUrl;
-  loadSitemap(sitemapUrl);
-});
-
-/* ═══════════════════════════════════════
-   LOAD SITEMAP
-═══════════════════════════════════════ */
-async function loadSitemap(sitemapUrl) {
-  try {
-    // Fetch langsung (same origin, tidak perlu proxy)
-    const res = await fetch(sitemapUrl);
-    if (!res.ok) throw new Error(`HTTP ${res.status}`);
-    const text = await res.text();
-
-    const xml  = new DOMParser().parseFromString(text, 'text/xml');
-    const parseErr = xml.querySelector('parsererror');
-    if (parseErr) throw new Error('XML parse error');
-
-    const locs = [...xml.getElementsByTagName('loc')].map(n => n.textContent.trim());
-    if (!locs.length) throw new Error('Tidak ada URL di sitemap');
-
-    data = locs.map(url => ({ url, status: 'pending' }));
-
-    document.getElementById('controls').classList.add('show');
-    document.getElementById('bulkRow').classList.add('show');
-    updateStats();
-    applyFilter();
-    toast(`✅ ${data.length} URL ditemukan`);
-
-  } catch (err) {
-    document.getElementById('urlList').innerHTML = `
-      <div class="empty">
-        <div class="ico">❌</div>
-        <p>Gagal memuat sitemap.<br><small>${err.message}</small></p>
-      </div>`;
-    toast('❌ Gagal memuat sitemap: ' + err.message);
-  }
+function updateStats(){
+  document.getElementById("total").innerText = data.length
+  document.getElementById("indexed").innerText = data.filter(x=>x.status==="ok").length
+  document.getElementById("not").innerText = data.filter(x=>x.status==="no").length
+  document.getElementById("pending").innerText = data.filter(x=>x.status==="pending").length
 }
 
-/* ═══════════════════════════════════════
-   CHECK ALL
-═══════════════════════════════════════ */
-async function checkAll() {
-  if (isRunning) return;
-  isRunning = true;
-  stopFlag  = false;
+function render(){
+  const list = document.getElementById("list")
+  const keyword = document.getElementById("search").value.toLowerCase()
+  list.innerHTML = ""
 
-  document.getElementById('btnCheckAll').disabled = true;
-  document.getElementById('btnStop').classList.add('show');
-  document.getElementById('progBox').classList.add('show');
+  data
+  .filter(x=>{
+    if(filter==="ok") return x.status==="ok"
+    if(filter==="no") return x.status==="no"
+    return true
+  })
+  .filter(x=>x.url.toLowerCase().includes(keyword))
+  .forEach(item=>{
+    const div = document.createElement("div")
+    div.className="card"
 
-  // Reset semua yang belum indexed
-  data.forEach(d => {
-    if (d.status !== 'indexed') d.status = 'pending';
-  });
-
-  const queue = data.filter(d => d.status !== 'indexed');
-  let done = 0;
-
-  setProgress(0, queue.length, 'Memulai...');
-
-  for (let i = 0; i < queue.length; i++) {
-    if (stopFlag) break;
-
-    const item = queue[i];
-    setProgress(done, queue.length, `Mengecek (${i+1}/${queue.length})`);
-
-    await checkOne(item);
-    done++;
-    setProgress(done, queue.length, done < queue.length ? `Mengecek (${done+1}/${queue.length})` : 'Selesai!');
-    applyFilter();
-
-    // Jeda acak 1.2–2.2 detik antar request
-    if (i < queue.length - 1 && !stopFlag) {
-      await sleep(1200 + Math.random() * 1000);
-    }
-  }
-
-  isRunning = false;
-  document.getElementById('btnCheckAll').disabled = false;
-  document.getElementById('btnStop').classList.remove('show');
-
-  if (!stopFlag) {
-    toast(`✅ Selesai! ${done} URL dicek.`);
-  } else {
-    toast('⏹ Dihentikan.');
-  }
-  stopFlag = false;
-}
-
-function doStop() {
-  stopFlag = true;
-  toast('⏳ Menghentikan...');
-}
-
-/* ═══════════════════════════════════════
-   CHECK SINGLE URL
-   Lebih akurat: 3 sinyal sekaligus
-═══════════════════════════════════════ */
-async function checkOne(item) {
-  item.status = 'checking';
-  updateCard(item);
-  updateStats();
-
-  const MAX_RETRY = 2;
-
-  for (let attempt = 1; attempt <= MAX_RETRY; attempt++) {
-    try {
-      const googleUrl = `https://www.google.com/search?q=site:${encodeURIComponent(item.url)}&hl=en&gl=us`;
-      const proxyUrl  = `https://api.allorigins.win/get?url=${encodeURIComponent(googleUrl)}`;
-
-      const res = await fetch(proxyUrl, { signal: AbortSignal.timeout(12000) });
-      if (!res.ok) throw new Error('proxy error');
-
-      const json = await res.json();
-      const html = json.contents || '';
-
-      // Jika response terlalu pendek kemungkinan captcha/block — retry
-      if (html.length < 500 && attempt < MAX_RETRY) {
-        await sleep(2000);
-        continue;
-      }
-
-      item.status = detectIndex(html, item.url);
-      break;
-
-    } catch (err) {
-      if (attempt === MAX_RETRY) {
-        item.status = 'not';
-      } else {
-        await sleep(2000);
-      }
-    }
-  }
-
-  updateCard(item);
-  updateStats();
-}
-
-/* ═══════════════════════════════════════
-   DETEKSI INDEX — 3 lapis lebih akurat
-═══════════════════════════════════════ */
-function detectIndex(html, targetUrl) {
-  if (!html || html.length < 200) return 'not';
-
-  const lower = html.toLowerCase();
-  const lowerUrl = targetUrl.toLowerCase();
-
-  // LAPIS 1 — paling kuat: URL muncul langsung di HTML (sama seperti ChatGPT, terbukti akurat)
-  const directMatch = lower.includes(lowerUrl);
-
-  // LAPIS 2 — cek "no results" sinyal negatif
-  const noResultSignals = [
-    'did not match any documents',
-    'your search - site:',
-    'no results found for',
-    'did not match any document',
-  ];
-  const isNoResult = noResultSignals.some(s => lower.includes(s));
-
-  // LAPIS 3 — cek domain muncul dalam konteks hasil pencarian Google
-  let domain = '';
-  try { domain = new URL(targetUrl).hostname.toLowerCase(); } catch(_) {}
-  const domainInResult = domain ? lower.includes(domain) : false;
-
-  // LAPIS 4 — cek ada elemen hasil pencarian Google (lebih ketat dari versi lama)
-  const hasResultBlock =
-    lower.includes('id="search"') ||
-    lower.includes('id="rso"')    ||
-    lower.includes('data-ved')    ||
-    lower.includes('jscontroller');
-
-  // Logika final:
-  // Jika ada sinyal "no result" → pasti NOT INDEXED
-  if (isNoResult) return 'not';
-
-  // Jika URL langsung ada di HTML → INDEXED (sama seperti ChatGPT)
-  if (directMatch) return 'indexed';
-
-  // Jika domain ada + ada blok hasil → kemungkinan INDEXED
-  if (domainInResult && hasResultBlock) return 'indexed';
-
-  return 'not';
-}
-
-/* ═══════════════════════════════════════
-   RENDER
-═══════════════════════════════════════ */
-function applyFilter() {
-  const kw = (document.getElementById('searchInput')?.value || '').toLowerCase();
-
-  let list = data;
-  if (filterMode === 'indexed') list = list.filter(d => d.status === 'indexed');
-  if (filterMode === 'not')     list = list.filter(d => d.status === 'not');
-  if (kw) list = list.filter(d => d.url.toLowerCase().includes(kw));
-
-  const el = document.getElementById('urlList');
-  const rc = document.getElementById('resultCount');
-
-  if (!list.length) {
-    el.innerHTML = `<div class="empty"><div class="ico">🔎</div><p>Tidak ada URL yang cocok.</p></div>`;
-    rc.textContent = '';
-    return;
-  }
-
-  rc.textContent = `Menampilkan ${list.length} dari ${data.length} URL`;
-  el.innerHTML = list.map(d => cardHTML(d)).join('');
-}
-
-function cardHTML(item) {
-  const path = getPath(item.url);
-  const sc   = item.status === 'indexed' ? 'indexed' : item.status === 'not' ? 'not' : item.status === 'checking' ? 'checking' : '';
-  const badge = badgeHTML(item.status);
-  const gUrl  = `https://www.google.com/search?q=site:${encodeURIComponent(item.url)}`;
-  const scUrl = `https://search.google.com/search-console/inspect?resource_id=${encodeURIComponent(sitemapOrigin + '/')}&url=${encodeURIComponent(item.url)}`;
-
-  return `
-    <div class="url-card ${sc}" id="${cardId(item.url)}">
-      <div class="card-top">
-        <div class="url-path">${esc(path)}</div>
-        ${badge}
+    div.innerHTML = `
+      <div>
+        <span>${new URL(item.url).pathname || "/"}</span>
+        <span class="status ${item.status}">
+          ${item.status==="pending"?"Pending":item.status==="ok"?"Indexed":"Not Indexed"}
+        </span>
       </div>
-      <div class="url-full">${esc(item.url)}</div>
-      <div class="card-actions">
-        <a class="btn-act g"  href="${gUrl}"  target="_blank" rel="noopener">🔍 Google</a>
-        <a class="btn-act sc" href="${scUrl}" target="_blank" rel="noopener">⚙️ Inspect</a>
-        <a class="btn-act op" href="${item.url}" target="_blank" rel="noopener">🌐 Buka</a>
-        <button class="btn-act re" onclick="recheckOne('${escAttr(item.url)}')">🔄 Cek Ulang</button>
+      <div style="font-size:12px;color:#94a3b8">${item.url}</div>
+
+      <div class="actions">
+        <button onclick="openGoogle('${item.url}')">🔍 Google</button>
+        <button onclick="inspect('${item.url}')">⚙ Inspect</button>
+        <button onclick="window.open('${item.url}')">🌐 Buka</button>
+        <button onclick="checkOne('${item.url}')">🔄 Cek Ulang</button>
       </div>
-    </div>`;
+    `
+
+    list.appendChild(div)
+  })
+
+  updateStats()
 }
 
-function badgeHTML(status) {
-  if (status === 'indexed')  return `<span class="badge indexed">🟢 Indexed</span>`;
-  if (status === 'not')      return `<span class="badge not">🔴 Not Indexed</span>`;
-  if (status === 'checking') return `<span class="badge checking"><span class="spin"></span> Checking</span>`;
-  return `<span class="badge pending">⚪ Pending</span>`;
+function setFilter(f){
+  filter = f
+  document.querySelectorAll(".filters button").forEach(b=>b.classList.remove("active"))
+  event.target.classList.add("active")
+  render()
 }
 
-function updateCard(item) {
-  const el = document.getElementById(cardId(item.url));
-  if (!el) return;
-
-  el.className = 'url-card ' + (item.status === 'indexed' ? 'indexed' : item.status === 'not' ? 'not' : item.status === 'checking' ? 'checking' : '');
-
-  const top = el.querySelector('.card-top');
-  const oldBadge = top.querySelector('.badge');
-  const newBadge = document.createElement('div');
-  newBadge.innerHTML = badgeHTML(item.status);
-  if (oldBadge) top.replaceChild(newBadge.firstChild, oldBadge);
-  else top.insertAdjacentHTML('beforeend', badgeHTML(item.status));
+function openGoogle(url){
+  window.open("https://www.google.com/search?q=site:"+url)
 }
 
-/* ═══════════════════════════════════════
-   CEK ULANG SINGLE
-═══════════════════════════════════════ */
-async function recheckOne(url) {
-  const item = data.find(d => d.url === url);
-  if (!item || isRunning) return;
-  item.status = 'pending';
-  updateCard(item);
-  await checkOne(item);
-  applyFilter();
+function inspect(url){
+  window.open("https://search.google.com/search-console/inspect?url="+url)
 }
 
-/* ═══════════════════════════════════════
-   STATS & PROGRESS
-═══════════════════════════════════════ */
-function updateStats() {
-  const total   = data.length;
-  const indexed = data.filter(d => d.status === 'indexed').length;
-  const not     = data.filter(d => d.status === 'not').length;
-  const pend    = data.filter(d => d.status === 'pending' || d.status === 'checking').length;
+async function loadSitemap(){
+  const res = await fetch("/sitemap.xml")
+  const text = await res.text()
+  const urls = [...text.matchAll(/<loc>(.*?)<\/loc>/g)].map(x=>x[1])
 
-  document.getElementById('stTotal').textContent = total;
-  document.getElementById('stIdx').textContent   = indexed;
-  document.getElementById('stNot').textContent   = not;
-  document.getElementById('stPend').textContent  = pend;
+  data = urls.map(u=>({url:u,status:"pending"}))
+  render()
 }
 
-function setProgress(done, total, text) {
-  const pct = total > 0 ? Math.round((done / total) * 100) : 0;
-  document.getElementById('progFill').style.width  = pct + '%';
-  document.getElementById('progText').textContent  = text;
-  document.getElementById('progCount').textContent = `${done} / ${total}`;
+async function checkOne(url){
+  const item = data.find(x=>x.url===url)
+  if(!item) return
+
+  item.status="pending"
+  render()
+
+  try{
+    const res = await fetch(worker+"?url="+encodeURIComponent(url))
+    const j = await res.json()
+    item.status = j.indexed ? "ok" : "no"
+  }catch{
+    item.status="no"
+  }
+
+  render()
 }
 
-/* ═══════════════════════════════════════
-   FILTER
-═══════════════════════════════════════ */
-function setFilter(mode, btn) {
-  filterMode = mode;
-  document.querySelectorAll('.f-btn').forEach(b => b.classList.remove('active'));
-  btn.classList.add('active');
-  applyFilter();
+async function checkAll(){
+  for(const item of data){
+    await checkOne(item.url)
+    await new Promise(r=>setTimeout(r,1200))
+  }
 }
 
-/* ═══════════════════════════════════════
-   HELPERS
-═══════════════════════════════════════ */
-function getPath(url) {
-  try {
-    const p = new URL(url);
-    return (p.pathname + p.search + p.hash) || '/';
-  } catch(_) { return url; }
-}
+document.getElementById("search").addEventListener("input",render)
 
-function cardId(url) {
-  return 'c_' + url.replace(/[^a-zA-Z0-9]/g, '_');
-}
-
-function esc(s) {
-  return s.replace(/&/g,'&amp;').replace(/</g,'&lt;').replace(/>/g,'&gt;').replace(/"/g,'&quot;');
-}
-
-function escAttr(s) {
-  return s.replace(/'/g,"\\'");
-}
-
-function sleep(ms) {
-  return new Promise(r => setTimeout(r, ms));
-}
-
-let _toastTimer = null;
-function toast(msg) {
-  const el = document.getElementById('toast');
-  el.textContent = msg;
-    el.classList.add('show');
-  if (_toastTimer) clearTimeout(_toastTimer);
-  _toastTimer = setTimeout(() => el.classList.remove('show'), 3200);
-}
+loadSitemap()
 </script>
+
 </body>
 </html>
-
