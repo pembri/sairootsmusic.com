@@ -206,8 +206,10 @@
         }
 
         // Search Engine Logic Upgrade
-        try {
+                try {
             let allSearchData = [];
+            
+            // 1. Ambil data dari sairootsDB (Article, Lyric, Discography)
             if (typeof sairootsDB !== 'undefined') {
                 const articles = sairootsDB.articles.map(a => ({
                     type: "Article", title: a.title, url: `/article/${a.id}`, excerpt: a.excerpt, category: a.category
@@ -220,42 +222,56 @@
                 }));
                 allSearchData = [...articles, ...lyrics, ...disco];
             }
+
+            // 2. Ambil data dari coverVideos (FIX LINK AGAR TIDAK 404)
             if (typeof coverVideos !== 'undefined' && coverVideos.length > 0) {
                 const formattedCovers = coverVideos.map(video => ({
-                    type: 'Cover', title: video.title, url: `/cover/${video.slug}`, excerpt: video.description, category: 'Playlist Cover'
+                    type: 'Cover', 
+                    title: video.title, 
+                    url: `/video_cover.html?video=${video.slug}`, // INI YANG SUDAH FIX COK!
+                    excerpt: video.description, 
+                    category: 'Playlist Cover'
                 }));
                 allSearchData = [...allSearchData, ...formattedCovers];
             }
 
+            // 3. Inisialisasi Fuse.js
             const fuse = new Fuse(allSearchData, { 
                 keys: ['title', 'excerpt', 'category', 'type'], 
                 threshold: 0.3 
             });
 
+            // 4. Fungsi Menampilkan Hasil Pencarian
             function showSearchResults(query) {
                 const container = document.getElementById('search-results');
                 const nav = document.getElementById('main-nav');
+                
                 if (query.length < 2) {
                     container.classList.add('hidden');
                     nav.classList.remove('hidden');
                     return;
                 }
+
                 const results = fuse.search(query);
                 nav.classList.add('hidden');
                 container.classList.remove('hidden');
                 container.innerHTML = '';
+
                 if (results.length === 0) {
                     container.innerHTML = `<div class="text-center py-10"><p class="text-gray-400 text-lg">Tidak ada hasil untuk "<span class="text-white">${query}</span>"</p></div>`;
                     return;
                 }
+
                 let html = '<div class="flex flex-col space-y-3 w-full pb-6">';
                 results.forEach(result => {
                     const item = result.item;
                     let colorClass = 'text-gray-400 border-gray-400';
+                    
                     if (item.type === 'Article') colorClass = 'text-rasta-green border-rasta-green';
                     else if (item.type === 'Discography') colorClass = 'text-rasta-yellow border-rasta-yellow';
                     else if (item.type === 'Lyric') colorClass = 'text-rasta-red border-rasta-red';
-                    else if (item.type === 'Cover') colorClass = 'text-white border-white';
+                    else if (item.type === 'Cover') colorClass = 'text-white border-white'; // Badge Putih buat Cover
+
                     html += `
                         <a href="${item.url}" class="block bg-white/5 border border-white/10 p-4 hover:bg-white/10 hover:border-white/30 transition-all text-left">
                             <div class="flex justify-between items-start mb-2">
@@ -270,7 +286,9 @@
                 html += '</div>';
                 container.innerHTML = html;
             }
+
             searchInput.addEventListener('input', (e) => showSearchResults(e.target.value.trim()));
+            
         } catch (error) {
             console.warn("Menunggu database.js...", error);
         }
