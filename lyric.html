@@ -155,6 +155,7 @@ menuBtn.addEventListener('click', toggleMenu);
 searchInput.addEventListener('click', e => e.stopPropagation());
 
 // ================= LOGIKA DATA LIRIK & PENCARIAN =================
+// ================= LOGIKA DATA LIRIK & PENCARIAN (VERSI FIX) =================
 try {
     // 1. Gabungkan data pencarian secara dinamis
     let allSearchData = [];
@@ -170,9 +171,15 @@ try {
         }));
         allSearchData = [...articles, ...lyrics, ...disco];
     }
+
+    // --- INI BAGIAN YANG PENTING: LINK VIDEO COVER DIUBAH BIAR GAK 404 ---
     if (typeof coverVideos !== 'undefined' && coverVideos.length > 0) {
         const formattedCovers = coverVideos.map(video => ({
-            type: 'Cover', title: video.title, url: `/cover/${video.slug}`, excerpt: video.description, category: 'Playlist Cover'
+            type: 'Cover', 
+            title: video.title, 
+            url: `/video_cover.html?video=${video.slug}`, // PAKAI ?video= BIAR JALAN DI GITHUB
+            excerpt: video.description, 
+            category: 'Playlist Cover'
         }));
         allSearchData = [...allSearchData, ...formattedCovers];
     }
@@ -183,7 +190,7 @@ try {
         threshold: 0.3 
     });
 
-    // FUNGSI KHUSUS LYRIC.HTML: Render lirik ke grid
+    // FUNGSI KHUSUS LYRIC.HTML: Render lirik ke grid (TETAP AMAN)
     function renderLyrics() {
         const grid = document.getElementById('lyrics-grid');
         if(!grid) return;
@@ -230,6 +237,7 @@ try {
             else if (item.type === 'Discography') colorClass = 'text-rasta-yellow border-rasta-yellow';
             else if (item.type === 'Lyric') colorClass = 'text-rasta-red border-rasta-red';
             else if (item.type === 'Cover') colorClass = 'text-white border-white';
+
             html += `
                 <a href="${item.url}" class="block bg-white/5 border border-white/10 p-4 hover:bg-white/10 hover:border-white/30 transition-all text-left">
                     <div class="flex justify-between items-start mb-2">
