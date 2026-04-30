@@ -34,7 +34,7 @@ jobs:
           const BASE_URL = 'https://sairootsmusic.com';
           const ROOT_DIR = '.';
 
-          // === DAFTAR HITAM (TIDAK ADA YANG DIUBAH) ===
+          // === DAFTAR HITAM (TIDAK ADA YANG DIUBAH - AMAN COK) ===
           const BLACKLIST_FOLDERS = ['admin_pages', 'node_modules', '.git', '.github'];
           const BLACKLIST_FILES = ['404.html'];
 
@@ -76,16 +76,12 @@ jobs:
           function parseDiscography() {
             if (!fs.existsSync(path.join(ROOT_DIR, 'database.js'))) return [];
             const dbContent = fs.readFileSync(path.join(ROOT_DIR, 'database.js'), 'utf8');
-            
             const dbStart = dbContent.indexOf('const sairootsDB = {');
             if (dbStart === -1) return [];
-            
             const dbEnd = dbContent.indexOf('};', dbStart) + 2;
             const dbString = dbContent.substring(dbStart, dbEnd);
-            
             const discographyStart = dbString.indexOf('"discography":');
             if (discographyStart === -1) return [];
-            
             const discographyBlock = dbString.substring(discographyStart);
             const titleRegex = /["']?title["']?\s*:\s*["'`]([^"'`]+)["'`]/g;
             const titles = [];
@@ -96,17 +92,14 @@ jobs:
             return titles;
           }
 
-          // === FUNGSI BARU UNTUK MENGAMBIL SLUG VIDEO COVER ===
+          // === FUNGSI AMBIL SLUG VIDEO (SUDAH DISESUAIKAN KE ?video=) ===
           function parseCovers() {
             if (!fs.existsSync(path.join(ROOT_DIR, 'database.js'))) return [];
             const dbContent = fs.readFileSync(path.join(ROOT_DIR, 'database.js'), 'utf8');
-            
             const cvStart = dbContent.indexOf('const coverVideos = [');
             if (cvStart === -1) return [];
-            
             const cvEnd = dbContent.indexOf('];', cvStart) + 2;
             const cvString = dbContent.substring(cvStart, cvEnd);
-            
             const slugRegex = /["']?slug["']?\s*:\s*["'`]([^"'`]+)["'`]/g;
             const slugs = [];
             let match;
@@ -116,23 +109,23 @@ jobs:
             return slugs;
           }
 
-          // 1. Eksekusi Scan File HTML Statis
+          // Eksekusi
           scanDir(ROOT_DIR);
           
-          // 2. Eksekusi Pencarian URL Discography
+          // Tambah Link Discography
           const tracks = parseDiscography();
           tracks.forEach(title => {
             const slug = slugify(title);
             urls.add(`${BASE_URL}/discography?track=${slug}`);
           });
 
-          // 3. Eksekusi Pencarian URL YouTube Covers
+          // TAMBAH LINK VIDEO COVER (SESUAIKAN DENGAN ?video= BIAR GAK 404)
           const covers = parseCovers();
           covers.forEach(slug => {
-            urls.add(`${BASE_URL}/cover/${slug}`);
+            urls.add(`${BASE_URL}/video_cover.html?video=${slug}`);
           });
 
-          // Generate XML String
+          // Generate XML
           let xml = '<?xml version="1.0" encoding="UTF-8"?>\n';
           xml += '<urlset xmlns="http://www.sitemaps.org/schemas/sitemap/0.9">\n';
           [...urls].sort().forEach(url => {
@@ -141,7 +134,7 @@ jobs:
           xml += '</urlset>\n';
 
           fs.writeFileSync('sitemap.xml', xml);
-          console.log('Sitemap Berhasil! Track Ditemukan: ' + tracks.length + ' | Cover Ditemukan: ' + covers.length);
+          console.log('Sitemap FIX! Track: ' + tracks.length + ' | Cover: ' + covers.length);
           EOF
 
           node generate-sitemap.js
