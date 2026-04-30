@@ -437,7 +437,7 @@
 
 
         // ================= LOGIKA DATA & PENCARIAN (UPGRADE BARU) =================
-        try {
+                  try {
             // 1. Persiapkan Data Pencarian Secara Dinamis
             let allSearchData = [];
             
@@ -456,7 +456,11 @@
 
             if (typeof coverVideos !== 'undefined' && coverVideos.length > 0) {
                 const formattedCovers = coverVideos.map(video => ({
-                    type: 'Cover', title: video.title, url: `/cover/${video.slug}`, excerpt: video.description, category: 'Playlist Cover'
+                    type: 'Cover', 
+                    title: video.title, 
+                    url: `/video_cover.html?video=${video.slug}`, // INI YANG SUDAH GUE FIX COK!
+                    excerpt: video.description, 
+                    category: 'Playlist Cover'
                 }));
                 allSearchData = [...allSearchData, ...formattedCovers];
             }
@@ -466,6 +470,7 @@
                 threshold: 0.3 
             });
 
+            // FUNGSI RENDER LIST DISCOGRAPHY (TETAP AMAN)
             window.renderDiscography = function() {
                 const list = document.getElementById('disco-list');
                 if(!list) return;
@@ -501,6 +506,7 @@
                 });
             }
 
+            // FUNGSI PENCARIAN (SAMA DENGAN HALAMAN LAIN)
             function showSearchResults(query) {
                 const container = document.getElementById('search-results');
                 const nav = document.getElementById('main-nav');
@@ -517,11 +523,7 @@
                 container.innerHTML = '';
 
                 if (results.length === 0) {
-                    container.innerHTML = `
-                        <div class="text-center py-10">
-                            <p class="text-gray-400 text-lg">Tidak ada hasil untuk "<span class="text-white">${query}</span>"</p>
-                            <p class="text-gray-600 text-sm mt-2">Coba kata kunci lain.</p>
-                        </div>`;
+                    container.innerHTML = `<div class="text-center py-10"><p class="text-gray-400 text-lg">Tidak ada hasil untuk "<span class="text-white">${query}</span>"</p></div>`;
                     return;
                 }
 
@@ -552,13 +554,9 @@
             searchInput.addEventListener('input', (e) => showSearchResults(e.target.value.trim()));
 
             window.addEventListener('load', () => {
-                // 1. Render data awal
                 renderDiscography();
-
-                // 2. Deteksi URL otomatis saat ada yang akses link hasil Share
                 const urlParams = new URLSearchParams(window.location.search);
                 const trackSlug = urlParams.get('track');
-                
                 if (trackSlug && typeof sairootsDB !== 'undefined') {
                     const index = sairootsDB.discography.findIndex(t => createSlug(t.title) === trackSlug);
                     if (index !== -1) {
