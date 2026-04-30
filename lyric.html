@@ -10,13 +10,13 @@
     <link rel="icon" type="image/png" sizes="512x512" href="/android-chrome-512x512.png">
     <link rel="manifest" href="/site.webmanifest">
     <link rel="canonical" href="https://sairootsmusic.com/lyric">
-
+    
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no">
-    <title>Lyric | SAI Roots</title>
+    <title>Lyrics | SAI Roots</title>
 
     <meta name="description" content="Kumpulan lirik lagu original dari SAI Roots - Roots Reggae & Reggae Rap Indonesia.">
-    <meta property="og:title" content="Lyric | SAI Roots">
+    <meta property="og:title" content="Lyrics | SAI Roots">
     <meta property="og:site_name" content="SAI Roots Music">
 
     <script src="https://cdn.tailwindcss.com"></script>
@@ -94,7 +94,10 @@
 
 <main class="pt-32 pb-20 container mx-auto px-6">
     <section class="mb-12 text-center md:text-left">
-        <h1 class="font-display text-5xl md:text-8xl mb-4 tracking-tight uppercase"><span class="text-rasta-red">Song</span> Lyrics</h1>
+        <h1 class="font-display text-5xl md:text-8xl mb-4 tracking-tight uppercase leading-none">
+            <span class="text-rasta-red">Song</span><br>
+            <span class="text-white">Lyrics</span>
+        </h1>
         <p class="text-gray-400 max-w-2xl text-lg font-light">Kumpulan lirik lagu original dari SAI Roots.</p>
     </section>
 
@@ -149,9 +152,11 @@ function toggleMenu() {
     }
 }
 menuBtn.addEventListener('click', toggleMenu);
+searchInput.addEventListener('click', e => e.stopPropagation());
 
 // ================= LOGIKA DATA LIRIK & PENCARIAN =================
 try {
+    // 1. Gabungkan data pencarian secara dinamis
     let allSearchData = [];
     if (typeof sairootsDB !== 'undefined') {
         const articles = sairootsDB.articles.map(a => ({
@@ -172,11 +177,13 @@ try {
         allSearchData = [...allSearchData, ...formattedCovers];
     }
 
+    // 2. Inisialisasi Fuse.js
     const fuse = new Fuse(allSearchData, { 
         keys: ['title', 'excerpt', 'category', 'type'], 
         threshold: 0.3 
     });
 
+    // FUNGSI KHUSUS LYRIC.HTML: Render lirik ke grid
     function renderLyrics() {
         const grid = document.getElementById('lyrics-grid');
         if(!grid) return;
@@ -198,6 +205,7 @@ try {
         });
     }
 
+    // FUNGSI PENCARIAN GLOBAL
     function showSearchResults(query) {
         const container = document.getElementById('search-results');
         const nav = document.getElementById('main-nav');
@@ -222,18 +230,21 @@ try {
             else if (item.type === 'Discography') colorClass = 'text-rasta-yellow border-rasta-yellow';
             else if (item.type === 'Lyric') colorClass = 'text-rasta-red border-rasta-red';
             else if (item.type === 'Cover') colorClass = 'text-white border-white';
-            html += `<a href="${item.url}" class="block bg-white/5 border border-white/10 p-4 hover:bg-white/10 hover:border-white/30 transition-all text-left">
-                        <div class="flex justify-between items-start mb-2">
-                            <span class="text-[10px] uppercase tracking-widest px-2 py-0.5 border ${colorClass}">${item.type}</span>
-                            <span class="text-xs text-gray-500">${item.category}</span>
-                        </div>
-                        <h4 class="text-xl font-display text-white mb-1 tracking-wide">${item.title}</h4>
-                        <p class="text-sm text-gray-400 line-clamp-2 font-light">${item.excerpt}</p>
-                    </a>`;
+            html += `
+                <a href="${item.url}" class="block bg-white/5 border border-white/10 p-4 hover:bg-white/10 hover:border-white/30 transition-all text-left">
+                    <div class="flex justify-between items-start mb-2">
+                        <span class="text-[10px] uppercase tracking-widest px-2 py-0.5 border ${colorClass}">${item.type}</span>
+                        <span class="text-xs text-gray-500">${item.category}</span>
+                    </div>
+                    <h4 class="text-xl font-display text-white mb-1 tracking-wide">${item.title}</h4>
+                    <p class="text-sm text-gray-400 line-clamp-2 font-light">${item.excerpt}</p>
+                </a>
+            `;
         });
         html += '</div>';
         container.innerHTML = html;
     }
+
     searchInput.addEventListener('input', (e) => showSearchResults(e.target.value.trim()));
     window.addEventListener('load', renderLyrics);
 } catch (error) {
