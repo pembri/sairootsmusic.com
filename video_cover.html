@@ -171,18 +171,25 @@ try {
         }));
         allSearchData = [...articles, ...lyrics, ...disco];
     }
+
+    // --- INI YANG WAJIB LO TAMBAHIN BIAR VIDEO COVER MUNCUL DI SEARCH ---
     if (typeof coverVideos !== 'undefined' && coverVideos.length > 0) {
         const formattedCovers = coverVideos.map(video => ({
-            type: 'Cover', title: video.title, url: `/cover/${video.slug}`, excerpt: video.description, category: 'Playlist Cover'
+            type: 'Cover', 
+            title: video.title, 
+            url: `/video_cover.html?video=${video.slug}`, // Link ini biar gak 404
+            excerpt: video.description, 
+            category: 'Playlist Cover'
         }));
         allSearchData = [...allSearchData, ...formattedCovers];
     }
+    // ------------------------------------------------------------------
 
-    // 2. Inisialisasi Fuse.js
     const fuse = new Fuse(allSearchData, { 
         keys: ['title', 'excerpt', 'category', 'type'], 
         threshold: 0.3 
     });
+
 
     function showSearchResults(query) {
         const container = document.getElementById('search-results');
@@ -386,7 +393,8 @@ function playNextVideo() {
 
 // Fungsi Navigasi SPA
 function navigateToVideo(slug) {
-    history.pushState({ view: 'player', slug: slug }, '', '/cover/' + slug);
+    const newUrl = window.location.protocol + "//" + window.location.host + '/video_cover.html?video=' + slug;
+    history.pushState({ view: 'player', slug: slug }, '', newUrl);
     renderPlayerView(slug);
 }
 
@@ -397,17 +405,13 @@ function navigateToList() {
 
 // Router untuk mengecek URL saat halaman dimuat atau tombol back ditekan
 function checkRoute() {
-    const path = window.location.pathname;
-    
-    // Mengecek apakah path mengandung '/cover/'
-    if (path.includes('/cover/')) {
-        const slug = path.split('/cover/')[1].replace(/\/$/, ""); // Ambil slug bersih
-        if (slug) {
-            renderPlayerView(slug);
-            return;
-        }
+    const urlParams = new URLSearchParams(window.location.search);
+    const videoSlug = urlParams.get('video'); // Nangkep tulisan setelah ?video=
+
+    if (videoSlug) {
+        renderPlayerView(videoSlug);
+        return;
     }
-    // Default tampilkan list
     renderListView();
 }
 
