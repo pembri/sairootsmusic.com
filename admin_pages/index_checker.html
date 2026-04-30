@@ -1,0 +1,122 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<title>Index Checker</title>
+
+<style>
+body {
+  font-family: Arial;
+  background: #0f172a;
+  color: white;
+  padding: 20px;
+}
+
+h2 { margin-bottom: 10px; }
+
+button {
+  padding: 10px 15px;
+  border: none;
+  background: #22c55e;
+  color: black;
+  cursor: pointer;
+  border-radius: 6px;
+  margin-bottom: 15px;
+}
+
+.url-box {
+  padding: 12px;
+  margin: 8px 0;
+  border-radius: 8px;
+  background: #1e293b;
+}
+
+.indexed { border-left: 6px solid #22c55e; }
+.not-indexed { border-left: 6px solid #ef4444; }
+.checking { border-left: 6px solid #facc15; }
+
+.actions {
+  margin-top: 6px;
+}
+
+a {
+  color: #38bdf8;
+  margin-right: 10px;
+  font-size: 13px;
+  text-decoration: none;
+}
+</style>
+
+</head>
+<body>
+
+<h2>Index Checker Pro+</h2>
+
+<button onclick="loadSitemap()">Load & Check</button>
+
+<div id="results"></div>
+
+<script>
+const DOMAIN = "https://sairootsmusic.com";
+const SITEMAP_URL = DOMAIN + "/sitemap.xml";
+
+async function loadSitemap() {
+  const res = await fetch(SITEMAP_URL);
+  const text = await res.text();
+
+  const parser = new DOMParser();
+  const xml = parser.parseFromString(text, "text/xml");
+
+  const urls = [...xml.getElementsByTagName("loc")].map(el => el.textContent);
+
+  const container = document.getElementById("results");
+  container.innerHTML = "";
+
+  for (let url of urls) {
+    let div = document.createElement("div");
+    div.className = "url-box checking";
+    div.innerHTML = `
+      <strong>${url}</strong>
+      <small>Checking...</small>
+      <div class="actions"></div>
+    `;
+    container.appendChild(div);
+
+    checkIndex(url, div);
+  }
+}
+
+async function checkIndex(url, element) {
+  let searchUrl = "https://www.google.com/search?q=site:" + encodeURIComponent(url);
+  let inspectUrl = "https://search.google.com/search-console/inspect?resource_id=" + DOMAIN + "&url=" + encodeURIComponent(url);
+
+  try {
+    let res = await fetch("https://api.allorigins.win/get?url=" + encodeURIComponent(searchUrl));
+    let data = await res.json();
+
+    let isIndexed = data.contents.includes(url);
+
+    if (isIndexed) {
+      element.className = "url-box indexed";
+      element.querySelector("small").innerText = "Indexed";
+    } else {
+      element.className = "url-box not-indexed";
+      element.querySelector("small").innerText = "Not Indexed";
+    }
+
+  } catch (e) {
+    element.className = "url-box not-indexed";
+    element.querySelector("small").innerText = "Check failed";
+  }
+
+  // tambah tombol aksi
+  element.querySelector(".actions").innerHTML = `
+    <a href="${searchUrl}" target="_blank">🔍 Lihat di Google</a>
+    <a href="${inspectUrl}" target="_blank">⚙️ Inspect</a>
+    <a href="${url}" target="_blank">🌐 Buka Halaman</a>
+  `;
+}
+</script>
+
+</body>
+</html>
