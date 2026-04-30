@@ -1,184 +1,232 @@
 <!DOCTYPE html>
 <html lang="id">
 <head>
-<meta charset="UTF-8">
-<meta name="viewport" content="width=device-width, initial-scale=1.0">
-<title>Index Checker</title>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Index Checker - SEO Tools</title>
+    <style>
+        :root {
+            --bg-color: #0f172a;
+            --card-bg: #1e293b;
+            --text-primary: #f8fafc;
+            --text-secondary: #94a3b8;
+            --accent-blue: #38bdf8;
+            --success: #22c55e;
+            --danger: #ef4444;
+            --warning: #f59e0b;
+            --border: #334155;
+        }
 
-<style>
-body{margin:0;font-family:Arial;background:#0b1220;color:#fff}
-.container{padding:16px}
-.grid{display:grid;grid-template-columns:repeat(4,1fr);gap:10px}
-.stat{background:#111827;padding:12px;border-radius:12px;text-align:center}
-.stat b{font-size:20px;display:block}
-.search input{width:100%;padding:12px;border-radius:10px;border:none;background:#111827;color:white;margin:10px 0}
-.filters{display:flex;gap:10px}
-.filters button{flex:1;padding:10px;border-radius:10px;border:none;background:#1e293b;color:white}
-.filters .active{background:#2563eb}
-.main-btn{width:100%;padding:14px;border:none;border-radius:12px;background:#22c55e;margin:10px 0}
-.card{background:#111827;padding:12px;border-radius:12px;margin-top:10px}
-.status{float:right;padding:4px 10px;border-radius:999px;font-size:12px}
-.pending{background:#475569}
-.ok{background:#22c55e}
-.no{background:#ef4444}
-.actions{margin-top:10px;display:flex;flex-wrap:wrap;gap:8px}
-.actions button{flex:1;padding:8px;border:none;border-radius:8px;background:#1e293b;color:white}
-</style>
+        * { margin: 0; padding: 0; box-sizing: border-box; font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif; }
+        body { background-color: var(--bg-color); color: var(--text-primary); padding: 20px; line-height: 1.6; }
+        .container { max-width: 1000px; margin: 0 auto; }
+
+        header { margin-bottom: 30px; text-align: center; }
+        header h1 { font-size: 2rem; color: var(--accent-blue); margin-bottom: 5px; }
+        header p { color: var(--text-secondary); }
+
+        /* Stats Section */
+        .stats-grid { display: grid; grid-template-columns: repeat(auto-fit, minmax(200px, 1fr)); gap: 15px; margin-bottom: 25px; }
+        .stat-card { background: var(--card-bg); padding: 20px; border-radius: 12px; border: 1px solid var(--border); text-align: center; }
+        .stat-card h3 { font-size: 0.9rem; color: var(--text-secondary); text-transform: uppercase; margin-bottom: 10px; }
+        .stat-card p { font-size: 1.8rem; font-weight: bold; }
+        #total-urls { color: var(--accent-blue); }
+        #indexed-count { color: var(--success); }
+        #not-indexed-count { color: var(--danger); }
+
+        /* Controls */
+        .controls { display: flex; gap: 10px; margin-bottom: 20px; justify-content: center; }
+        button { 
+            padding: 10px 20px; border: none; border-radius: 8px; cursor: pointer; font-weight: bold; 
+            transition: all 0.3s ease; font-size: 0.9rem;
+        }
+        .btn-load { background: var(--border); color: white; }
+        .btn-start { background: var(--accent-blue); color: var(--bg-color); }
+        button:disabled { opacity: 0.5; cursor: not-allowed; }
+        button:hover:not(:disabled) { transform: translateY(-2px); filter: brightness(1.1); }
+
+        /* Table Section */
+        .table-container { background: var(--card-bg); border-radius: 12px; border: 1px solid var(--border); overflow: hidden; }
+        table { width: 100%; border-collapse: collapse; text-align: left; }
+        th { background: rgba(0,0,0,0.2); padding: 15px; color: var(--text-secondary); font-size: 0.85rem; text-transform: uppercase; }
+        td { padding: 15px; border-top: 1px solid var(--border); font-size: 0.9rem; vertical-align: middle; }
+        .url-text { color: var(--text-secondary); word-break: break-all; }
+        
+        .badge { padding: 4px 10px; border-radius: 20px; font-size: 0.75rem; font-weight: bold; display: inline-block; }
+        .badge-pending { background: #334155; color: #cbd5e1; }
+        .badge-checking { background: var(--warning); color: #451a03; animation: pulse 1.5s infinite; }
+        .badge-indexed { background: var(--success); color: #052e16; }
+        .badge-failed { background: var(--danger); color: #450a0a; }
+
+        @keyframes pulse { 0% { opacity: 1; } 50% { opacity: 0.6; } 100% { opacity: 1; } }
+
+        .log-container { margin-top: 15px; font-size: 0.8rem; color: var(--text-secondary); text-align: center; }
+    </style>
 </head>
-
 <body>
+
 <div class="container">
+    <header>
+        <h1>Index Checker</h1>
+        <p>Monitoring Google Indexing Status via Cloudflare Workers</p>
+    </header>
 
-<h2>🔍 Index Checker</h2>
+    <div class="stats-grid">
+        <div class="stat-card">
+            <h3>Total URL</h3>
+            <p id="total-urls">0</p>
+        </div>
+        <div class="stat-card">
+            <h3>Terindeks</h3>
+            <p id="indexed-count">0</p>
+        </div>
+        <div class="stat-card">
+            <h3>Belum Terindeks</h3>
+            <p id="not-indexed-count">0</p>
+        </div>
+    </div>
 
-<div class="grid">
-  <div class="stat"><b id="total">0</b>TOTAL</div>
-  <div class="stat"><b id="indexed">0</b>INDEXED</div>
-  <div class="stat"><b id="not">0</b>NOT INDEXED</div>
-  <div class="stat"><b id="pending">0</b>PENDING</div>
-</div>
+    <div class="controls">
+        <button id="btn-load-sitemap" class="btn-load">Muat Sitemap.xml</button>
+        <button id="btn-start-scan" class="btn-start" disabled>Mulai Scanning</button>
+    </div>
 
-<div class="search">
-  <input type="text" id="search" placeholder="Cari URL...">
-</div>
+    <div class="table-container">
+        <table>
+            <thead>
+                <tr>
+                    <th style="width: 70%;">URL Halaman</th>
+                    <th style="width: 30%; text-align: center;">Status Index</th>
+                </tr>
+            </thead>
+            <tbody id="url-list">
+                </tbody>
+        </table>
+    </div>
 
-<div class="filters">
-  <button onclick="setFilter('all')" class="active">Semua</button>
-  <button onclick="setFilter('ok')">Indexed</button>
-  <button onclick="setFilter('no')">Not Indexed</button>
-</div>
-
-<button class="main-btn" onclick="checkAll()" id="btn">Cek Semua</button>
-
-<div id="list"></div>
-
+    <div id="status-log" class="log-container">Silakan klik "Muat Sitemap" untuk memulai.</div>
 </div>
 
 <script>
-const worker = "https://worker-crimson-smoke-71e0.pembriahmad526.workers.dev"
+    // KONFIGURASI
+    const WORKER_URL = "https://worker-crimson-smoke-71e0.pembriahmad526.workers.dev/check?url=";
+    const SITEMAP_PATH = "./sitemap.xml";
+    const SCAN_DELAY = 5000; // Jeda 5 detik antar URL agar aman dari block
 
-let data = []
-let filter = "all"
+    let urlQueue = [];
+    let isScanning = false;
+    let counts = { total: 0, indexed: 0, failed: 0 };
 
-function stats(){
-  document.getElementById("total").innerText = data.length
-  document.getElementById("indexed").innerText = data.filter(x=>x.status==="ok").length
-  document.getElementById("not").innerText = data.filter(x=>x.status==="no").length
-  document.getElementById("pending").innerText = data.filter(x=>x.status==="pending").length
-}
+    const btnLoad = document.getElementById('btn-load-sitemap');
+    const btnStart = document.getElementById('btn-start-scan');
+    const urlListBody = document.getElementById('url-list');
+    const logContainer = document.getElementById('status-log');
 
-function render(){
-  const list = document.getElementById("list")
-  const key = document.getElementById("search").value.toLowerCase()
-  list.innerHTML=""
+    // 1. Fungsi Ambil Sitemap
+    btnLoad.addEventListener('click', async () => {
+        try {
+            logContainer.innerText = "Membaca sitemap...";
+            const response = await fetch(SITEMAP_PATH);
+            if (!response.ok) throw new Error("File sitemap.xml tidak ditemukan!");
+            
+            const xmlText = await response.text();
+            const parser = new DOMParser();
+            const xmlDoc = parser.parseFromString(xmlText, "text/xml");
+            const locations = xmlDoc.getElementsByTagName("loc");
 
-  data
-  .filter(x=>{
-    if(filter==="ok") return x.status==="ok"
-    if(filter==="no") return x.status==="no"
-    return true
-  })
-  .filter(x=>x.url.toLowerCase().includes(key))
-  .forEach(item=>{
-    const div = document.createElement("div")
-    div.className="card"
+            urlQueue = [];
+            urlListBody.innerHTML = "";
+            counts = { total: 0, indexed: 0, failed: 0 };
 
-    let label = "Pending"
-    if(item.status==="ok") label="Indexed"
-    if(item.status==="no") label="Not Indexed"
+            for (let i = 0; i < locations.length; i++) {
+                const url = locations[i].textContent;
+                urlQueue.push(url);
+                renderRow(url, i);
+            }
 
-    div.innerHTML = `
-      <div>
-        ${new URL(item.url).pathname}
-        <span class="status ${item.status}">${label}</span>
-      </div>
-      <div style="font-size:12px;color:#94a3b8">${item.url}</div>
+            counts.total = urlQueue.length;
+            updateStats();
+            
+            btnStart.disabled = false;
+            logContainer.innerText = `Berhasil memuat ${counts.total} URL. Siap scan.`;
+        } catch (err) {
+            logContainer.innerText = "Error: " + err.message;
+            alert(err.message);
+        }
+    });
 
-      <div class="actions">
-        <button onclick="google('${item.url}')">Google</button>
-        <button onclick="inspect('${item.url}')">Inspect</button>
-        <button onclick="window.open('${item.url}')">Open</button>
-        <button onclick="checkOne('${item.url}')">Recheck</button>
-      </div>
-    `
-
-    list.appendChild(div)
-  })
-
-  stats()
-}
-
-function setFilter(f){
-  filter=f
-  document.querySelectorAll(".filters button").forEach(b=>b.classList.remove("active"))
-  event.target.classList.add("active")
-  render()
-}
-
-function google(url){
-  window.open("https://www.google.com/search?q=site:"+url)
-}
-
-function inspect(url){
-  window.open("https://search.google.com/search-console/inspect?url="+url)
-}
-
-async function load(){
-  const res = await fetch("/sitemap.xml")
-  const txt = await res.text()
-  const urls = [...txt.matchAll(/<loc>(.*?)<\/loc>/g)].map(x=>x[1])
-
-  data = urls.map(u=>({url:u,status:"pending"}))
-  render()
-}
-
-async function checkOne(url){
-  const item = data.find(x=>x.url===url)
-  item.status="pending"
-  render()
-
-  try{
-    const r = await fetch(worker+"?url="+encodeURIComponent(url))
-    const j = await r.json()
-
-    if(j.blocked){
-      item.status="pending"
-    }else{
-      item.status = j.indexed ? "ok" : "no"
+    // 2. Fungsi Render Baris Tabel
+    function renderRow(url, index) {
+        const row = document.createElement('tr');
+        row.innerHTML = `
+            <td><span class="url-text">${url}</span></td>
+            <td style="text-align: center;">
+                <span id="status-${index}" class="badge badge-pending">Pending</span>
+            </td>
+        `;
+        urlListBody.appendChild(row);
     }
 
-  }catch{
-    item.status="no"
-  }
+    // 3. Fungsi Jalankan Scan (Sequential Queue)
+    btnStart.addEventListener('click', async () => {
+        if (isScanning) return;
+        isScanning = true;
+        btnStart.disabled = true;
+        btnLoad.disabled = true;
 
-  render()
-}
+        for (let i = 0; i < urlQueue.length; i++) {
+            const currentUrl = urlQueue[i];
+            const statusBadge = document.getElementById(`status-${i}`);
+            
+            statusBadge.innerText = "Checking...";
+            statusBadge.className = "badge badge-checking";
+            logContainer.innerText = `Memproses (${i + 1}/${counts.total}): ${currentUrl}`;
 
-// 🔥 FIX UTAMA: checkAll nggak macet + pasti ke-trigger
-async function checkAll(){
-  const btn = document.getElementById("btn")
-  btn.innerText = "Loading..."
-  btn.disabled = true
+            try {
+                const result = await checkIndex(currentUrl);
+                
+                if (result.indexed) {
+                    statusBadge.innerText = "Indexed";
+                    statusBadge.className = "badge badge-indexed";
+                    counts.indexed++;
+                } else {
+                    statusBadge.innerText = "Not Indexed";
+                    statusBadge.className = "badge badge-failed";
+                    counts.failed++;
+                }
+            } catch (error) {
+                statusBadge.innerText = "Error";
+                statusBadge.className = "badge badge-failed";
+                counts.failed++;
+            }
 
-  for(let i=0;i<data.length;i++){
-    await checkOne(data[i].url)
-    await new Promise(r=>setTimeout(r,1000))
-  }
+            updateStats();
+            
+            // Beri jeda kecuali URL terakhir
+            if (i < urlQueue.length - 1) {
+                await new Promise(resolve => setTimeout(resolve, SCAN_DELAY));
+            }
+        }
 
-  btn.innerText = "Cek Semua"
-  btn.disabled = false
-}
+        isScanning = false;
+        btnLoad.disabled = false;
+        logContainer.innerText = "Scanning Selesai!";
+    });
 
-document.getElementById("search").addEventListener("input",render)
+    // 4. Hit ke Cloudflare Worker
+    async function checkIndex(url) {
+        const target = WORKER_URL + encodeURIComponent(url);
+        const response = await fetch(target);
+        if (!response.ok) throw new Error("Worker Error");
+        return await response.json();
+    }
 
-// 🔥 WAJIB: bikin fungsi global biar onclick jalan
-window.checkAll = checkAll
-window.checkOne = checkOne
-window.setFilter = setFilter
-window.google = google
-window.inspect = inspect
-
-load()
+    // 5. Update UI Statistik
+    function updateStats() {
+        document.getElementById('total-urls').innerText = counts.total;
+        document.getElementById('indexed-count').innerText = counts.indexed;
+        document.getElementById('not-indexed-count').innerText = counts.failed;
+    }
 </script>
 
 </body>
