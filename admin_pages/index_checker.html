@@ -3,60 +3,33 @@
 <head>
 <meta charset="UTF-8">
 <meta name="viewport" content="width=device-width, initial-scale=1.0">
-<title>SEO Index Checker</title>
+<title>Index Checker</title>
 
 <style>
 body{margin:0;font-family:Arial;background:#0b1220;color:#fff}
 .container{padding:16px}
-.header{font-size:20px;font-weight:bold;margin-bottom:10px}
-.sub{font-size:12px;color:#94a3b8;margin-bottom:15px}
-
 .grid{display:grid;grid-template-columns:repeat(4,1fr);gap:10px}
 .stat{background:#111827;padding:12px;border-radius:12px;text-align:center}
 .stat b{font-size:20px;display:block}
-
-.search{margin:15px 0}
-.search input{
-width:100%;padding:12px;border-radius:10px;border:none;
-background:#111827;color:white
-}
-
-.filters{display:flex;gap:10px;margin-bottom:10px}
-.filters button{
-flex:1;padding:10px;border-radius:10px;border:none;
-background:#1e293b;color:white
-}
-.filters button.active{background:#2563eb}
-
-.main-btn{
-width:100%;padding:14px;border-radius:12px;border:none;
-background:#22c55e;color:white;font-size:16px;margin:10px 0
-}
-
-.card{
-background:#111827;padding:12px;border-radius:12px;margin-top:10px
-}
-
-.status{
-float:right;padding:4px 10px;border-radius:999px;font-size:12px
-}
+.search input{width:100%;padding:12px;border-radius:10px;border:none;background:#111827;color:white;margin:10px 0}
+.filters{display:flex;gap:10px}
+.filters button{flex:1;padding:10px;border-radius:10px;border:none;background:#1e293b;color:white}
+.filters .active{background:#2563eb}
+.main-btn{width:100%;padding:14px;border:none;border-radius:12px;background:#22c55e;margin:10px 0}
+.card{background:#111827;padding:12px;border-radius:12px;margin-top:10px}
+.status{float:right;padding:4px 10px;border-radius:999px;font-size:12px}
 .pending{background:#475569}
 .ok{background:#22c55e}
 .no{background:#ef4444}
-
 .actions{margin-top:10px;display:flex;flex-wrap:wrap;gap:8px}
-.actions button{
-flex:1;padding:8px;border-radius:8px;border:none;
-background:#1e293b;color:white;font-size:12px
-}
+.actions button{flex:1;padding:8px;border:none;border-radius:8px;background:#1e293b;color:white}
 </style>
 </head>
 
 <body>
 <div class="container">
 
-<div class="header">🔍 SEO Index Checker</div>
-<div class="sub">/sitemap.xml</div>
+<h2>🔍 Index Checker</h2>
 
 <div class="grid">
   <div class="stat"><b id="total">0</b>TOTAL</div>
@@ -75,7 +48,7 @@ background:#1e293b;color:white;font-size:12px
   <button onclick="setFilter('no')">Not Indexed</button>
 </div>
 
-<button class="main-btn" onclick="checkAll()">▶ Cek Semua URL</button>
+<button class="main-btn" onclick="checkAll()">Cek Semua</button>
 
 <div id="list"></div>
 
@@ -86,60 +59,59 @@ const worker = "https://worker-crimson-smoke-71e0.pembriahmad526.workers.dev"
 let data = []
 let filter = "all"
 
-function updateStats(){
-  document.getElementById("total").innerText = data.length
-  document.getElementById("indexed").innerText = data.filter(x=>x.status==="ok").length
-  document.getElementById("not").innerText = data.filter(x=>x.status==="no").length
-  document.getElementById("pending").innerText = data.filter(x=>x.status==="pending").length
+function stats(){
+  total.innerText = data.length
+  indexed.innerText = data.filter(x=>x.status==="ok").length
+  not.innerText = data.filter(x=>x.status==="no").length
+  pending.innerText = data.filter(x=>x.status==="pending").length
 }
 
 function render(){
   const list = document.getElementById("list")
-  const keyword = document.getElementById("search").value.toLowerCase()
-  list.innerHTML = ""
+  const key = search.value.toLowerCase()
+  list.innerHTML=""
 
-  data
-  .filter(x=>{
+  data.filter(x=>{
     if(filter==="ok") return x.status==="ok"
     if(filter==="no") return x.status==="no"
     return true
-  })
-  .filter(x=>x.url.toLowerCase().includes(keyword))
+  }).filter(x=>x.url.toLowerCase().includes(key))
   .forEach(item=>{
     const div = document.createElement("div")
     div.className="card"
 
+    let label = "Pending"
+    if(item.status==="ok") label="Indexed"
+    if(item.status==="no") label="Not Indexed"
+
     div.innerHTML = `
       <div>
-        <span>${new URL(item.url).pathname || "/"}</span>
-        <span class="status ${item.status}">
-          ${item.status==="pending"?"Pending":item.status==="ok"?"Indexed":"Not Indexed"}
-        </span>
+        ${new URL(item.url).pathname}
+        <span class="status ${item.status}">${label}</span>
       </div>
       <div style="font-size:12px;color:#94a3b8">${item.url}</div>
 
       <div class="actions">
-        <button onclick="openGoogle('${item.url}')">🔍 Google</button>
-        <button onclick="inspect('${item.url}')">⚙ Inspect</button>
-        <button onclick="window.open('${item.url}')">🌐 Buka</button>
-        <button onclick="checkOne('${item.url}')">🔄 Cek Ulang</button>
+        <button onclick="google('${item.url}')">Google</button>
+        <button onclick="inspect('${item.url}')">Inspect</button>
+        <button onclick="window.open('${item.url}')">Open</button>
+        <button onclick="checkOne('${item.url}')">Recheck</button>
       </div>
     `
-
     list.appendChild(div)
   })
 
-  updateStats()
+  stats()
 }
 
 function setFilter(f){
-  filter = f
+  filter=f
   document.querySelectorAll(".filters button").forEach(b=>b.classList.remove("active"))
   event.target.classList.add("active")
   render()
 }
 
-function openGoogle(url){
+function google(url){
   window.open("https://www.google.com/search?q=site:"+url)
 }
 
@@ -147,10 +119,10 @@ function inspect(url){
   window.open("https://search.google.com/search-console/inspect?url="+url)
 }
 
-async function loadSitemap(){
+async function load(){
   const res = await fetch("/sitemap.xml")
-  const text = await res.text()
-  const urls = [...text.matchAll(/<loc>(.*?)<\/loc>/g)].map(x=>x[1])
+  const txt = await res.text()
+  const urls = [...txt.matchAll(/<loc>(.*?)<\/loc>/g)].map(x=>x[1])
 
   data = urls.map(u=>({url:u,status:"pending"}))
   render()
@@ -158,15 +130,19 @@ async function loadSitemap(){
 
 async function checkOne(url){
   const item = data.find(x=>x.url===url)
-  if(!item) return
-
   item.status="pending"
   render()
 
   try{
-    const res = await fetch(worker+"?url="+encodeURIComponent(url))
-    const j = await res.json()
-    item.status = j.indexed ? "ok" : "no"
+    const r = await fetch(worker+"?url="+encodeURIComponent(url))
+    const j = await r.json()
+
+    if(j.blocked){
+      item.status="pending"
+    }else{
+      item.status = j.indexed ? "ok" : "no"
+    }
+
   }catch{
     item.status="no"
   }
@@ -177,13 +153,13 @@ async function checkOne(url){
 async function checkAll(){
   for(const item of data){
     await checkOne(item.url)
-    await new Promise(r=>setTimeout(r,1200))
+    await new Promise(r=>setTimeout(r,1500))
   }
 }
 
-document.getElementById("search").addEventListener("input",render)
+search.oninput=render
 
-loadSitemap()
+load()
 </script>
 
 </body>
