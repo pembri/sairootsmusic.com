@@ -97,6 +97,7 @@
             <a href="/" class="text-3xl font-display hover:text-rasta-green transition duration-300">Home</a>
             <a href="/discography" class="text-3xl font-display hover:text-rasta-yellow transition duration-300">Discography</a>
             <a href="/lyric" class="text-3xl font-display hover:text-rasta-red transition duration-300">Lyric</a>
+            <a href="/video_cover.html" class="text-3xl font-display hover:text-rasta-yellow transition duration-300">Covers</a>
             <a href="/about" class="hover:text-rasta-green transition duration-300 text-base font-sans mt-4">About</a>
             <a href="/privacy" class="hover:text-rasta-yellow transition duration-300 text-base font-sans">Privacy Policy</a>
             <a href="/contact" class="hover:text-rasta-red transition duration-300 text-base font-sans">Contact Us</a>
@@ -435,9 +436,32 @@
         });
 
 
-        // ================= LOGIKA DATA & PENCARIAN =================
+        // ================= LOGIKA DATA & PENCARIAN (UPGRADE BARU) =================
         try {
-            const fuse = new Fuse(searchData, { 
+            // 1. Persiapkan Data Pencarian Secara Dinamis
+            let allSearchData = [];
+            
+            if (typeof sairootsDB !== 'undefined') {
+                const articles = sairootsDB.articles.map(a => ({
+                    type: "Article", title: a.title, url: `/article/${a.id}`, excerpt: a.excerpt, category: a.category
+                }));
+                const lyrics = sairootsDB.lyrics.map(l => ({
+                    type: "Lyric", title: `${l.title} (Lyrics)`, url: `/lyric/${l.id}`, excerpt: l.excerpt, category: l.category
+                }));
+                const disco = sairootsDB.discography.map(d => ({
+                    type: "Discography", title: d.title, url: `/discography?track=${d.id}`, excerpt: d.excerpt, category: d.category
+                }));
+                allSearchData = [...articles, ...lyrics, ...disco];
+            }
+
+            if (typeof coverVideos !== 'undefined' && coverVideos.length > 0) {
+                const formattedCovers = coverVideos.map(video => ({
+                    type: 'Cover', title: video.title, url: `/cover/${video.slug}`, excerpt: video.description, category: 'Playlist Cover'
+                }));
+                allSearchData = [...allSearchData, ...formattedCovers];
+            }
+
+            const fuse = new Fuse(allSearchData, { 
                 keys: ['title', 'excerpt', 'category', 'type'], 
                 threshold: 0.3 
             });
@@ -446,6 +470,8 @@
                 const list = document.getElementById('disco-list');
                 if(!list) return;
                 list.innerHTML = '';
+
+                if (typeof sairootsDB === 'undefined' || !sairootsDB.discography) return;
 
                 sairootsDB.discography.forEach((track, index) => {
                     const html = `
@@ -506,6 +532,7 @@
                     if (item.type === 'Article') colorClass = 'text-rasta-green border-rasta-green';
                     else if (item.type === 'Discography') colorClass = 'text-rasta-yellow border-rasta-yellow';
                     else if (item.type === 'Lyric') colorClass = 'text-rasta-red border-rasta-red';
+                    else if (item.type === 'Cover') colorClass = 'text-white border-white';
 
                     html += `
                         <a href="${item.url}" class="block bg-white/5 border border-white/10 p-4 hover:bg-white/10 hover:border-white/30 transition-all text-left">
@@ -532,7 +559,7 @@
                 const urlParams = new URLSearchParams(window.location.search);
                 const trackSlug = urlParams.get('track');
                 
-                if (trackSlug) {
+                if (trackSlug && typeof sairootsDB !== 'undefined') {
                     const index = sairootsDB.discography.findIndex(t => createSlug(t.title) === trackSlug);
                     if (index !== -1) {
                         setTimeout(() => playTrack(index), 600);
