@@ -166,7 +166,7 @@
         searchInput.addEventListener('click', e => e.stopPropagation());
 
         // ================= LOGIKA DATA, PAGINASI, & PENCARIAN =================
-        try {
+                 try {
             // 1. Persiapkan Data Pencarian Secara Dinamis
             let allSearchData = [];
             
@@ -185,7 +185,11 @@
 
             if (typeof coverVideos !== 'undefined' && coverVideos.length > 0) {
                 const formattedCovers = coverVideos.map(video => ({
-                    type: 'Cover', title: video.title, url: `/cover/${video.slug}`, excerpt: video.description, category: 'Playlist Cover'
+                    type: 'Cover', 
+                    title: video.title, 
+                    url: `/video_cover.html?video=${video.slug}`, // INI YANG DIGANTI COK!
+                    excerpt: video.description, 
+                    category: 'Playlist Cover'
                 }));
                 allSearchData = [...allSearchData, ...formattedCovers];
             }
@@ -196,25 +200,22 @@
             });
 
             // Setingan Paginasi
-            const articlesPerPage = 5; // Batas maksimal artikel per halaman
+            const articlesPerPage = 5; 
             let currentPage = 1;
 
-            // Fungsi Mender Artikel berdasarkan Halaman
+            // Fungsi Mender Artikel berdasarkan Halaman (TETAP AMAN)
             function renderArticles() {
                 const grid = document.getElementById('articles-grid');
                 if(!grid || typeof sairootsDB === 'undefined' || !sairootsDB.articles) return;
                 grid.innerHTML = '';
 
-                // Hitung total data dan total halaman
                 const totalArticles = sairootsDB.articles.length;
                 const totalPages = Math.ceil(totalArticles / articlesPerPage);
 
-                // Potong array artikel sesuai halaman saat ini (0-5, 5-10, dst)
                 const startIndex = (currentPage - 1) * articlesPerPage;
                 const endIndex = startIndex + articlesPerPage;
                 const articlesToShow = sairootsDB.articles.slice(startIndex, endIndex);
 
-                // Render artikel yang sudah dipotong
                 articlesToShow.forEach(article => {
                     const html = `
                         <article class="group bg-neutral-950 rounded-none overflow-hidden border border-white/5 hover:border-rasta-${article.color}/30 transition-all">
@@ -233,27 +234,20 @@
                     grid.innerHTML += html;
                 });
 
-                // Panggil fungsi render tombol paginasi
                 renderPagination(totalPages);
             }
 
-            // Fungsi Render Tombol Paginasi
+            // Fungsi Render Tombol Paginasi (TETAP AMAN)
             function renderPagination(totalPages) {
                 const container = document.getElementById('pagination-container');
                 if(!container) return;
                 container.innerHTML = '';
-
-                // Kalau halamannya cuma 1 (atau artikelnya kurang dari 5), gak usah nampilin tombol
                 if (totalPages <= 1) return;
 
                 let html = '<div class="flex items-center space-x-2">';
-                
-                // Tombol Prev (Kiri)
                 if (currentPage > 1) {
                     html += `<button onclick="changePage(${currentPage - 1})" class="px-4 py-2 bg-white/5 border border-white/10 text-white hover:bg-rasta-yellow hover:text-black transition uppercase text-xs tracking-widest font-bold">Prev</button>`;
                 }
-
-                // Angka Halaman (1, 2, 3...)
                 for (let i = 1; i <= totalPages; i++) {
                     if (i === currentPage) {
                         html += `<button class="px-4 py-2 bg-rasta-green text-white border border-rasta-green transition uppercase text-xs tracking-widest font-bold">${i}</button>`;
@@ -261,22 +255,16 @@
                         html += `<button onclick="changePage(${i})" class="px-4 py-2 bg-white/5 border border-white/10 text-gray-400 hover:bg-white/10 hover:text-white transition uppercase text-xs tracking-widest font-bold">${i}</button>`;
                     }
                 }
-
-                // Tombol Next (Kanan)
                 if (currentPage < totalPages) {
                     html += `<button onclick="changePage(${currentPage + 1})" class="px-4 py-2 bg-white/5 border border-white/10 text-white hover:bg-rasta-yellow hover:text-black transition uppercase text-xs tracking-widest font-bold">Next</button>`;
                 }
-
                 html += '</div>';
                 container.innerHTML = html;
             }
 
-            // Fungsi Saat Tombol Halaman Diklik
             window.changePage = function(page) {
                 currentPage = page;
-                renderArticles(); // Update grid artikel
-                
-                // Auto scroll dengan mulus ke bagian atas tulisan "Latest Update" biar user gak usah scroll manual
+                renderArticles();
                 const section = document.getElementById('articles-section');
                 if (section) {
                     const offset = section.getBoundingClientRect().top + window.scrollY - 100;
@@ -284,7 +272,7 @@
                 }
             }
 
-            // FUNGSI PENCARIAN GLOBAL
+            // FUNGSI PENCARIAN GLOBAL (DENGAN URL FIX)
             function showSearchResults(query) {
                 const container = document.getElementById('search-results');
                 const nav = document.getElementById('main-nav');
@@ -301,11 +289,7 @@
                 container.innerHTML = '';
 
                 if (results.length === 0) {
-                    container.innerHTML = `
-                        <div class="text-center py-10">
-                            <p class="text-gray-400 text-lg">Tidak ada hasil untuk "<span class="text-white">${query}</span>"</p>
-                            <p class="text-gray-600 text-sm mt-2">Coba kata kunci lain.</p>
-                        </div>`;
+                    container.innerHTML = `<div class="text-center py-10"><p class="text-gray-400 text-lg">Tidak ada hasil untuk "<span class="text-white">${query}</span>"</p></div>`;
                     return;
                 }
 
@@ -335,7 +319,6 @@
 
             searchInput.addEventListener('input', (e) => showSearchResults(e.target.value.trim()));
 
-            // Load artikel saat halaman pertama kali dibuka
             window.addEventListener('load', () => {
                 renderArticles();
             });
@@ -343,6 +326,7 @@
         } catch (error) {
             console.warn("Menunggu database.js...", error);
         }
+
     </script>
 </body>
 </html>
