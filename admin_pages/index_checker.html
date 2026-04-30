@@ -2,83 +2,75 @@
 <html lang="en">
 <head>
 <meta charset="UTF-8">
-<title>SEO Index Dashboard</title>
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>SEO Index Mobile</title>
 
 <style>
 body {
   font-family: Arial, sans-serif;
   background: #020617;
   color: #e2e8f0;
-  padding: 20px;
-  font-size: 18px;
+  padding: 15px;
+  font-size: 20px; /* BESAR */
 }
 
 h1 {
-  font-size: 28px;
+  font-size: 26px;
   margin-bottom: 10px;
 }
 
-.controls {
-  margin-bottom: 15px;
-}
-
 button {
-  font-size: 15px;
-  padding: 10px 14px;
-  margin: 5px 5px 5px 0;
+  width: 100%;
+  padding: 14px;
+  font-size: 18px;
+  margin-bottom: 10px;
   border: none;
-  border-radius: 8px;
-  cursor: pointer;
+  border-radius: 10px;
 }
 
 .primary { background: #22c55e; color: black; }
 .filter { background: #334155; color: white; }
 
 input {
-  padding: 10px;
-  border-radius: 8px;
+  width: 100%;
+  padding: 14px;
+  font-size: 18px;
+  border-radius: 10px;
   border: none;
-  width: 250px;
-  font-size: 15px;
+  margin-bottom: 10px;
 }
 
 .stats {
-  margin: 15px 0;
-  font-size: 16px;
-}
-
-.grid {
-  display: grid;
-  gap: 12px;
+  font-size: 18px;
+  margin-bottom: 10px;
 }
 
 .card {
   background: #0f172a;
-  padding: 16px;
+  padding: 18px;
+  margin-bottom: 14px;
   border-radius: 14px;
-  line-height: 1.6;
 }
 
-.card strong {
+.indexed { border-left: 8px solid #22c55e; }
+.not { border-left: 8px solid #ef4444; }
+.checking { border-left: 8px solid #facc15; }
+
+.url {
   font-size: 18px;
   word-break: break-word;
 }
 
-.indexed { border-left: 6px solid #22c55e; }
-.not { border-left: 6px solid #ef4444; }
-.checking { border-left: 6px solid #facc15; }
-
 .status {
-  margin-top: 5px;
-  font-size: 15px;
+  font-size: 17px;
+  margin-top: 6px;
 }
 
 .actions a {
-  display: inline-block;
-  margin-top: 8px;
-  margin-right: 10px;
+  display: block;
+  font-size: 16px;
+  margin-top: 6px;
   color: #38bdf8;
-  font-size: 14px;
   text-decoration: none;
 }
 </style>
@@ -86,20 +78,19 @@ input {
 
 <body>
 
-<h1>SEO Index Dashboard</h1>
+<h1>Index Checker</h1>
 
-<div class="controls">
-  <button class="primary" onclick="loadSitemap()">Load Sitemap</button>
-  <button class="filter" onclick="setFilter('all')">All</button>
-  <button class="filter" onclick="setFilter('indexed')">Indexed</button>
-  <button class="filter" onclick="setFilter('not')">Not Indexed</button>
-  <button onclick="toggleZoom()">🔍 Zoom</button>
-  <br><br>
-  <input type="text" id="search" placeholder="Search URL..." oninput="render()">
-</div>
+<button class="primary" onclick="loadSitemap()">Load Sitemap</button>
+
+<button class="filter" onclick="setFilter('all')">All</button>
+<button class="filter" onclick="setFilter('indexed')">Indexed</button>
+<button class="filter" onclick="setFilter('not')">Not Indexed</button>
+
+<input type="text" id="search" placeholder="Cari URL..." oninput="render()">
 
 <div class="stats" id="stats"></div>
-<div class="grid" id="results"></div>
+
+<div id="results"></div>
 
 <script>
 const DOMAIN = "https://sairootsmusic.com";
@@ -107,7 +98,6 @@ const SITEMAP = DOMAIN + "/sitemap.xml";
 
 let dataList = [];
 let filterMode = "all";
-let zoom = false;
 
 async function loadSitemap() {
   let res = await fetch(SITEMAP);
@@ -119,18 +109,12 @@ async function loadSitemap() {
   dataList = urls.map(u => ({ url: u, status: "checking" }));
 
   render();
-
   urls.forEach((url, i) => checkIndex(url, i));
 }
 
 function setFilter(mode) {
   filterMode = mode;
   render();
-}
-
-function toggleZoom() {
-  zoom = !zoom;
-  document.body.style.fontSize = zoom ? "22px" : "18px";
 }
 
 function render() {
@@ -161,12 +145,12 @@ function render() {
       "🟡 Checking";
 
     div.innerHTML = `
-      <strong>${shortUrl}</strong>
+      <div class="url">${shortUrl}</div>
       <div class="status">${statusText}</div>
       <div class="actions">
-        <a href="${searchUrl}" target="_blank">🔍 Google</a>
+        <a href="${searchUrl}" target="_blank">🔍 Lihat di Google</a>
         <a href="${inspectUrl}" target="_blank">⚙️ Inspect</a>
-        <a href="${item.url}" target="_blank">🌐 Open</a>
+        <a href="${item.url}" target="_blank">🌐 Buka Halaman</a>
       </div>
     `;
 
@@ -182,7 +166,7 @@ function updateStats() {
   let not = dataList.filter(i => i.status === "not").length;
 
   document.getElementById("stats").innerText =
-    `Total: ${total} | Indexed: ${indexed} | Not Indexed: ${not}`;
+    `Total: ${total} | Indexed: ${indexed} | Not: ${not}`;
 }
 
 async function checkIndex(url, index) {
