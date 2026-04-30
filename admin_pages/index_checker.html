@@ -48,7 +48,7 @@ body{margin:0;font-family:Arial;background:#0b1220;color:#fff}
   <button onclick="setFilter('no')">Not Indexed</button>
 </div>
 
-<button class="main-btn" onclick="checkAll()">Cek Semua</button>
+<button class="main-btn" onclick="checkAll()" id="btn">Cek Semua</button>
 
 <div id="list"></div>
 
@@ -56,26 +56,29 @@ body{margin:0;font-family:Arial;background:#0b1220;color:#fff}
 
 <script>
 const worker = "https://worker-crimson-smoke-71e0.pembriahmad526.workers.dev"
+
 let data = []
 let filter = "all"
 
 function stats(){
-  total.innerText = data.length
-  indexed.innerText = data.filter(x=>x.status==="ok").length
-  not.innerText = data.filter(x=>x.status==="no").length
-  pending.innerText = data.filter(x=>x.status==="pending").length
+  document.getElementById("total").innerText = data.length
+  document.getElementById("indexed").innerText = data.filter(x=>x.status==="ok").length
+  document.getElementById("not").innerText = data.filter(x=>x.status==="no").length
+  document.getElementById("pending").innerText = data.filter(x=>x.status==="pending").length
 }
 
 function render(){
   const list = document.getElementById("list")
-  const key = search.value.toLowerCase()
+  const key = document.getElementById("search").value.toLowerCase()
   list.innerHTML=""
 
-  data.filter(x=>{
+  data
+  .filter(x=>{
     if(filter==="ok") return x.status==="ok"
     if(filter==="no") return x.status==="no"
     return true
-  }).filter(x=>x.url.toLowerCase().includes(key))
+  })
+  .filter(x=>x.url.toLowerCase().includes(key))
   .forEach(item=>{
     const div = document.createElement("div")
     div.className="card"
@@ -98,6 +101,7 @@ function render(){
         <button onclick="checkOne('${item.url}')">Recheck</button>
       </div>
     `
+
     list.appendChild(div)
   })
 
@@ -150,14 +154,29 @@ async function checkOne(url){
   render()
 }
 
+// 🔥 FIX UTAMA: checkAll nggak macet + pasti ke-trigger
 async function checkAll(){
-  for(const item of data){
-    await checkOne(item.url)
-    await new Promise(r=>setTimeout(r,1500))
+  const btn = document.getElementById("btn")
+  btn.innerText = "Loading..."
+  btn.disabled = true
+
+  for(let i=0;i<data.length;i++){
+    await checkOne(data[i].url)
+    await new Promise(r=>setTimeout(r,1000))
   }
+
+  btn.innerText = "Cek Semua"
+  btn.disabled = false
 }
 
-search.oninput=render
+document.getElementById("search").addEventListener("input",render)
+
+// 🔥 WAJIB: bikin fungsi global biar onclick jalan
+window.checkAll = checkAll
+window.checkOne = checkOne
+window.setFilter = setFilter
+window.google = google
+window.inspect = inspect
 
 load()
 </script>
