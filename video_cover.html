@@ -177,7 +177,7 @@ try {
         const formattedCovers = coverVideos.map(video => ({
             type: 'Cover', 
             title: video.title, 
-            url: `/video_cover.html?video=${video.slug}`, // Link ini biar gak 404
+            url: `/video_cover?video=${video.slug}`, // Link ini biar gak 404
             excerpt: video.description, 
             category: 'Playlist Cover'
         }));
@@ -393,13 +393,13 @@ function playNextVideo() {
 
 // Fungsi Navigasi SPA
 function navigateToVideo(slug) {
-    const newUrl = window.location.protocol + "//" + window.location.host + '/video_cover.html?video=' + slug;
+    const newUrl = window.location.protocol + "//" + window.location.host + '/video_cover?video=' + slug;
     history.pushState({ view: 'player', slug: slug }, '', newUrl);
     renderPlayerView(slug);
 }
 
 function navigateToList() {
-    history.pushState({ view: 'list' }, '', '/video_cover.html');
+    history.pushState({ view: 'list' }, '', '/video_cover');
     renderListView();
 }
 
