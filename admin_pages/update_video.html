@@ -236,17 +236,27 @@ async function startSync() {
     terminal.innerHTML = '> Memulai proses sinkronisasi...';
 
     try {
-        // 1. Fetch YouTube API
+        // ================== PERBAIKAN UTAMA: Fetch YouTube Playlist ==================
         logMsg(`Mengambil data dari Playlist YouTube (${PLAYLIST_ID})...`);
+
         let videoData = [];
         let nextPageToken = '';
-        
-        do {
-            const ytUrl = `https://www.googleapis.com/youtube/v3/playlistItems?part=snippet&maxResults=50&playlistId=${PLAYLIST_ID}&key=${ytKey}${nextPageToken ? '&pageToken=' + nextPageToken : ''}`;
+        let page = 1;
+        let totalFetched = 0;
+
+        while (true) {
+            const ytUrl = `https://www.googleapis.com/youtube/v3/playlistItems?part=snippet&maxResults=50&playlistId=\( {PLAYLIST_ID}&key= \){ytKey}${nextPageToken ? '&pageToken=' + nextPageToken : ''}`;
+            
             const ytRes = await fetch(ytUrl);
             const ytJson = await ytRes.json();
 
-            if (!ytRes.ok) throw new Error(ytJson.error.message || "Gagal menghubungi YouTube API");
+            if (!ytRes.ok) {
+                throw new Error(ytJson.error?.message || "Gagal menghubungi YouTube API");
+            }
+
+            if (!ytJson.items || ytJson.items.length === 0) {
+                break;
+            }
 
             ytJson.items.forEach(item => {
                 const snippet = item.snippet;
@@ -256,18 +266,29 @@ async function startSync() {
                         slug: createSlug(snippet.title),
                         videoId: snippet.resourceId.videoId,
                         thumbnail: snippet.thumbnails.maxres ? snippet.thumbnails.maxres.url : snippet.thumbnails.high.url,
-                        description: snippet.description
+                        description: snippet.description || ""
                     });
                 }
             });
+
+            totalFetched += ytJson.items.length;
+            logMsg(`Halaman ${page}: ${ytJson.items.length} video diambil (Total: ${totalFetched})`);
+
             nextPageToken = ytJson.nextPageToken;
-        } while (nextPageToken);
+            page++;
 
-        logMsg(`Sukses! ${videoData.length} video cover berhasil diekstrak.`);
+            if (!nextPageToken) break;
+        }
 
+        // Video terbaru biasanya muncul di paling atas
+        videoData.reverse();
+
+        logMsg(`Sukses! Total ${videoData.length} video cover berhasil diekstrak.`);
+
+        // ================== BAGIAN BAWAH TETAP SAMA (TIDAK DIUBAH) ==================
         // 2. Fetch Github File (database.js)
         logMsg(`Memeriksa file ${FILE_PATH} di repositori GitHub...`);
-        const ghUrl = `https://api.github.com/repos/${ghOwner}/${ghRepo}/contents/${FILE_PATH}`;
+        const ghUrl = `https://api.github.com/repos/\( {ghOwner}/ \){ghRepo}/contents/${FILE_PATH}`;
         const ghHeaders = {
             'Authorization': `token ${ghToken}`,
             'Accept': 'application/vnd.github.v3+json'
@@ -285,7 +306,6 @@ async function startSync() {
             fileContent = atou(ghJson.content);
             logMsg(`File ditemukan. Bersiap memperbarui kode...`);
 
-            // Mencari dan mereplace `const coverVideos = [...]`
             const coverRegex = /const\s+coverVideos\s*=\s*\[[\s\S]*?\];/;
             const newVarString = `const coverVideos = ${JSON.stringify(videoData, null, 4)};`;
 
