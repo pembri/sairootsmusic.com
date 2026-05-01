@@ -659,77 +659,77 @@ const coverVideos = [
         "title": "Hotel California - Eagles (Reggae Cover By SAI Roots)",
         "slug": "hotel-california-eagles-reggae-cover-by-sai-roots",
         "videoId": "kscjWwgYQfo",
-        "thumbnail": "https://i.ytimg.com/vi/kscjWwgYQfo/hqdefault.jpg",
+        "thumbnail": "https://i.ytimg.com/vi/kscjWwgYQfo/sddefault.jpg",
         "description": "Terima kasih sudah menonton.\nDukung terus channel ini dengan subscribe, like, dan share agar kami bisa terus berkarya dan mengunggah konten selanjutnya.\n\n📲 Media sosial:\nInstagram: https://instagram.com/ahmadsupembri\nTikTok: https://tiktok.com/@ahmadsupembri.\n\n#reggae #hotelcalifornia #reggaeton #reggaemusic #reggaeindonesia #rootsreggae"
     },
     {
         "title": "Pura Pura - Besut's (Cover By SAI Roots)",
         "slug": "pura-pura-besuts-cover-by-sai-roots",
         "videoId": "HJLrRLXR_bw",
-        "thumbnail": "https://i.ytimg.com/vi/HJLrRLXR_bw/hqdefault.jpg",
+        "thumbnail": "https://i.ytimg.com/vi/HJLrRLXR_bw/sddefault.jpg",
         "description": "Terima kasih sudah menonton.\nDukung terus channel ini dengan subscribe, like, dan share agar kami bisa terus berkarya dan mengunggah konten selanjutnya.\n\nOriginal Music\nhttps://youtu.be/yXhB0uebTyY?si=KCyBivLrgFUFK-X-\n\n📲 Media sosial:\nInstagram: https://instagram.com/ahmadsupembri\nTikTok: https://tiktok.com/@ahmadsupembri.\n\n#reggae #jombang #reggaeton #reggaemusic #reggaeindonesia #rootsreggae"
     },
     {
         "title": "Gadis Western - S2B (Cover By SAI Roots)",
         "slug": "gadis-western-s2b-cover-by-sai-roots",
         "videoId": "pb3355eBDsA",
-        "thumbnail": "https://i.ytimg.com/vi/pb3355eBDsA/hqdefault.jpg",
+        "thumbnail": "https://i.ytimg.com/vi/pb3355eBDsA/sddefault.jpg",
         "description": "Terima kasih sudah menonton.\nDukung terus channel ini dengan subscribe, like, dan share agar kami bisa terus berkarya dan mengunggah konten selanjutnya.\n\n📲 Media sosial:\nInstagram: https://instagram.com/ahmadsupembri\nTikTok: https://tiktok.com/@ahmadsupembri.\n\n#reggae #rootsreggae #reggaeindonesia #reggaeton #reggaemusic"
     },
     {
         "title": "Balo Lipa - SAI Roots (Reggae Cover)",
         "slug": "balo-lipa-sai-roots-reggae-cover",
         "videoId": "N7ddSR6Tfe0",
-        "thumbnail": "https://i.ytimg.com/vi/N7ddSR6Tfe0/hqdefault.jpg",
+        "thumbnail": "https://i.ytimg.com/vi/N7ddSR6Tfe0/sddefault.jpg",
         "description": "Terima kasih sudah menonton.\nDukung terus channel ini dengan subscribe, like, dan share agar kami bisa terus berkarya dan mengunggah konten selanjutnya.\n\n📲 Media sosial:\nInstagram: https://instagram.com/ahmadsupembri\nTikTok: https://tiktok.com/@ahmadsupembri.\n\n#reggae #balolipa #lagubugis #reggaeton #reggaemusic #reggaeindonesia #rootsreggae"
     },
     {
         "title": "Jah Rastafari - On The Spot (Cover By SAI Roots)",
         "slug": "jah-rastafari-on-the-spot-cover-by-sai-roots",
         "videoId": "yT1zL1eT8OY",
-        "thumbnail": "https://i.ytimg.com/vi/yT1zL1eT8OY/hqdefault.jpg",
+        "thumbnail": "https://i.ytimg.com/vi/yT1zL1eT8OY/sddefault.jpg",
         "description": "Terima kasih sudah menonton.\nDukung terus channel ini dengan subscribe, like, dan share agar kami bisa terus berkarya dan mengunggah konten selanjutnya.\n\n📲 Media sosial:\nInstagram: https://instagram.com/ahmadsupembri\nTikTok: https://tiktok.com/@ahmadsupembri.\n\n#reggae #jahrastafari #reggaephilippines #reggaeton #reggaemusic #reggaeindonesia #rootsreggae"
     },
     {
         "title": "Tembok Derita - SAI Roots (Reggae Cover)",
         "slug": "tembok-derita-sai-roots-reggae-cover",
         "videoId": "VOzvfNx7y1g",
-        "thumbnail": "https://i.ytimg.com/vi/VOzvfNx7y1g/hqdefault.jpg",
+        "thumbnail": "https://i.ytimg.com/vi/VOzvfNx7y1g/sddefault.jpg",
         "description": "Terima kasih sudah menonton.\nDukung terus channel ini dengan subscribe, like, dan share agar kami bisa terus berkarya dan mengunggah konten selanjutnya.\n\n📲 Media sosial:\nInstagram: https://instagram.com/ahmadsupembri\nTikTok: https://tiktok.com/@ahmadsupembri.\n\n#reggae #dangdut #dangdutlawas #reggaeton #reggaemusic #reggaeindonesia #rootsreggae"
     },
     {
         "title": "Hanuman (IKSPI Kera Sakti) - Reggae Ska Koplo Cover (SAI Roots)",
         "slug": "hanuman-ikspi-kera-sakti-reggae-ska-koplo-cover-sai-roots",
         "videoId": "mWHbTIQwJ9M",
-        "thumbnail": "https://i.ytimg.com/vi/mWHbTIQwJ9M/hqdefault.jpg",
+        "thumbnail": "https://i.ytimg.com/vi/mWHbTIQwJ9M/sddefault.jpg",
         "description": "Terima kasih sudah menonton.\nDukung terus channel ini dengan subscribe, like, dan share agar kami bisa terus berkarya dan mengunggah konten selanjutnya.\n\n📲 Media sosial:\nInstagram: https://instagram.com/ahmadsupembri\nTikTok: https://tiktok.com/@ahmadsupembri.\n\n#ikspi #pasker #jiensho #reggaemusic #reggae #ska #koplo #reggaeindonesia #rootsreggae"
     },
     {
         "title": "I'm Yours - Jason Mraz (Reggae Cover By SAI Roots)",
         "slug": "im-yours-jason-mraz-reggae-cover-by-sai-roots",
         "videoId": "tt7TTdmSmh8",
-        "thumbnail": "https://i.ytimg.com/vi/tt7TTdmSmh8/hqdefault.jpg",
+        "thumbnail": "https://i.ytimg.com/vi/tt7TTdmSmh8/sddefault.jpg",
         "description": "Terima kasih sudah menonton.\nDukung terus channel ini dengan subscribe, like, dan share agar kami bisa terus berkarya dan mengunggah konten selanjutnya.\n\nOriginal Music\nhttps://youtu.be/EkHTsc9PU2A?si=Tap-W1_x1Qb9tFDX\n\n📲 Media sosial:\nInstagram: https://instagram.com/ahmadsupembri\nTikTok: https://tiktok.com/@ahmadsupembri.\n\n#reggae #imyours #reggaeton #reggaemusic #reggaeindonesia #rootsreggae"
     },
     {
         "title": "Sound System - Stick Figure (Reggae Cover By SAI Roots)",
         "slug": "sound-system-stick-figure-reggae-cover-by-sai-roots",
         "videoId": "T0w5N0vG5SU",
-        "thumbnail": "https://i.ytimg.com/vi/T0w5N0vG5SU/hqdefault.jpg",
+        "thumbnail": "https://i.ytimg.com/vi/T0w5N0vG5SU/sddefault.jpg",
         "description": "Terima kasih sudah menonton.\nDukung terus channel ini dengan subscribe, like, dan share agar kami bisa terus berkarya dan mengunggah konten selanjutnya.\n\nOriginal Music\nhttps://youtu.be/ZU53VOnPlnQ?si=gC92SxEcmoaJP0iu\n\n📲 Media sosial:\nInstagram: https://instagram.com/ahmadsupembri\nTikTok: https://tiktok.com/@ahmadsupembri.\n\n#reggae #soundsystem #reggaeton #reggaemusic #reggaeindonesia #rootsreggae #soundsystemreggae"
     },
     {
         "title": "Hiasi Langit Hatiku - Amtenar (Reggae Cover By SAI Roots)",
         "slug": "hiasi-langit-hatiku-amtenar-reggae-cover-by-sai-roots",
         "videoId": "1IAtezyQ0Tw",
-        "thumbnail": "https://i.ytimg.com/vi/1IAtezyQ0Tw/hqdefault.jpg",
+        "thumbnail": "https://i.ytimg.com/vi/1IAtezyQ0Tw/sddefault.jpg",
         "description": "Terima kasih sudah menonton.\nDukung terus channel ini dengan subscribe, like, dan share agar kami bisa terus berkarya dan mengunggah konten selanjutnya.\n\nOriginal Music\nhttps://youtu.be/iZG-9HLZLp0?si=PeMnsnqioRDkwzcd\n\n📲 Media sosial:\nInstagram: https://instagram.com/ahmadsupembri\nTikTok: https://tiktok.com/@ahmadsupembri.\n\n#reggae #reggaeton #reggaemusic #reggaeindonesia #rootsreggae"
     },
     {
         "title": "Redemption Song - Bob Marley (Reggae Cover By SAI Roots)",
         "slug": "redemption-song-bob-marley-reggae-cover-by-sai-roots",
         "videoId": "da4Hvf80utg",
-        "thumbnail": "https://i.ytimg.com/vi/da4Hvf80utg/hqdefault.jpg",
+        "thumbnail": "https://i.ytimg.com/vi/da4Hvf80utg/sddefault.jpg",
         "description": "Terima kasih sudah menonton.\nDukung terus channel ini dengan subscribe, like, dan share agar kami bisa terus berkarya dan mengunggah konten selanjutnya.\n\n\n📲 Media sosial:\nInstagram: https://instagram.com/ahmadsupembri\nTikTok: https://tiktok.com/@ahmadsupembri.\n\n#reggae #redemption #reggaeton #bobmarley #redemptionsong #reggaemusic #reggaeindonesia #rootsreggae"
     },
     {
@@ -743,7 +743,7 @@ const coverVideos = [
         "title": "Alamak - Rizky Febian & Adrian Khalid (Reggae Cover By SAI Roots)",
         "slug": "alamak-rizky-febian-adrian-khalid-reggae-cover-by-sai-roots",
         "videoId": "CTD6ci2yQX8",
-        "thumbnail": "https://i.ytimg.com/vi/CTD6ci2yQX8/hqdefault.jpg",
+        "thumbnail": "https://i.ytimg.com/vi/CTD6ci2yQX8/sddefault.jpg",
         "description": "Terima kasih sudah menonton.\nDukung terus channel ini dengan subscribe, like, dan share agar kami bisa terus berkarya dan mengunggah konten selanjutnya.\n\nOriginal Music\nhttps://youtu.be/OErndIcI8gE?si=qsZ5jcHqeOzwBpld\n\n📲 Media sosial:\nInstagram: https://instagram.com/ahmadsupembri\nTikTok: https://tiktok.com/@ahmadsupembri.\n\n#reggae #alamak #reggaeton #reggaemusic #reggaeindonesia #rootsreggae"
     },
     {
@@ -757,63 +757,63 @@ const coverVideos = [
         "title": "Polisi - Central Of Peace & Masmus (Reggae Cover By SAI Roots)",
         "slug": "polisi-central-of-peace-masmus-reggae-cover-by-sai-roots",
         "videoId": "KHyVcFGwSrY",
-        "thumbnail": "https://i.ytimg.com/vi/KHyVcFGwSrY/hqdefault.jpg",
+        "thumbnail": "https://i.ytimg.com/vi/KHyVcFGwSrY/sddefault.jpg",
         "description": "Terima kasih sudah menonton.\nDukung terus channel ini dengan subscribe, like, dan share agar kami bisa terus berkarya dan mengunggah konten selanjutnya.\n\nCover lagu ini dibawakan sebagai bentuk apresiasi terhadap karya musik asli.\n\nDISCLAIMER COPYRIGHT\nVideo ini berisi cover lagu. Seluruh hak cipta atas musik dan lirik sepenuhnya milik pencipta dan pemegang hak cipta asli.\nKami tidak mengklaim kepemilikan atas karya ini dan tidak bermaksud melanggar hak cipta.\n\n📲 Media sosial:\nInstagram: https://instagram.com/ahmadsupembri\nTikTok: https://tiktok.com/@ahmadsupembri.\n\n#reggae #polisi #reggaeton #reggaemusic #reggaeindonesia #rootsreggae"
     },
     {
         "title": "Scooter Mania - Peron Satoe (Reegae Cover By SAI Roots)",
         "slug": "scooter-mania-peron-satoe-reegae-cover-by-sai-roots",
         "videoId": "6PQRWSnQvcA",
-        "thumbnail": "https://i.ytimg.com/vi/6PQRWSnQvcA/hqdefault.jpg",
+        "thumbnail": "https://i.ytimg.com/vi/6PQRWSnQvcA/sddefault.jpg",
         "description": "Terima kasih sudah menonton.\nDukung terus channel ini dengan subscribe, like, dan share agar kami bisa terus berkarya dan mengunggah konten selanjutnya.\n\nCover lagu ini dibawakan sebagai bentuk apresiasi terhadap karya musik asli.\n\nDISCLAIMER COPYRIGHT\nVideo ini berisi cover lagu. Seluruh hak cipta atas musik dan lirik sepenuhnya milik pencipta dan pemegang hak cipta asli.\nKami tidak mengklaim kepemilikan atas karya ini dan tidak bermaksud melanggar hak cipta.\n\nOriginal Music\nhttps://youtu.be/mZ7JhR9IikY?si=QItGxo5tr3ZN2Bbt\n\n📲 Media sosial:\nInstagram: https://instagram.com/ahmadsupembri\nTikTok: https://tiktok.com/@ahmadsupembri.\n\n#reggae #scooter #reggaeton #reggaemusic #reggaeindonesia #rootsreggae"
     },
     {
         "title": "Holiday - Joni Agung & Double T (Reggae SKA Cover By SAI Roots)",
         "slug": "holiday-joni-agung-double-t-reggae-ska-cover-by-sai-roots",
         "videoId": "4Doou8RlL_A",
-        "thumbnail": "https://i.ytimg.com/vi/4Doou8RlL_A/hqdefault.jpg",
+        "thumbnail": "https://i.ytimg.com/vi/4Doou8RlL_A/sddefault.jpg",
         "description": "Terima kasih sudah menonton.\nDukung terus channel ini dengan subscribe, like, dan share agar kami bisa terus berkarya dan mengunggah konten selanjutnya.\n\nCover lagu ini dibawakan sebagai bentuk apresiasi terhadap karya musik asli.\n\nDISCLAIMER COPYRIGHT\nVideo ini berisi cover lagu. Seluruh hak cipta atas musik dan lirik sepenuhnya milik pencipta dan pemegang hak cipta asli.\nKami tidak mengklaim kepemilikan atas karya ini dan tidak bermaksud melanggar hak cipta.\n\nOriginal Music\nhttps://youtu.be/bpBDjXYishI?si=FvpO2sFdRooY-iw-\n\n📲 Media sosial:\nInstagram: https://instagram.com/ahmadsupembri\nTikTok: https://tiktok.com/@ahmadsupembri.\n\n#reggae #ska #reggaeton #holiday #reggaemusic #reggaeindonesia #rootsreggae"
     },
     {
         "title": "SAI Roots - Crayon Shinchan (Opening Crayon Shinchan SKA Rocksteady Cover By SAI Roots)",
         "slug": "sai-roots-crayon-shinchan-opening-crayon-shinchan-ska-rocksteady-cover-by-sai-roots",
         "videoId": "1_oAVhNDrhs",
-        "thumbnail": "https://i.ytimg.com/vi/1_oAVhNDrhs/hqdefault.jpg",
+        "thumbnail": "https://i.ytimg.com/vi/1_oAVhNDrhs/sddefault.jpg",
         "description": "Terima kasih sudah menonton.\nDukung terus channel ini dengan subscribe, like, dan share agar kami bisa terus berkarya dan mengunggah konten selanjutnya.\n\nCover lagu ini dibawakan sebagai bentuk apresiasi terhadap karya musik asli.\n\nDISCLAIMER COPYRIGHT\nVideo ini berisi cover lagu. Seluruh hak cipta atas musik dan lirik sepenuhnya milik pencipta dan pemegang hak cipta asli.\nKami tidak mengklaim kepemilikan atas karya ini dan tidak bermaksud melanggar hak cipta.\n\n📲 Media sosial:\nInstagram: https://instagram.com/ahmadsupembri\nTikTok: https://tiktok.com/@ahmadsupembri.\n\n#reggae #shinchan #ska #crayonshinchan #rootsreggae #reggaemusic #reggaeindonesia #reggaeton"
     },
     {
         "title": "Free - Denny Frust (Reggae SKA Cover by SAI Roots)",
         "slug": "free-denny-frust-reggae-ska-cover-by-sai-roots",
         "videoId": "Jd5E5PQ5CKk",
-        "thumbnail": "https://i.ytimg.com/vi/Jd5E5PQ5CKk/hqdefault.jpg",
+        "thumbnail": "https://i.ytimg.com/vi/Jd5E5PQ5CKk/sddefault.jpg",
         "description": "Terima kasih sudah menonton.\nDukung terus channel ini dengan subscribe, like, dan share agar kami bisa terus berkarya dan mengunggah konten selanjutnya.\n\nCover lagu ini dibawakan sebagai bentuk apresiasi terhadap karya musik asli.\n\nDISCLAIMER COPYRIGHT\nVideo ini berisi cover lagu. Seluruh hak cipta atas musik dan lirik sepenuhnya milik pencipta dan pemegang hak cipta asli.\nKami tidak mengklaim kepemilikan atas karya ini dan tidak bermaksud melanggar hak cipta.\n\nOriginal Music\nhttps://youtu.be/WhNy9IKrs14?si=5nwQSm-AtkkQ4DRx\n\n📲 Media sosial:\nInstagram: https://instagram.com/ahmadsupembri\nTikTok: https://tiktok.com/@ahmadsupembri.\n\n#reggae #ska #reggaeton #reggaemusic #reggaeindonesia #rootsreggae"
     },
     {
         "title": "SAI Roots - Yume Ippai (Opening Chibi Maruko Chan - Indonesia Version - Reggae SKA Cover)",
         "slug": "sai-roots-yume-ippai-opening-chibi-maruko-chan-indonesia-version-reggae-ska-cover",
         "videoId": "ElTfJbwaknI",
-        "thumbnail": "https://i.ytimg.com/vi/ElTfJbwaknI/hqdefault.jpg",
+        "thumbnail": "https://i.ytimg.com/vi/ElTfJbwaknI/sddefault.jpg",
         "description": "Terima kasih sudah menonton.\nDukung terus channel ini dengan subscribe, like, dan share agar kami bisa terus berkarya dan mengunggah konten selanjutnya.\n\nCover lagu ini dibawakan sebagai bentuk apresiasi terhadap karya musik asli.\n\nDISCLAIMER COPYRIGHT\nVideo ini berisi cover lagu. Seluruh hak cipta atas musik dan lirik sepenuhnya milik pencipta dan pemegang hak cipta asli.\nKami tidak mengklaim kepemilikan atas karya ini dan tidak bermaksud melanggar hak cipta.\n\n📲 Media sosial:\nInstagram: https://instagram.com/ahmadsupembri\nTikTok: https://tiktok.com/@ahmadsupembri.\n\n#reggae #chibimarukochan #ska #rootsreggae #reggaemusic #reggaeindonesia #reggaeton"
     },
     {
         "title": "SAI Roots - Rayuan Pulau Kelapa (Reggae SKA Cover)",
         "slug": "sai-roots-rayuan-pulau-kelapa-reggae-ska-cover",
         "videoId": "wEpD_FbX9Tc",
-        "thumbnail": "https://i.ytimg.com/vi/wEpD_FbX9Tc/hqdefault.jpg",
+        "thumbnail": "https://i.ytimg.com/vi/wEpD_FbX9Tc/sddefault.jpg",
         "description": "Terima kasih sudah menonton.\nDukung terus channel ini dengan subscribe, like, dan share agar kami bisa terus berkarya dan mengunggah konten selanjutnya.\n\nCover lagu ini dibawakan sebagai bentuk apresiasi terhadap karya musik asli.\n\nDISCLAIMER COPYRIGHT\nVideo ini berisi cover lagu. Seluruh hak cipta atas musik dan lirik sepenuhnya milik pencipta dan pemegang hak cipta asli.\nKami tidak mengklaim kepemilikan atas karya ini dan tidak bermaksud melanggar hak cipta.\n\n📲 Media sosial:\nInstagram: https://instagram.com/ahmadsupembri\nTikTok: https://tiktok.com/@ahmadsupembri.\n\n#reggae #reggaeton #rayuanpulaukelapa #rootsreggae #reggaemusic #reggaeindonesia"
     },
     {
         "title": "Berita Cuaca/Lestari Alamku - Gombloh  (Reggae SKA Cover By SAI Roots)",
         "slug": "berita-cuacalestari-alamku-gombloh-reggae-ska-cover-by-sai-roots",
         "videoId": "I8S6g9l_Frs",
-        "thumbnail": "https://i.ytimg.com/vi/I8S6g9l_Frs/hqdefault.jpg",
+        "thumbnail": "https://i.ytimg.com/vi/I8S6g9l_Frs/sddefault.jpg",
         "description": "Terima kasih sudah menonton.\nDukung terus channel ini dengan subscribe, like, dan share agar kami bisa terus berkarya dan mengunggah konten selanjutnya.\n\nCover lagu ini dibawakan sebagai bentuk apresiasi terhadap karya musik asli.\n\nDISCLAIMER COPYRIGHT\nVideo ini berisi cover lagu. Seluruh hak cipta atas musik dan lirik sepenuhnya milik pencipta dan pemegang hak cipta asli.\nKami tidak mengklaim kepemilikan atas karya ini dan tidak bermaksud melanggar hak cipta.\n\n📲 Media sosial:\nInstagram: https://instagram.com/ahmadsupembri\nTikTok: https://tiktok.com/@ahmadsupembri.\n\n#reggae #reggaeton #ska #rootsreggae #reggaemusic #reggaeindonesia"
     },
     {
         "title": "It's a Beautiful Day - The Kiffness X Rushawn (Reggae X Rap Cover By SAI Roots)",
         "slug": "its-a-beautiful-day-the-kiffness-x-rushawn-reggae-x-rap-cover-by-sai-roots",
         "videoId": "AalwSpKJtnI",
-        "thumbnail": "https://i.ytimg.com/vi/AalwSpKJtnI/hqdefault.jpg",
+        "thumbnail": "https://i.ytimg.com/vi/AalwSpKJtnI/sddefault.jpg",
         "description": "Terima kasih sudah menonton.\nDukung terus channel ini dengan subscribe, like, dan share agar kami bisa terus berkarya dan mengunggah konten selanjutnya.\n\nCover lagu ini dibawakan sebagai bentuk apresiasi terhadap karya musik asli.\n\nDISCLAIMER COPYRIGHT\nVideo ini berisi cover lagu. Seluruh hak cipta atas musik dan lirik sepenuhnya milik pencipta dan pemegang hak cipta asli.\nKami tidak mengklaim kepemilikan atas karya ini dan tidak bermaksud melanggar hak cipta.\n\n📲 Media sosial:\nInstagram: https://instagram.com/ahmadsupembri\nTikTok: https://tiktok.com/@ahmadsupembri.\n\n#reggae #reggaeton #bobmarley #rapper #rootsreggae #rap #reggaemusic #reggaeindonesia"
     },
     {
@@ -827,7 +827,7 @@ const coverVideos = [
         "title": "Bella Ciao – SAI Roots (Reggae SKA Cover)",
         "slug": "bella-ciao-sai-roots-reggae-ska-cover",
         "videoId": "HnHEPxoiAwE",
-        "thumbnail": "https://i.ytimg.com/vi/HnHEPxoiAwE/hqdefault.jpg",
+        "thumbnail": "https://i.ytimg.com/vi/HnHEPxoiAwE/sddefault.jpg",
         "description": "🎤 Cover oleh: SAI Roots\n🎶 Genre: Reggae Ska\n\nTerima kasih sudah menonton.\nDukung terus channel ini dengan subscribe, like, dan share agar kami bisa terus berkarya dan mengunggah konten selanjutnya.\n\nCover lagu ini dibawakan sebagai bentuk apresiasi terhadap karya musik asli.\n\nDISCLAIMER COPYRIGHT\nVideo ini berisi cover lagu. Seluruh hak cipta atas musik dan lirik sepenuhnya milik pencipta dan pemegang hak cipta asli.\nKami tidak mengklaim kepemilikan atas karya ini dan tidak bermaksud melanggar hak cipta.\n\n📲 Media sosial:\nInstagram: https://instagram.com/ahmadsupembri\nTikTok: https://tiktok.com/@ahmadsupembri.\n\n#reggae #reggaeton #bellaciao #ska #reggaemusic #reggaeska #rapper #rootsreggae #rap #reggaeindonesia"
     },
     {
@@ -841,56 +841,56 @@ const coverVideos = [
         "title": "Rivers Of Babylon – The Melodians (Reggae SKA Cover by SAI Roots)",
         "slug": "rivers-of-babylon-the-melodians-reggae-ska-cover-by-sai-roots",
         "videoId": "CLJWVEFXiAc",
-        "thumbnail": "https://i.ytimg.com/vi/CLJWVEFXiAc/hqdefault.jpg",
+        "thumbnail": "https://i.ytimg.com/vi/CLJWVEFXiAc/sddefault.jpg",
         "description": "🎤 Cover oleh: SAI Roots\n✍️ Pencipta & Penyanyi Asli: The Melodians\n🎶 Genre: Reggae Ska\n\n⚠️ Copyright Disclaimer:\nThis song is a cover version of “Rivers Of Babylon” originally written and performed by The Melodians. All rights belong to the respective copyright owners. This cover is made for artistic expression and tribute purposes only.\n\nTerima kasih sudah menonton.\nDukung terus channel ini dengan subscribe, like, dan share agar kami bisa terus berkarya dan mengunggah konten selanjutnya.\n\n📲 Media sosial:\nInstagram: https://instagram.com/ahmadsupembri\nTikTok: https://tiktok.com/@ahmadsupembri.\n\n#reggae #reggaemusic #reggaeton #ska #riversofbabylonreggae #reggaeska #rapper #rootsreggae #bobmarley #rap #reggaeindonesia"
     },
     {
         "title": "SAI Roots - Doraemon (OST Doraemon Reggae Ska Cover)",
         "slug": "sai-roots-doraemon-ost-doraemon-reggae-ska-cover",
         "videoId": "JW_hHQ2TWvQ",
-        "thumbnail": "https://i.ytimg.com/vi/JW_hHQ2TWvQ/hqdefault.jpg",
+        "thumbnail": "https://i.ytimg.com/vi/JW_hHQ2TWvQ/sddefault.jpg",
         "description": "#reggae #ska #doraemon #reggaemusic #rootsreggae #reggaeska #balingbalingbambu"
     },
     {
         "title": "SAI Roots - Miskin Naik Panggung (Kere Munggah Bale)",
         "slug": "sai-roots-miskin-naik-panggung-kere-munggah-bale",
         "videoId": "1Pw1Rtdv8Vk",
-        "thumbnail": "https://i.ytimg.com/vi/1Pw1Rtdv8Vk/hqdefault.jpg",
+        "thumbnail": "https://i.ytimg.com/vi/1Pw1Rtdv8Vk/sddefault.jpg",
         "description": "“Miskin Naik Panggung” merupakan aransemen ulang dari lagu “Kere Munggah Bale” yang dibawakan dalam balutan Reggae Rap. Lagu ini menyuarakan kritik sosial tentang lupa asal-usul saat hidup mulai naik kelas, dikemas dengan vibe santai tapi pesan yang menohok.\n\n🎶 Judul Cover: Miskin Naik Panggung\n🎤 Aransemen & Vokal: SAI Roots\n📝 Lagu Asli: Kere Munggah Bale\n✍️ Pencipta Lagu Asli: Teguh Ribawanto, S.S.\n\nCover ini dibuat sebagai bentuk apresiasi terhadap karya asli dan tidak dimaksudkan untuk melanggar hak cipta.\n\n📲 Ikuti & dukung Saya\nInstagram: https://instagram.com/ahmadsupembri\nTikTok: https://tiktok.com/@ahmadsupembri\n\nDengerin pelan-pelan, resapi maknanya. Tetap ingat, tetap membumi 🌿🔥\n\n#reggae #reggaemusic #rap #rapper #rootsreggae #campursari #lagujawa"
     },
     {
         "title": "SAI Roots - Ganja Gun (Reggae X Rap Indonesia)",
         "slug": "sai-roots-ganja-gun-reggae-x-rap-indonesia",
         "videoId": "xWJx29d9Dsw",
-        "thumbnail": "https://i.ytimg.com/vi/xWJx29d9Dsw/hqdefault.jpg",
+        "thumbnail": "https://i.ytimg.com/vi/xWJx29d9Dsw/sddefault.jpg",
         "description": "Ganja Gun\nReggae rap nge-fly dari SAI Roots.\n\nLagu ini pakai metafora, satire, dan bacotan khas jalanan buat nembak stres, munafik sosial, dan drama hidup sehari-hari.\nBukan ajakan, ini ekspresi. Ketawa pahit dibalut bass berat dan lirik nyentil.\n\n🎤 Musik & vokal: SAI Roots\n🎶 Genre: Reggae Roots × Rap\n\nFollow & support:\nInstagram 👉 https://instagram.com/ahmadsupembri\nTikTok 👉 https://tiktok.com/@ahmadsupembri\n\n#ganja #reggae #rap #reggaemusic #rootsreggae #rapper #reggaeindonesia #ganjagun"
     },
     {
         "title": "No Woman No Cry (Reggae Rap Indonesia Cover) – SAI Roots Original song by Bob Marley",
         "slug": "no-woman-no-cry-reggae-rap-indonesia-cover-sai-roots-original-song-by-bob-marley",
         "videoId": "pYZZW3_9RGE",
-        "thumbnail": "https://i.ytimg.com/vi/pYZZW3_9RGE/hqdefault.jpg",
+        "thumbnail": "https://i.ytimg.com/vi/pYZZW3_9RGE/sddefault.jpg",
         "description": "🎤 Cover oleh: SAI Roots\n✍️ Pencipta & Penyanyi Asli: Bob Marley\n🎶 Genre: Reggae / Slow Rap / Roots\n\n⚠️ Copyright Disclaimer:\nThis song is a cover version of “No Woman No Cry” originally written and performed by Bob Marley. All rights belong to the respective copyright owners. This cover is made for artistic expression and tribute purposes only.\n\nTerima kasih sudah menonton.\nDukung terus channel ini dengan subscribe, like, dan share agar kami bisa terus berkarya dan mengunggah konten selanjutnya.\n\n📲 Media sosial:\nInstagram: https://instagram.com/ahmadsupembri\nTikTok: https://tiktok.com/@ahmadsupembri.\n\n#reggae #reggaemusic #rap #rapper #rootsreggae #bobmarley #nowomannocry #reggaeindonesia"
     },
     {
         "title": "ONE LOVE – Bob Marley (Reggae Cover by SAI Roots)",
         "slug": "one-love-bob-marley-reggae-cover-by-sai-roots",
         "videoId": "XLxZrntkwjk",
-        "thumbnail": "https://i.ytimg.com/vi/XLxZrntkwjk/hqdefault.jpg",
+        "thumbnail": "https://i.ytimg.com/vi/XLxZrntkwjk/sddefault.jpg",
         "description": "Terima kasih sudah menonton.\nDukung terus channel ini dengan subscribe, like, dan share agar kami bisa terus berkarya dan mengunggah konten selanjutnya.\n\nOriginal Song \nhttps://youtu.be/IN0KkGeEURw?si=glFIpeu9O4jLlV_m\n\n📲 Media sosial:\nInstagram: https://instagram.com/ahmadsupembri\nTikTok: https://tiktok.com/@ahmadsupembri.\n\n#reggae #onelove #bobmarley #rapper #rootsreggae #rap #reggaemusic #onelovereggae #reggaeindonesia"
     },
     {
         "title": "Roots Rock Reggae (Reggae X Rap Indonesia Cover) - SAI Roots Original song by Bob Marley",
         "slug": "roots-rock-reggae-reggae-x-rap-indonesia-cover-sai-roots-original-song-by-bob-marley",
         "videoId": "tLuysbhbzUA",
-        "thumbnail": "https://i.ytimg.com/vi/tLuysbhbzUA/hqdefault.jpg",
+        "thumbnail": "https://i.ytimg.com/vi/tLuysbhbzUA/sddefault.jpg",
         "description": "🎤 Cover oleh: SAI Roots\n✍️ Pencipta & Penyanyi Asli: Bob Marley\n🎶 Genre: Reggae Roots\n\n⚠️ Copyright Disclaimer:\nThis song is a cover version of “Roots Rock Reggae” originally written and performed by Bob Marley. All rights belong to the respective copyright owners. This cover is made for artistic expression and tribute purposes only.\n\nTerima kasih sudah menonton.\nDukung terus channel ini dengan subscribe, like, dan share agar kami bisa terus berkarya dan mengunggah konten selanjutnya.\n\n📲 Media sosial:\nInstagram: https://instagram.com/ahmadsupembri\nTikTok: https://tiktok.com/@ahmadsupembri.\n\n#reggae #reggaemusic #rootsrockreggae #rapper #rootsreggae #bobmarley #rap #reggaeindonesia"
     },
     {
         "title": "Three Little Bird – Bob Marley (Reggae SKA Cover by SAI Roots)",
         "slug": "three-little-bird-bob-marley-reggae-ska-cover-by-sai-roots",
         "videoId": "GKShjwW8IBA",
-        "thumbnail": "https://i.ytimg.com/vi/GKShjwW8IBA/hqdefault.jpg",
+        "thumbnail": "https://i.ytimg.com/vi/GKShjwW8IBA/sddefault.jpg",
         "description": "🎤 Cover oleh: SAI Roots\n✍️ Pencipta & Penyanyi Asli: Bob Marley\n🎶 Genre: Reggae SKA\n\n⚠️ Copyright Disclaimer:\nThis song is a cover version of “Three Little Bird” originally written and performed by Bob Marley. All rights belong to the respective copyright owners. This cover is made for artistic expression and tribute purposes only.\n\nOriginal Song \nhttps://youtu.be/HNBCVM4KbUM?si=xNoB4_hYDUvSo_8i\n\nTerima kasih sudah menonton.\nDukung terus channel ini dengan subscribe, like, dan share agar kami bisa terus berkarya dan mengunggah konten selanjutnya.\n\n📲 Media sosial:\nInstagram: https://instagram.com/ahmadsupembri\nTikTok: https://tiktok.com/@ahmadsupembri.\n\n#reggae #reggaemusic #threelittlebirds #rapper #rootsreggae #bobmarley #rap #reggaeindonesia #ska"
     }
 ];
