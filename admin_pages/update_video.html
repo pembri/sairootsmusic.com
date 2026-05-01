@@ -9,8 +9,7 @@
     <link rel="icon" type="image/png" sizes="192x192" href="/android-chrome-192x192.png">
     <link rel="icon" type="image/png" sizes="512x512" href="/android-chrome-512x512.png">
     <link rel="manifest" href="/site.webmanifest">
-    <meta name="robots" content="noindex, nofollow"> 
-    <meta charset="UTF-8">
+    <meta name="robots" content="noindex, nofollow"> <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no">
     <title>Admin Update Video | SAI Roots</title>
 
@@ -99,17 +98,20 @@
                 </div>
                 <div>
                     <label class="block text-xs uppercase tracking-widest text-gray-500 mb-2">GitHub Username / Owner</label>
-                    <input type="text" id="gh-owner" class="w-full bg-black/50 border border-white/10 rounded-sm py-3 px-4 focus:outline-none focus:border-white/50 transition-all text-white text-sm" placeholder="contoh: pembri">
+                    <input type="text" id="gh-owner" class="w-full bg-black/50 border border-white/10 rounded-sm py-3 px-4 focus:outline-none focus:border-white/50 transition-all text-white text-sm" placeholder="contoh: sairoots">
                 </div>
                 <div>
                     <label class="block text-xs uppercase tracking-widest text-gray-500 mb-2">Repository Name</label>
-                    <input type="text" id="gh-repo" class="w-full bg-black/50 border border-white/10 rounded-sm py-3 px-4 focus:outline-none focus:border-white/50 transition-all text-white text-sm" placeholder="contoh: sairootsmusic.com">
+                    <input type="text" id="gh-repo" class="w-full bg-black/50 border border-white/10 rounded-sm py-3 px-4 focus:outline-none focus:border-white/50 transition-all text-white text-sm" placeholder="contoh: sairoots.github.io">
                 </div>
             </div>
 
             <div class="flex items-center gap-4 border-t border-white/10 pt-6">
                 <button id="btn-sync" onclick="startSync()" class="bg-rasta-green hover:bg-green-700 text-white font-bold py-3 px-8 rounded-sm transition duration-300 uppercase tracking-widest text-sm flex-1 md:flex-none">
                     <i class="fas fa-sync-alt mr-2"></i> Tarik & Update
+                </button>
+                <button id="btn-preview" onclick="startSync(true)" class="bg-rasta-yellow hover:bg-yellow-500 text-black font-bold py-3 px-6 rounded-sm transition duration-300 uppercase tracking-widest text-sm flex-1 md:flex-none">
+                    <i class="fas fa-eye mr-2"></i> Preview Saja
                 </button>
                 <div class="flex items-center gap-2">
                     <input type="checkbox" id="save-cred" class="accent-rasta-yellow w-4 h-4" checked>
@@ -179,24 +181,25 @@ menuBtn.addEventListener('click', toggleMenu);
 
 // --- LOGIKA SINKRONISASI ---
 const terminal = document.getElementById('terminal-log');
-const PLAYLIST_ID = 'PL29NQfo2Ox_DkGY9khBqL8vat09CbkI4K';
-const FILE_PATH = 'database.js';
+const PLAYLIST_ID = 'PL29NQfo2Ox_DkGY9khBqL8vat09CbkI4K'; // ID Playlist Cover
+const FILE_PATH = 'database.js'; // Target file di GitHub
 
 function logMsg(msg, isError = false) {
     const time = new Date().toLocaleTimeString();
     const color = isError ? 'text-rasta-red' : 'text-rasta-green';
-    terminal.innerHTML += `<br><span class="text-gray-500">[\( {time}]</span> <span class=" \){color}">${msg}</span>`;
+    terminal.innerHTML += `<br><span class="text-gray-500">[${time}]</span> <span class="${color}">${msg}</span>`;
     terminal.scrollTop = terminal.scrollHeight;
 }
 
+// Unicode safe Base64 encoding/decoding untuk Github API
 function utoa(str) { return window.btoa(unescape(encodeURIComponent(str))); }
 function atou(str) { return decodeURIComponent(escape(window.atob(str))); }
 
 function createSlug(title) {
     return title.toLowerCase()
-        .replace(/[^\w\s-]/g, '')
-        .replace(/[\s_-]+/g, '-')
-        .replace(/^-+|-+$/g, '');
+        .replace(/[^\w\s-]/g, '') // Hapus karakter spesial
+        .replace(/[\s_-]+/g, '-') // Ganti spasi dengan strip
+        .replace(/^-+|-+$/g, ''); // Hapus strip di awal/akhir
 }
 
 // Load Kredensial Tersimpan
@@ -207,17 +210,22 @@ window.onload = () => {
     if (localStorage.getItem('ghRepo')) document.getElementById('gh-repo').value = localStorage.getItem('ghRepo');
 };
 
-async function startSync() {
+async function startSync(previewOnly = false) {
     const ytKey = document.getElementById('yt-api-key').value.trim();
     const ghToken = document.getElementById('gh-token').value.trim();
     const ghOwner = document.getElementById('gh-owner').value.trim();
     const ghRepo = document.getElementById('gh-repo').value.trim();
     const saveCred = document.getElementById('save-cred').checked;
     const btn = document.getElementById('btn-sync');
+    const btnPreview = document.getElementById('btn-preview');
 
-    if (!ytKey || !ghToken || !ghOwner || !ghRepo) {
-        logMsg("GAGAL: Harap isi semua kolom kredensial!", true);
-        return;
+    if (previewOnly) {
+        if (!ytKey) { logMsg("GAGAL: Harap isi YouTube API Key!", true); return; }
+    } else {
+        if (!ytKey || !ghToken || !ghOwner || !ghRepo) {
+            logMsg("GAGAL: Harap isi semua kolom kredensial!", true);
+            return;
+        }
     }
 
     if (saveCred) {
@@ -230,64 +238,78 @@ async function startSync() {
     }
 
     btn.disabled = true;
+    btnPreview.disabled = true;
     btn.innerHTML = `<i class="fas fa-spinner fa-spin mr-2"></i> Memproses...`;
     btn.classList.replace('bg-rasta-green', 'bg-gray-600');
+    btnPreview.classList.replace('bg-rasta-yellow', 'bg-gray-600');
     
-    terminal.innerHTML = '> Memulai proses sinkronisasi...';
+    terminal.innerHTML = previewOnly
+        ? '> Mode Preview: Hanya mengambil data YouTube, tidak push ke GitHub...'
+        : '> Memulai proses sinkronisasi...';
 
     try {
-        // ================== PERBAIKAN FETCH YOUTUBE ==================
+        // 1. Fetch YouTube API
         logMsg(`Mengambil data dari Playlist YouTube (${PLAYLIST_ID})...`);
-        
         let videoData = [];
-        let nextPageToken = '';
+        let nextPageToken = null;
         let page = 1;
-        let totalFetched = 0;
 
-        while (true) {
-            const ytUrl = `https://www.googleapis.com/youtube/v3/playlistItems?part=snippet&maxResults=50&playlistId=\( {PLAYLIST_ID}&key= \){ytKey}${nextPageToken ? '&pageToken=' + nextPageToken : ''}`;
-            
+        do {
+            const ytUrl = `https://www.googleapis.com/youtube/v3/playlistItems?part=snippet,contentDetails&maxResults=50&playlistId=${PLAYLIST_ID}&key=${ytKey}${nextPageToken ? '&pageToken=' + nextPageToken : ''}`;
             const ytRes = await fetch(ytUrl);
             const ytJson = await ytRes.json();
 
-            if (!ytRes.ok) {
-                throw new Error(ytJson.error?.message || ytJson.error || "Gagal menghubungi YouTube API");
-            }
+            if (!ytRes.ok) throw new Error(ytJson.error.message || "Gagal menghubungi YouTube API");
 
-            if (!ytJson.items || ytJson.items.length === 0) {
-                break;
-            }
+            const items = ytJson.items || [];
+            logMsg(`Halaman ${page}: ${items.length} item diterima dari API.`);
 
-            ytJson.items.forEach(item => {
+            items.forEach(item => {
                 const snippet = item.snippet;
-                if (snippet.title !== "Private video" && snippet.title !== "Deleted video") {
-                    videoData.push({
-                        title: snippet.title,
-                        slug: createSlug(snippet.title),
-                        videoId: snippet.resourceId.videoId,
-                        thumbnail: snippet.thumbnails.maxres ? snippet.thumbnails.maxres.url : snippet.thumbnails.high.url,
-                        description: snippet.description || ""
-                    });
-                }
+                const videoId = snippet.resourceId?.videoId || item.contentDetails?.videoId;
+
+                // Skip video private, deleted, atau tanpa videoId
+                if (!videoId) return;
+                if (snippet.title === "Private video" || snippet.title === "Deleted video") return;
+
+                // Hindari duplikat
+                if (videoData.some(v => v.videoId === videoId)) return;
+
+                const thumb = snippet.thumbnails;
+                videoData.push({
+                    title: snippet.title,
+                    slug: createSlug(snippet.title),
+                    videoId: videoId,
+                    thumbnail: thumb?.maxres?.url || thumb?.standard?.url || thumb?.high?.url || thumb?.medium?.url || '',
+                    description: snippet.description || ''
+                });
             });
 
-            totalFetched += ytJson.items.length;
-            logMsg(`Halaman ${page}: ${ytJson.items.length} video diambil (Total: ${totalFetched})`);
-
-            nextPageToken = ytJson.nextPageToken;
+            nextPageToken = ytJson.nextPageToken || null;
             page++;
 
-            if (!nextPageToken) break;
+            // Jeda kecil agar tidak terlalu cepat hit API limit
+            if (nextPageToken) await new Promise(r => setTimeout(r, 300));
+
+        } while (nextPageToken);
+
+        logMsg(`Sukses! ${videoData.length} video cover berhasil diekstrak dari ${page - 1} halaman.`);
+        logMsg(`--- DAFTAR VIDEO YANG DITEMUKAN ---`);
+        videoData.forEach((v, i) => {
+            logMsg(`[${i + 1}] ${v.title} (ID: ${v.videoId})`);
+        });
+        logMsg(`--- TOTAL: ${videoData.length} VIDEO ---`);
+
+        // Jika preview saja, berhenti di sini
+        if (previewOnly) {
+            logMsg(`✅ PREVIEW SELESAI. Tidak ada perubahan yang dikirim ke GitHub.`, false);
+            logMsg(`Jika semua video sudah benar, klik "Tarik & Update" untuk push ke GitHub.`, false);
+            return;
         }
 
-        // Video terbaru biasanya di paling atas setelah di-reverse
-        videoData.reverse();
-
-        logMsg(`Sukses! Total ${videoData.length} video cover berhasil diekstrak.`);
-
-        // ================== BAGIAN GITHub (TIDAK DIUBAH) ==================
+        // 2. Fetch Github File (database.js)
         logMsg(`Memeriksa file ${FILE_PATH} di repositori GitHub...`);
-        const ghUrl = `https://api.github.com/repos/\( {ghOwner}/ \){ghRepo}/contents/${FILE_PATH}`;
+        const ghUrl = `https://api.github.com/repos/${ghOwner}/${ghRepo}/contents/${FILE_PATH}`;
         const ghHeaders = {
             'Authorization': `token ${ghToken}`,
             'Accept': 'application/vnd.github.v3+json'
@@ -305,6 +327,7 @@ async function startSync() {
             fileContent = atou(ghJson.content);
             logMsg(`File ditemukan. Bersiap memperbarui kode...`);
 
+            // Mencari dan mereplace `const coverVideos = [...]`
             const coverRegex = /const\s+coverVideos\s*=\s*\[[\s\S]*?\];/;
             const newVarString = `const coverVideos = ${JSON.stringify(videoData, null, 4)};`;
 
@@ -322,6 +345,7 @@ async function startSync() {
             throw new Error(errJson.message || "Gagal mengakses GitHub API");
         }
 
+        // 3. Commit dan Push ke Github
         logMsg(`Mengirim (push) perubahan ke GitHub...`);
         const commitBody = {
             message: `Auto-sync: Memperbarui data video cover (${videoData.length} video)`,
@@ -341,15 +365,16 @@ async function startSync() {
         }
 
         logMsg(`✅ SINKRONISASI SELESAI! Perubahan berhasil di-push ke branch utama.`, false);
-        logMsg(`Catatan: Karena GitHub Pages, perubahan mungkin butuh 1-3 menit untuk muncul.`, false);
+        logMsg(`Catatan: Karena GitHub Pages, perubahan di web mungkin butuh waktu 1-3 menit untuk muncul.`, false);
 
     } catch (error) {
         logMsg(`ERROR: ${error.message}`, true);
-        console.error(error);
     } finally {
         btn.disabled = false;
+        btnPreview.disabled = false;
         btn.innerHTML = `<i class="fas fa-sync-alt mr-2"></i> Tarik & Update`;
         btn.classList.replace('bg-gray-600', 'bg-rasta-green');
+        btnPreview.classList.replace('bg-gray-600', 'bg-rasta-yellow');
     }
 }
 </script>
