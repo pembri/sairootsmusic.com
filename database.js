@@ -234,7 +234,7 @@ const sairootsDB = {
             "id": "evaluasi-lagi",
             "title": "Evaluasi Lagi",
             "category": "Album Critical Fire",
-            "image": "/asset_gambar/art-critical-fire.jpg",
+            "image": "/asset_gambar/art-album-critical-fire.png",
             "excerpt": "",
             "audio": "/discography/evaluasi-lagi.mp3"
         },
