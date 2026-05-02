@@ -2,13 +2,33 @@
 
 **All Rights Reserved.**
 
-Seluruh isi dalam repositori ini, termasuk namun tidak terbatas pada kode (HTML, CSS, JS), aset gambar, grafis, lirik, dan musik, adalah milik eksklusif dari **SAI Roots**.
+Seluruh isi dalam repositori ini, termasuk namun tidak terbatas pada desain antarmuka pengguna (UI/UX), tata letak, aset gambar, elemen grafis, lirik, artikel, serta struktur direktori dan file sumber berikut:
 
-Izin **TIDAK** diberikan kepada orang atau pihak manapun untuk:
-1. Menyalin, memodifikasi, atau mendistribusikan bagian apa pun dari repositori ini.
-2. Menggunakan aset atau kode untuk tujuan komersial maupun non-komersial.
-3. Melakukan hosting ulang atau penggandaan konten tanpa izin tertulis dari pemilik.
+**Folder/Direktori:**
+- `admin_pages/`
+- `article/`
+- `asset_gambar/`
+- `discography/`
+- `lyric/`
 
-> Penggunaan, reproduksi, atau distribusi materi ini tanpa izin tertulis yang sah sangat dilarang dan dapat berakibat pada tindakan hukum.
+**File:**
+- `index.html`
+- `article.html`
+- `discography.html`
+- `lyric.html`
+- `video_cover.html`
+- `about.html`
+- `privacy.html`
+- `contact.html`
+- `404.html`
 
-Untuk pertanyaan atau permintaan izin, silakan hubungi pemilik melalui saluran resmi yang tertera di [Kontak Kami](https://sairootsmusic.com/contact).
+...adalah hak milik eksklusif dari **SAI Roots Music**.
+
+Izin **TIDAK** diberikan kepada orang atau entitas manapun untuk:
+1. **Menyalin atau Menggandakan**: Mengambil sebagian atau seluruh struktur kode, file, folder, dan desain dari repositori ini.
+2. **Memodifikasi**: Mengubah ulang kode, aset, atau desain untuk digunakan pada proyek pribadi maupun komersial.
+3. **Mendistribusikan**: Menyebarluaskan, membagikan, atau melakukan *hosting* ulang terhadap file-file dan direktori dalam repositori ini tanpa izin tertulis yang sah.
+
+> Penggunaan, pencurian, reproduksi, plagiasi, atau distribusi materi dari repositori ini tanpa izin tertulis adalah pelanggaran hak cipta dan dilarang keras secara hukum.
+
+Untuk pertanyaan terkait hak cipta atau permintaan izin penggunaan, silakan hubungi pengelola melalui saluran resmi di [kontak kami](https://sairootsmusic.com/contact).
