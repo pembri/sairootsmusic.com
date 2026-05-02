@@ -220,8 +220,8 @@
                 articlesToShow.forEach(article => {
                     const html = `
                         <article class="group bg-neutral-950 rounded-none overflow-hidden border border-white/5 hover:border-rasta-${article.color}/30 transition-all">
-                            <div class="h-56 bg-zinc-900 bg-cover bg-center group-hover:scale-105 transition-transform" 
-                                 style="background-image: url('${article.image}'); filter: brightness(100%);"></div>
+                            <div class="h-56 bg-zinc-900 bg-contain bg-center bg-no-repeat group-hover:scale-105 transition-transform" 
+                              style="background-image: url('${article.image}'); filter: brightness(100%);"></div>
                             <div class="p-7">
                                 <span class="text-xs text-rasta-${article.color} font-bold uppercase tracking-widest bg-rasta-${article.color}/10 py-1 px-3">${article.category}</span>
                                 <h3 class="text-2xl font-display mt-4 group-hover:text-rasta-${article.color}">
