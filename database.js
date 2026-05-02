@@ -274,7 +274,7 @@ const sairootsDB = {
             "id": "roots-medication",
             "title": "Roots Medication",
             "category": "Album Critical Fire",
-            "image": "/asset_gambar/art-critical-fire.jpg",
+            "image": "/asset_gambar/art-album-critical-fire.png",
             "excerpt": "",
             "audio": "/discography/roots-medication.mp3"
         },
