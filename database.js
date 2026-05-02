@@ -250,7 +250,7 @@ const sairootsDB = {
             "id": "jamaican-sound",
             "title": "Jamaican Sound",
             "category": "Album Critical Fire",
-            "image": "/asset_gambar/art-critical-fire.jpg",
+            "image": "/asset_gambar/art-album-critical-fire.png",
             "excerpt": "",
             "audio": "/discography/jamaican-sound.mp3"
         },
