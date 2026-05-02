@@ -50,12 +50,10 @@
         #mobile-menu { transition: transform 0.4s cubic-bezier(0.4, 0, 0.2, 1); overflow-y: auto; }
         .menu-open { transform: translateX(0) !important; }
         
-        /* Custom Audio Player Style (Mini Player) */
         #seek-bar { overflow: hidden; appearance: none; background-color: rgba(255,255,255,0.1); }
         #seek-bar::-webkit-slider-runnable-track { height: 4px; appearance: none; color: #FBBF24; }
         #seek-bar::-webkit-slider-thumb { width: 0; appearance: none; height: 0; box-shadow: -100vw 0 0 100vw #FBBF24; }
 
-        /* Custom Fullscreen Player Seekbar */
         #fs-seek-bar { appearance: none; background: rgba(255,255,255,0.2); height: 4px; border-radius: 2px; outline: none; overflow: visible; }
         #fs-seek-bar::-webkit-slider-runnable-track { height: 4px; appearance: none; }
         #fs-seek-bar::-webkit-slider-thumb { width: 12px; height: 12px; appearance: none; background: #fff; border-radius: 50%; box-shadow: 0 0 5px rgba(0,0,0,0.5); margin-top: -4px; cursor: pointer; transition: transform 0.1s; }
@@ -70,12 +68,10 @@
         <div class="container mx-auto px-6 py-4 flex justify-between items-center">
             <div class="text-3xl font-display uppercase tracking-wider">
                 <a href="/" class="flex items-center gap-3 hover:text-rasta-yellow transition-colors duration-300">
-                    <img src="/android-chrome-192x192.png" 
-                         alt="Logo SAI Roots" class="w-10 h-10 rounded-full object-cover border border-white/10">
+                    <img src="/android-chrome-192x192.png" alt="Logo SAI Roots" class="w-10 h-10 rounded-full object-cover border border-white/10">
                     <span>SAI <span class="text-rasta-green">Roots</span></span>
                 </a>
             </div>
-
             <button id="menu-btn" class="focus:outline-none z-50 p-2 rounded-full hover:bg-white/5 transition">
                 <svg id="hamburger-icon" class="w-7 h-7 text-white" fill="none" stroke="currentColor" viewBox="0 0 24 24">
                     <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M4 6h16M4 12h16m-7 6h7"></path>
@@ -86,13 +82,10 @@
 
     <div id="mobile-menu" class="fixed inset-0 z-40 bg-neutral-950 translate-x-full flex flex-col items-center pt-28 pb-12 p-6 border-l border-white/5">
         <div class="w-full max-w-md relative mb-8 shrink-0">
-            <input type="text" id="search-input" placeholder="Cari artikel, lirik, atau lagu..." 
-                   class="w-full bg-white/5 border border-white/10 rounded-none py-4 px-6 focus:outline-none focus:border-rasta-yellow transition-all text-white text-lg">
+            <input type="text" id="search-input" placeholder="Cari artikel, lirik, atau lagu..." class="w-full bg-white/5 border border-white/10 rounded-none py-4 px-6 focus:outline-none focus:border-rasta-yellow transition-all text-white text-lg">
             <span class="absolute right-5 top-1/2 -translate-y-1/2 text-gray-500">⏎</span>
         </div>
-
         <div id="search-results" class="w-full max-w-md flex-1 overflow-y-auto hidden"></div>
-
         <nav id="main-nav" class="flex flex-col space-y-6 text-center uppercase tracking-widest w-full max-w-md">
             <a href="/" class="text-3xl font-display hover:text-rasta-green transition duration-300">Home</a>
             <a href="/discography" class="text-3xl font-display hover:text-rasta-yellow transition duration-300">Discography</a>
@@ -109,9 +102,7 @@
             <h1 class="font-display text-5xl md:text-7xl mb-4 tracking-tight uppercase leading-none text-white">
                 Official <span class="text-rasta-yellow">Discography</span>
             </h1>
-            <p class="text-gray-400 max-w-xl text-sm md:text-base font-light">
-                Dengarkan karya-karya terbaru SAI Roots.
-            </p>
+            <p class="text-gray-400 max-w-xl text-sm md:text-base font-light">Dengarkan karya-karya terbaru SAI Roots.</p>
         </div>
 
         <div id="global-player" onclick="openFullscreenPlayer()" class="fixed bottom-0 left-0 w-full bg-neutral-950/95 border-t border-white/10 p-4 z-[100] transform translate-y-full transition-transform duration-500 backdrop-blur-md cursor-pointer hover:bg-neutral-900">
@@ -135,7 +126,6 @@
 
         <div id="fullscreen-player" class="fixed inset-0 z-[200] bg-neutral-950 flex flex-col transform translate-y-full transition-transform duration-500 pb-10">
             <div class="absolute inset-0 bg-gradient-to-b from-neutral-900 to-black z-[-1]"></div>
-            
             <div class="flex justify-between items-center w-full px-6 pt-8 pb-4">
                 <button onclick="closeFullscreenPlayer()" class="text-white hover:text-rasta-yellow p-2 transition-colors">
                     <i class="fas fa-chevron-down text-xl"></i>
@@ -162,11 +152,8 @@
                         <h2 id="fs-player-title" class="text-2xl font-display text-white truncate mb-1">Judul Lagu</h2>
                         <p id="fs-player-cat" class="text-rasta-yellow text-xs uppercase tracking-widest">Category</p>
                     </div>
-                    <button class="text-white hover:text-rasta-green transition p-2">
-                        <i class="fas fa-plus text-xl"></i>
-                    </button>
+                    <button class="text-white hover:text-rasta-green transition p-2"><i class="fas fa-plus text-xl"></i></button>
                 </div>
-
                 <div class="w-full mb-2 flex items-center h-4">
                     <input type="range" id="fs-seek-bar" value="0" class="w-full h-1 cursor-pointer">
                 </div>
@@ -174,7 +161,6 @@
                     <span id="fs-current-time">0:00</span>
                     <span id="fs-total-time">0:00</span>
                 </div>
-
                 <div class="w-full flex justify-between items-center px-2">
                     <button id="btn-shuffle" onclick="toggleShuffle()" class="text-white hover:text-rasta-green transition text-xl"><i class="fas fa-random"></i></button>
                     <button onclick="playPrev()" class="text-white hover:text-rasta-yellow transition text-3xl"><i class="fas fa-step-backward"></i></button>
@@ -187,8 +173,7 @@
             </div>
         </div>
 
-        <div id="disco-list" class="flex flex-col space-y-4 max-w-4xl mx-auto">
-            </div>
+        <div id="disco-list" class="flex flex-col space-y-4 max-w-4xl mx-auto"></div>
     </main>
 
     <footer id="footer" class="border-t border-white/5 py-12 bg-black">
@@ -196,7 +181,7 @@
             <p class="text-gray-600 text-[10px] tracking-[0.3em] uppercase mb-6">Stream Our Music</p>
             <div class="flex flex-wrap justify-center gap-7 mb-10 text-gray-400">
                 <a href="https://www.youtube.com/@sairoots" target="_blank" class="hover:text-[#ff0000]"><i class="fab fa-youtube text-2xl"></i></a>
-                <a href="https://open.spotify.com/artist/0xOPCtZvhXVd9RTbU1aYTr" target="_blank" class="hover:text-[#1DB954]"><i class="fab fa-spotify text-2xl"></i></a>
+                <a href="https://open.spotify.com/artist/sairoots" target="_blank" class="hover:text-[#1DB954]"><i class="fab fa-spotify text-2xl"></i></a>
                 <a href="https://music.apple.com/id/artist/sai-roots/1892187423?l=id" target="_blank" class="hover:text-white"><i class="fab fa-apple text-2xl"></i></a>
                 <a href="https://m.soundcloud.com/sairoots" target="_blank" class="hover:text-[#ff5500]"><i class="fab fa-soundcloud text-2xl"></i></a>
                 <a href="https://link.deezer.com/s/3366qh6efN8QoSqSPCEsB" target="_blank" class="hover:text-white"><i class="fab fa-deezer text-2xl"></i></a>
@@ -217,7 +202,6 @@
     <script src="./database.js"></script>
 
     <script>
-        // ================= UI & HAMBURGER (MUTLAK SAMA) =================
         const menuBtn = document.getElementById('menu-btn');
         const mobileMenu = document.getElementById('mobile-menu');
         const hamburgerIcon = document.getElementById('hamburger-icon');
@@ -242,12 +226,9 @@
         menuBtn.addEventListener('click', toggleMenu);
         searchInput.addEventListener('click', e => e.stopPropagation());
 
-        // ================= AUDIO PLAYER LOGIC UPGRADE =================
         const audio = document.getElementById('main-audio-element');
         const globalPlayer = document.getElementById('global-player');
         const fullscreenPlayer = document.getElementById('fullscreen-player');
-        
-        // Elemen Player
         const playIcon = document.getElementById('play-icon');
         const fsPlayIcon = document.getElementById('fs-play-icon');
         const seekBar = document.getElementById('seek-bar');
@@ -273,11 +254,23 @@
         window.openFullscreenPlayer = function() {
             fullscreenPlayer.classList.remove('translate-y-full');
             document.body.style.overflow = 'hidden';
+            
+            // KEMBALIKAN URL SAAT MAXIMIZE
+            if (currentTrackIndex !== -1 && typeof sairootsDB !== 'undefined') {
+                const track = sairootsDB.discography[currentTrackIndex];
+                const slug = createSlug(track.title);
+                const trackUrl = window.location.protocol + "//" + window.location.host + window.location.pathname + '?track=' + slug;
+                window.history.pushState({path: trackUrl}, '', trackUrl);
+            }
         };
 
         window.closeFullscreenPlayer = function() {
             fullscreenPlayer.classList.add('translate-y-full');
             document.body.style.overflow = 'auto';
+            
+            // BERSIHKAN URL SAAT MINIMIZE
+            const cleanUrl = window.location.protocol + "//" + window.location.host + window.location.pathname;
+            window.history.pushState({path: cleanUrl}, '', cleanUrl);
         };
 
         window.updatePlayState = function(isPlaying) {
@@ -312,13 +305,11 @@
             audio.src = track.audio;
             audio.play();
             
-            // Update Mini Player
             globalPlayer.classList.remove('translate-y-full');
             document.getElementById('player-title').innerText = track.title;
             document.getElementById('player-cat').innerText = track.category;
             document.getElementById('player-img').src = track.image;
             
-            // Update Fullscreen Player
             document.getElementById('fs-player-title').innerText = track.title;
             document.getElementById('fs-player-cat').innerText = track.category;
             document.getElementById('fs-player-img').src = track.image;
@@ -326,7 +317,6 @@
             updatePlayState(true);
             openFullscreenPlayer();
             
-            // ================= TITLE SWITCHER (DINAMIS GANTI JUDUL & SEO) =================
             const newTitle = `${track.title} | SAI Roots`;
             document.title = newTitle;
             
@@ -335,15 +325,6 @@
             
             const metaDesc = document.querySelector('meta[name="description"]');
             if (metaDesc) metaDesc.setAttribute('content', `Dengarkan lagu ${track.title} dari SAI Roots - ${track.category}`);
-            
-            const ogDesc = document.querySelector('meta[property="og:description"]');
-            if (ogDesc) ogDesc.setAttribute('content', `Dengarkan lagu ${track.title} dari SAI Roots - ${track.category}`);
-            // ==============================================================================
-
-            // Update URL Clean Mode
-            const slug = createSlug(track.title);
-            const newUrl = window.location.protocol + "//" + window.location.host + window.location.pathname + '?track=' + slug;
-            window.history.pushState({path: newUrl}, '', newUrl);
         };
 
         window.playNext = function() {
@@ -382,22 +363,21 @@
         window.shareTrack = async function() {
             if (currentTrackIndex === -1 || typeof sairootsDB === 'undefined') return;
             const track = sairootsDB.discography[currentTrackIndex];
+            const slug = createSlug(track.title);
+            const shareUrl = window.location.protocol + "//" + window.location.host + window.location.pathname + '?track=' + slug;
             
             const shareData = {
                 title: track.title + ' - SAI Roots',
                 text: 'Dengarkan lagu ' + track.title + ' dari SAI Roots!',
-                url: window.location.href
+                url: shareUrl
             };
 
-            // Web Share API
             if (navigator.share) {
                 try {
                     await navigator.share(shareData);
-                } catch (err) {
-                    console.log('Berbagi dibatalkan', err);
-                }
+                } catch (err) { console.log('Berbagi dibatalkan', err); }
             } else {
-                navigator.clipboard.writeText(window.location.href).then(() => {
+                navigator.clipboard.writeText(shareUrl).then(() => {
                     const tooltip = document.getElementById('share-tooltip');
                     tooltip.classList.remove('opacity-0');
                     setTimeout(() => tooltip.classList.add('opacity-0'), 2500);
@@ -405,15 +385,37 @@
             }
         };
 
-        // Event Listeners Audio
+        window.shareTrackFromList = async function(index, event) {
+            if (event) event.stopPropagation();
+            if (typeof sairootsDB === 'undefined') return;
+            
+            const track = sairootsDB.discography[index];
+            const slug = createSlug(track.title);
+            const trackUrl = window.location.protocol + "//" + window.location.host + window.location.pathname + '?track=' + slug;
+            
+            const shareData = {
+                title: track.title + ' - SAI Roots',
+                text: 'Dengarkan lagu ' + track.title + ' dari SAI Roots!',
+                url: trackUrl
+            };
+
+            if (navigator.share) {
+                try {
+                    await navigator.share(shareData);
+                } catch (err) { console.log('Berbagi dibatalkan', err); }
+            } else {
+                navigator.clipboard.writeText(trackUrl).then(() => {
+                    alert('Tautan lagu disalin: ' + trackUrl);
+                });
+            }
+        };
+
         audio.addEventListener('timeupdate', () => {
             if (audio.duration) {
                 const percent = (audio.currentTime / audio.duration) * 100;
                 seekBar.value = percent;
                 fsSeekBar.value = percent;
-                
                 fsSeekBar.style.background = `linear-gradient(to right, #2D8659 ${percent}%, rgba(255,255,255,0.2) ${percent}%)`;
-                
                 fsCurrentTime.innerText = formatTime(audio.currentTime);
                 fsTotalTime.innerText = formatTime(audio.duration);
             }
@@ -427,55 +429,29 @@
             if (!isRepeat) playNext();
         });
 
-        fsSeekBar.addEventListener('input', () => {
-            audio.currentTime = (fsSeekBar.value / 100) * audio.duration;
-        });
-        
-        seekBar.addEventListener('input', () => {
-            audio.currentTime = (seekBar.value / 100) * audio.duration;
-        });
+        fsSeekBar.addEventListener('input', () => { audio.currentTime = (fsSeekBar.value / 100) * audio.duration; });
+        seekBar.addEventListener('input', () => { audio.currentTime = (seekBar.value / 100) * audio.duration; });
 
-
-        // ================= LOGIKA DATA & PENCARIAN (UPGRADE BARU) =================
-                  try {
-            // 1. Persiapkan Data Pencarian Secara Dinamis
+        try {
             let allSearchData = [];
-            
             if (typeof sairootsDB !== 'undefined') {
-                const articles = sairootsDB.articles.map(a => ({
-                    type: "Article", title: a.title, url: `/article/${a.id}`, excerpt: a.excerpt, category: a.category
-                }));
-                const lyrics = sairootsDB.lyrics.map(l => ({
-                    type: "Lyric", title: `${l.title} (Lyrics)`, url: `/lyric/${l.id}`, excerpt: l.excerpt, category: l.category
-                }));
-                const disco = sairootsDB.discography.map(d => ({
-                    type: "Discography", title: d.title, url: `/discography?track=${d.id}`, excerpt: d.excerpt, category: d.category
-                }));
+                const articles = sairootsDB.articles.map(a => ({ type: "Article", title: a.title, url: `/article/${a.id}`, excerpt: a.excerpt, category: a.category }));
+                const lyrics = sairootsDB.lyrics.map(l => ({ type: "Lyric", title: `${l.title} (Lyrics)`, url: `/lyric/${l.id}`, excerpt: l.excerpt, category: l.category }));
+                const disco = sairootsDB.discography.map(d => ({ type: "Discography", title: d.title, url: `/discography?track=${createSlug(d.title)}`, excerpt: d.excerpt, category: d.category }));
                 allSearchData = [...articles, ...lyrics, ...disco];
             }
 
             if (typeof coverVideos !== 'undefined' && coverVideos.length > 0) {
-                const formattedCovers = coverVideos.map(video => ({
-                    type: 'Cover', 
-                    title: video.title, 
-                    url: `/video_cover.html?video=${video.slug}`, // INI YANG SUDAH GUE FIX COK!
-                    excerpt: video.description, 
-                    category: 'Playlist Cover'
-                }));
+                const formattedCovers = coverVideos.map(video => ({ type: 'Cover', title: video.title, url: `/video_cover.html?video=${video.slug}`, excerpt: video.description, category: 'Playlist Cover' }));
                 allSearchData = [...allSearchData, ...formattedCovers];
             }
 
-            const fuse = new Fuse(allSearchData, { 
-                keys: ['title', 'excerpt', 'category', 'type'], 
-                threshold: 0.3 
-            });
+            const fuse = new Fuse(allSearchData, { keys: ['title', 'excerpt', 'category', 'type'], threshold: 0.3 });
 
-            // FUNGSI RENDER LIST DISCOGRAPHY (TETAP AMAN)
             window.renderDiscography = function() {
                 const list = document.getElementById('disco-list');
                 if(!list) return;
                 list.innerHTML = '';
-
                 if (typeof sairootsDB === 'undefined' || !sairootsDB.discography) return;
 
                 sairootsDB.discography.forEach((track, index) => {
@@ -484,8 +460,7 @@
                             <div class="flex items-center gap-6 min-w-0">
                                 <div class="relative w-16 h-16 shrink-0 group-hover:scale-105 transition-transform duration-300">
                                     <img src="${track.image}" class="w-full h-full object-cover brightness-100">
-                                    <button onclick="playTrack(${index})" 
-                                            class="absolute inset-0 flex items-center justify-center bg-black/40 opacity-0 group-hover:opacity-100 transition-opacity">
+                                    <button onclick="playTrack(${index})" class="absolute inset-0 flex items-center justify-center bg-black/40 opacity-0 group-hover:opacity-100 transition-opacity">
                                         <i class="fas fa-play text-white text-lg"></i>
                                     </button>
                                 </div>
@@ -495,10 +470,10 @@
                                     <p class="text-xs text-gray-500 line-clamp-1">${track.excerpt}</p>
                                 </div>
                             </div>
-                            <div class="flex items-center gap-4">
-                                <a href="${track.audio}" download class="text-gray-500 hover:text-white transition p-2">
-                                    <i class="fas fa-download"></i>
-                                </a>
+                            <div class="flex items-center gap-4 relative">
+                                <button onclick="shareTrackFromList(${index}, event)" class="text-gray-500 hover:text-rasta-green transition p-2">
+                                    <i class="fas fa-share-alt"></i>
+                                </button>
                             </div>
                         </div>
                     `;
@@ -506,27 +481,13 @@
                 });
             }
 
-            // FUNGSI PENCARIAN (SAMA DENGAN HALAMAN LAIN)
             function showSearchResults(query) {
                 const container = document.getElementById('search-results');
                 const nav = document.getElementById('main-nav');
-                
-                if (query.length < 2) {
-                    container.classList.add('hidden');
-                    nav.classList.remove('hidden');
-                    return;
-                }
-
+                if (query.length < 2) { container.classList.add('hidden'); nav.classList.remove('hidden'); return; }
                 const results = fuse.search(query);
-                nav.classList.add('hidden');
-                container.classList.remove('hidden');
-                container.innerHTML = '';
-
-                if (results.length === 0) {
-                    container.innerHTML = `<div class="text-center py-10"><p class="text-gray-400 text-lg">Tidak ada hasil untuk "<span class="text-white">${query}</span>"</p></div>`;
-                    return;
-                }
-
+                nav.classList.add('hidden'); container.classList.remove('hidden'); container.innerHTML = '';
+                if (results.length === 0) { container.innerHTML = `<div class="text-center py-10"><p class="text-gray-400 text-lg">Tidak ada hasil untuk "<span class="text-white">${query}</span>"</p></div>`; return; }
                 let html = '<div class="flex flex-col space-y-3 w-full pb-6">';
                 results.forEach(result => {
                     const item = result.item;
@@ -535,20 +496,12 @@
                     else if (item.type === 'Discography') colorClass = 'text-rasta-yellow border-rasta-yellow';
                     else if (item.type === 'Lyric') colorClass = 'text-rasta-red border-rasta-red';
                     else if (item.type === 'Cover') colorClass = 'text-white border-white';
-
-                    html += `
-                        <a href="${item.url}" class="block bg-white/5 border border-white/10 p-4 hover:bg-white/10 hover:border-white/30 transition-all text-left">
-                            <div class="flex justify-between items-start mb-2">
-                                <span class="text-[10px] uppercase tracking-widest px-2 py-0.5 border ${colorClass}">${item.type}</span>
-                                <span class="text-xs text-gray-500">${item.category}</span>
-                            </div>
+                    html += `<a href="${item.url}" class="block bg-white/5 border border-white/10 p-4 hover:bg-white/10 hover:border-white/30 transition-all text-left">
+                            <div class="flex justify-between items-start mb-2"><span class="text-[10px] uppercase tracking-widest px-2 py-0.5 border ${colorClass}">${item.type}</span><span class="text-xs text-gray-500">${item.category}</span></div>
                             <h4 class="text-xl font-display text-white mb-1 tracking-wide">${item.title}</h4>
-                            <p class="text-sm text-gray-400 line-clamp-2 font-light">${item.excerpt}</p>
-                        </a>
-                    `;
+                            <p class="text-sm text-gray-400 line-clamp-2 font-light">${item.excerpt}</p></a>`;
                 });
-                html += '</div>';
-                container.innerHTML = html;
+                html += '</div>'; container.innerHTML = html;
             }
 
             searchInput.addEventListener('input', (e) => showSearchResults(e.target.value.trim()));
@@ -559,15 +512,10 @@
                 const trackSlug = urlParams.get('track');
                 if (trackSlug && typeof sairootsDB !== 'undefined') {
                     const index = sairootsDB.discography.findIndex(t => createSlug(t.title) === trackSlug);
-                    if (index !== -1) {
-                        setTimeout(() => playTrack(index), 600);
-                    }
+                    if (index !== -1) { setTimeout(() => playTrack(index), 600); }
                 }
             });
-
-        } catch (error) {
-            console.warn("Menunggu database.js...", error);
-        }
+        } catch (error) { console.warn("Menunggu database.js...", error); }
     </script>
 </body>
 </html>
