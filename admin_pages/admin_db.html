@@ -3,7 +3,7 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Admin | Database Manager V2</title>
+    <title>Admin | Database Manager</title>
     <script src="https://cdn.tailwindcss.com"></script>
     <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.0.0/css/all.min.css">
     <style>
@@ -11,14 +11,22 @@
         .sai-card { background: #111; border: 1px solid #222; }
         .input-sai { background: #000; border: 1px solid #333; color: white; transition: 0.3s; }
         .input-sai:focus { border-color: #ef4444; outline: none; }
-        .tab-btn { color: #666; transition: 0.3s; border-bottom: 2px solid transparent; padding-bottom: 1rem; font-weight: 900; white-space: nowrap; }
+        .tab-btn { color: #666; transition: 0.3s; border-bottom: 2px solid transparent; }
         .tab-btn.active { color: #ef4444; border-bottom: 2px solid #ef4444; }
         .modal-open { overflow: hidden; }
+        /* Custom scrollbar */
         ::-webkit-scrollbar { width: 5px; }
         ::-webkit-scrollbar-track { background: #000; }
         ::-webkit-scrollbar-thumb { background: #333; border-radius: 10px; }
-        .zoom-in { animation: zoom 0.2s ease-out; }
-        @keyframes zoom { from { transform: scale(0.95); opacity: 0; } to { transform: scale(1); opacity: 1; } }
+        
+        /* Animasi Pop-up */
+        .zoom-in {
+            animation: zoom 0.2s ease-out;
+        }
+        @keyframes zoom {
+            from { transform: scale(0.95); opacity: 0; }
+            to { transform: scale(1); opacity: 1; }
+        }
     </style>
 </head>
 <body>
@@ -45,22 +53,23 @@
 
     <div class="max-w-4xl mx-auto w-full p-4 flex-grow">
         <div class="flex space-x-8 mb-6 border-b border-zinc-800 overflow-x-auto no-scrollbar">
-            <button onclick="switchTab('articles')" id="tab-articles" class="tab-btn active">ARTICLES</button>
-            <button onclick="switchTab('lyrics')" id="tab-lyrics" class="tab-btn">LYRICS</button>
-            <button onclick="switchTab('discography')" id="tab-discography" class="tab-btn">DISCOGRAPHY</button>
-            <button onclick="switchTab('covers')" id="tab-covers" class="tab-btn">COVERS <span class="text-[10px] bg-red-600 text-white px-1 rounded ml-1">NEW</span></button>
+            <button onclick="switchTab('articles')" id="tab-articles" class="tab-btn pb-4 font-black active whitespace-nowrap">ARTICLES</button>
+            <button onclick="switchTab('lyrics')" id="tab-lyrics" class="tab-btn pb-4 font-black whitespace-nowrap">LYRICS</button>
+            <button onclick="switchTab('discography')" id="tab-discography" class="tab-btn pb-4 font-black whitespace-nowrap">DISCOGRAPHY</button>
         </div>
 
         <button onclick="prepareNew()" class="w-full mb-6 bg-zinc-900 border border-zinc-800 text-zinc-300 hover:bg-red-600 hover:text-white p-5 rounded-2xl font-bold transition flex items-center justify-center gap-3 group">
             <i class="fas fa-plus-circle text-red-600 group-hover:text-white transition"></i> TAMBAH DATA BARU
         </button>
 
-        <div id="dataList" class="grid grid-cols-1 gap-3 mb-20"></div>
+        <div id="dataList" class="grid grid-cols-1 gap-3 mb-20">
+            </div>
     </div>
 </div>
 
 <div id="modalEditor" class="fixed inset-0 bg-black/90 backdrop-blur-md z-[60] hidden flex items-center justify-center p-4">
     <div class="sai-card bg-[#0a0a0a] border border-zinc-800 w-full max-w-lg rounded-3xl overflow-hidden shadow-2xl zoom-in">
+        
         <div class="p-5 border-b border-zinc-800 flex justify-between items-center bg-[#111]">
             <h3 id="modalTitle" class="font-black text-yellow-500 uppercase tracking-tighter">Editor</h3>
             <div class="flex items-center gap-4">
@@ -69,31 +78,27 @@
             </div>
         </div>
         
-        <div class="p-6 space-y-5 max-h-[65vh] overflow-y-auto custom-scrollbar">
+        <div class="p-6 space-y-5 max-h-[65vh] overflow-y-auto">
             <div class="grid grid-cols-1 gap-4">
                 <div>
-                    <label class="text-[10px] text-zinc-500 uppercase font-bold tracking-widest">ID / Slug</label>
-                    <input type="text" id="f_id" class="input-sai w-full p-3 rounded-xl mt-1" placeholder="slug-tanpa-html">
-                </div>
-                <div id="ytVideoGroup" class="hidden">
-                    <label class="text-[10px] text-zinc-400 uppercase font-bold tracking-widest">YouTube Video ID</label>
-                    <input type="text" id="f_videoId" class="input-sai w-full p-3 rounded-xl mt-1 border-red-900/30" placeholder="Contoh: dQw4w9WgXcQ">
+                    <label class="text-[10px] text-zinc-500 uppercase font-bold tracking-widest">ID / Slug (Tanpa .html)</label>
+                    <input type="text" id="f_id" class="input-sai w-full p-3 rounded-xl mt-1" placeholder="judul-lagu-slug">
                 </div>
                 <div>
                     <label class="text-[10px] text-zinc-500 uppercase font-bold tracking-widest">Judul Konten</label>
                     <input type="text" id="f_title" class="input-sai w-full p-3 rounded-xl mt-1">
                 </div>
-                <div id="categoryGroup">
+                <div>
                     <label class="text-[10px] text-zinc-500 uppercase font-bold tracking-widest">Kategori / Label</label>
                     <input type="text" id="f_category" class="input-sai w-full p-3 rounded-xl mt-1">
                 </div>
                 <div>
-                    <label class="text-[10px] text-zinc-500 uppercase font-bold tracking-widest">Image / Thumbnail URL</label>
+                    <label class="text-[10px] text-zinc-500 uppercase font-bold tracking-widest">Image URL</label>
                     <input type="text" id="f_image" class="input-sai w-full p-3 rounded-xl mt-1">
                 </div>
                 <div>
-                    <label class="text-[10px] text-zinc-500 uppercase font-bold tracking-widest">Deskripsi / Excerpt</label>
-                    <textarea id="f_excerpt" class="input-sai w-full p-3 rounded-xl mt-1 h-32 resize-none"></textarea>
+                    <label class="text-[10px] text-zinc-500 uppercase font-bold tracking-widest">Excerpt (Kutipan)</label>
+                    <textarea id="f_excerpt" class="input-sai w-full p-3 rounded-xl mt-1 h-24 resize-none"></textarea>
                 </div>
                 <div id="audioGroup" class="hidden">
                     <label class="text-[10px] text-zinc-400 uppercase font-bold tracking-widest">Audio Path (.mp3)</label>
@@ -114,15 +119,10 @@
 <script>
 const CONFIG = { owner: 'pembri', repo: 'sairootsmusic.com', path: 'database.js' };
 let db = { articles: [], lyrics: [], discography: [] };
-let coverVideos = []; // Variabel baru untuk menampung data cover
 let currentTab = 'articles';
 let currentSha = '';
 let rawFileContent = '';
 let editingId = null;
-
-// Helper Unicode Base64
-function utoa(str) { return btoa(unescape(encodeURIComponent(str))); }
-function atou(str) { return decodeURIComponent(escape(atob(str))); }
 
 async function login() {
     const token = document.getElementById('ghToken').value;
@@ -137,7 +137,7 @@ async function login() {
         const data = await res.json();
         if(res.ok) {
             currentSha = data.sha;
-            rawFileContent = atou(data.content);
+            rawFileContent = atob(data.content);
             parseDB(rawFileContent);
             document.getElementById('loginOverlay').classList.add('hidden');
             document.getElementById('adminPanel').classList.remove('hidden');
@@ -150,22 +150,12 @@ async function login() {
 
 function parseDB(content) {
     try {
-        // Parse sairootsDB (Lama)
-        const dbStart = content.indexOf('const sairootsDB = {');
-        const dbEnd = content.indexOf('};', dbStart) + 2;
-        const dbJsonStr = content.substring(dbStart, dbEnd).replace('const sairootsDB = ', '').replace(';', '');
-        db = JSON.parse(dbJsonStr);
-
-        // Parse coverVideos (Baru - Jika ada)
-        const cvStart = content.indexOf('const coverVideos = [');
-        if (cvStart !== -1) {
-            const cvEnd = content.indexOf('];', cvStart) + 2;
-            const cvJsonStr = content.substring(cvStart, cvEnd).replace('const coverVideos = ', '').replace(';', '');
-            coverVideos = JSON.parse(cvJsonStr);
-        }
+        const start = content.indexOf('const sairootsDB = {');
+        const end = content.indexOf('};', start) + 2;
+        const jsonStr = content.substring(start, end).replace('const sairootsDB = ', '').replace(';', '');
+        db = JSON.parse(jsonStr);
     } catch (e) {
-        console.error(e);
-        alert("Gagal memproses struktur database.js! Memastikan format file benar.");
+        alert("Gagal memproses struktur database.js! Pastikan format file benar.");
     }
 }
 
@@ -180,49 +170,47 @@ function renderList() {
     const container = document.getElementById('dataList');
     container.innerHTML = '';
     
-    const activeData = (currentTab === 'covers') ? coverVideos : db[currentTab];
-    
-    if (!activeData || activeData.length === 0) {
+    if (!db[currentTab] || db[currentTab].length === 0) {
         container.innerHTML = '<div class="text-center p-10 text-zinc-700 italic">Belum ada data.</div>';
         return;
     }
 
-    activeData.forEach((item, index) => {
+    db[currentTab].forEach((item, index) => {
         const div = document.createElement('div');
-        div.className = "p-3 bg-zinc-950 border border-zinc-900 rounded-2xl hover:border-red-600 transition flex justify-between items-center group shadow-sm";
-        
-        // Cek ID atau Slug
-        const displayId = (currentTab === 'covers') ? item.slug : item.id;
-        const displayImg = (currentTab === 'covers') ? item.thumbnail : item.image;
-
+        div.className = "p-4 bg-zinc-950 border border-zinc-900 rounded-2xl hover:border-red-600 transition flex justify-between items-center group shadow-sm";
         div.innerHTML = `
             <div class="flex items-center gap-4 overflow-hidden">
                 <div class="flex flex-col gap-1">
                     <button onclick="moveItem(${index}, 'up')" class="text-zinc-800 hover:text-yellow-500 transition text-xs"><i class="fas fa-chevron-up"></i></button>
                     <button onclick="moveItem(${index}, 'down')" class="text-zinc-800 hover:text-yellow-500 transition text-xs"><i class="fas fa-chevron-down"></i></button>
                 </div>
-                <img src="${displayImg}" class="w-12 h-12 object-cover rounded-lg border border-zinc-800 shrink-0">
-                <div class="overflow-hidden cursor-pointer" onclick="loadToEditorByIndex(${index})">
+                <div class="overflow-hidden cursor-pointer" onclick="loadToEditorById('${item.id}')">
                     <div class="font-bold text-zinc-300 group-hover:text-red-500 transition truncate text-sm">${item.title}</div>
-                    <div class="text-[9px] text-zinc-600 tracking-widest uppercase mt-1 italic">${displayId}</div>
+                    <div class="text-[9px] text-zinc-600 tracking-widest uppercase mt-1 italic">${item.id}</div>
                 </div>
             </div>
-            <i class="fas fa-edit text-zinc-800 group-hover:text-white transition cursor-pointer p-2" onclick="loadToEditorByIndex(${index})"></i>
+            <i class="fas fa-edit text-zinc-800 group-hover:text-white transition cursor-pointer" onclick="loadToEditorById('${item.id}')"></i>
         `;
         container.appendChild(div);
     });
 }
 
+// Fitur Geser Posisi
 async function moveItem(index, direction) {
-    const arr = (currentTab === 'covers') ? coverVideos : db[currentTab];
+    const arr = db[currentTab];
     if (direction === 'up' && index > 0) {
         [arr[index], arr[index - 1]] = [arr[index - 1], arr[index]];
     } else if (direction === 'down' && index < arr.length - 1) {
         [arr[index], arr[index + 1]] = [arr[index + 1], arr[index]];
-    } else { return; }
+    } else {
+        return;
+    }
     
+    // Tampilkan perubahan di UI dulu agar responsif
     renderList();
-    await silentPush("Reorder " + currentTab);
+    
+    // Auto-save ke GitHub agar posisi di database.js berubah
+    await silentPush();
 }
 
 function openModal() {
@@ -235,26 +223,29 @@ function closeModal() {
     document.body.classList.remove('modal-open');
 }
 
-function loadToEditorByIndex(index) {
-    const item = (currentTab === 'covers') ? coverVideos[index] : db[currentTab][index];
-    editingId = (currentTab === 'covers') ? item.slug : item.id;
-    
+// Helper untuk render modal via ID
+function loadToEditorById(id) {
+    const item = db[currentTab].find(i => i.id === id);
+    if(item) loadToEditor(item);
+}
+
+function loadToEditor(item) {
+    editingId = item.id;
     document.getElementById('modalTitle').innerText = "EDIT: " + item.title;
-    document.getElementById('f_id').value = editingId;
+    document.getElementById('f_id').value = item.id;
     document.getElementById('f_title').value = item.title;
-    document.getElementById('f_image').value = (currentTab === 'covers') ? item.thumbnail : item.image;
-    document.getElementById('f_excerpt').value = (currentTab === 'covers') ? item.description : (item.excerpt || "");
+    document.getElementById('f_category').value = item.category;
+    document.getElementById('f_image').value = item.image;
+    document.getElementById('f_excerpt').value = item.excerpt || "";
     
-    // Toggle Fields
     document.getElementById('deleteBtn').classList.remove('hidden');
-    document.getElementById('audioGroup').classList.toggle('hidden', currentTab !== 'discography');
-    document.getElementById('ytVideoGroup').classList.toggle('hidden', currentTab !== 'covers');
-    document.getElementById('categoryGroup').classList.toggle('hidden', currentTab === 'covers');
-
-    if(currentTab === 'discography') document.getElementById('f_audio').value = item.audio || "";
-    if(currentTab === 'covers') document.getElementById('f_videoId').value = item.videoId || "";
-    if(currentTab !== 'covers') document.getElementById('f_category').value = item.category || "";
-
+    const audioGrp = document.getElementById('audioGroup');
+    if(currentTab === 'discography') {
+        audioGrp.classList.remove('hidden');
+        document.getElementById('f_audio').value = item.audio || "";
+    } else {
+        audioGrp.classList.add('hidden');
+    }
     openModal();
 }
 
@@ -268,38 +259,38 @@ function prepareNew() {
     document.getElementById('f_excerpt').value = "";
     
     document.getElementById('deleteBtn').classList.add('hidden');
-    document.getElementById('audioGroup').classList.toggle('hidden', currentTab !== 'discography');
-    document.getElementById('ytVideoGroup').classList.toggle('hidden', currentTab !== 'covers');
-    document.getElementById('categoryGroup').classList.toggle('hidden', currentTab === 'covers');
-
+    const audioGrp = document.getElementById('audioGroup');
+    if(currentTab === 'discography') {
+        audioGrp.classList.remove('hidden');
+        document.getElementById('f_audio').value = "";
+    } else {
+        audioGrp.classList.add('hidden');
+    }
     openModal();
 }
 
+// Fitur Hapus Data
 async function deleteData() {
-    if(!confirm("Hapus data ini?")) return;
-    if(currentTab === 'covers') {
-        coverVideos = coverVideos.filter(i => i.slug !== editingId);
-    } else {
-        db[currentTab] = db[currentTab].filter(i => i.id !== editingId);
-    }
-    await silentPush("Hapus " + currentTab);
+    if(!confirm("Yakin mau hapus data ini dari database SAI Roots?")) return;
+    
+    const btn = document.getElementById('saveBtn');
+    btn.disabled = true;
+    
+    db[currentTab] = db[currentTab].filter(i => i.id !== editingId);
+    
+    await silentPush("Hapus data");
     closeModal();
     renderList();
 }
 
+// Fungsi Push Internal (Tanpa Reload)
 async function silentPush(msg = "Update Database") {
     const token = document.getElementById('ghToken').value;
-    
-    // Konstruksi String Database Baru
     const dbString = `const sairootsDB = ${JSON.stringify(db, null, 4)};`;
-    const cvString = `const coverVideos = ${JSON.stringify(coverVideos, null, 4)};`;
-    
     const startAnchor = "// === PUSAT DATA SAI ROOTS ===";
     const endAnchor = "// === DATA PENCARIAN GLOBAL (FUSE.JS) ===";
-    
-    // Pecah file lama untuk mengambil bagian pencarian (Fuse.js) agar tidak hilang
     const partsTail = rawFileContent.split(endAnchor);
-    const finalFileContent = `${startAnchor}\n// File ini di-update otomatis\n\n${dbString}\n\n${cvString}\n\n${endAnchor}${partsTail[1]}`;
+    const finalFileContent = `${startAnchor}\n// File ini akan di-update otomatis oleh admin_post.html\n\n${dbString}\n\n${endAnchor}${partsTail[1]}`;
 
     try {
         const res = await fetch(`https://api.github.com/repos/${CONFIG.owner}/${CONFIG.repo}/contents/${CONFIG.path}`, {
@@ -307,7 +298,7 @@ async function silentPush(msg = "Update Database") {
             headers: { 'Authorization': `token ${token}`, 'Content-Type': 'application/json' },
             body: JSON.stringify({
                 message: msg,
-                content: utoa(finalFileContent),
+                content: btoa(unescape(encodeURIComponent(finalFileContent))),
                 sha: currentSha
             })
         });
@@ -318,59 +309,43 @@ async function silentPush(msg = "Update Database") {
             rawFileContent = finalFileContent;
             return true;
         }
-    } catch (e) { console.error("Sync failed", e); }
+    } catch (e) { console.error("Sync failed"); }
     return false;
 }
 
 async function saveData() {
+    const token = document.getElementById('ghToken').value;
     const btn = document.getElementById('saveBtn');
-    const idVal = document.getElementById('f_id').value;
-    if(!idVal) return alert("ID wajib diisi!");
+    const idBaru = document.getElementById('f_id').value;
+    
+    if(!idBaru) return alert("ID wajib diisi!");
 
     btn.disabled = true;
     btn.innerHTML = '<i class="fas fa-spinner fa-spin mr-2"></i>PROSES...';
 
-    let itemData = {};
-    if (currentTab === 'covers') {
-        itemData = {
-            title: document.getElementById('f_title').value,
-            slug: idVal,
-            videoId: document.getElementById('f_videoId').value,
-            thumbnail: document.getElementById('f_image').value,
-            description: document.getElementById('f_excerpt').value
-        };
-    } else {
-        itemData = {
-            id: idVal,
-            title: document.getElementById('f_title').value,
-            category: document.getElementById('f_category').value,
-            image: document.getElementById('f_image').value,
-            excerpt: document.getElementById('f_excerpt').value
-        };
-        if(currentTab === 'discography') itemData.audio = document.getElementById('f_audio').value;
-    }
+    const itemData = {
+        id: idBaru,
+        title: document.getElementById('f_title').value,
+        category: document.getElementById('f_category').value,
+        image: document.getElementById('f_image').value,
+        excerpt: document.getElementById('f_excerpt').value
+    };
+    if(currentTab === 'discography') itemData.audio = document.getElementById('f_audio').value;
 
-    // Logic Update or Insert
     if(editingId === "NEW") {
-        if(currentTab === 'covers') coverVideos.unshift(itemData);
-        else db[currentTab].unshift(itemData);
+        db[currentTab].unshift(itemData);
     } else {
-        if(currentTab === 'covers') {
-            const idx = coverVideos.findIndex(i => i.slug === editingId);
-            coverVideos[idx] = itemData;
-        } else {
-            const idx = db[currentTab].findIndex(i => i.id === editingId);
-            db[currentTab][idx] = itemData;
-        }
+        const idx = db[currentTab].findIndex(i => i.id === editingId);
+        db[currentTab][idx] = itemData;
     }
 
     const success = await silentPush(`Update ${currentTab}: ${itemData.title}`);
     if(success) {
         renderList();
         closeModal();
-        alert("BERHASIL! Data tersimpan.");
+        alert("GAS! Data berhasil disimpan.");
     } else {
-        alert("Gagal simpan. Periksa Token/SHA.");
+        alert("Gagal menyimpan. Cek Token atau SHA.");
     }
     
     btn.disabled = false;
