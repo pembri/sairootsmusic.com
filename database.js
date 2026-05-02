@@ -210,7 +210,7 @@ const sairootsDB = {
             "id": "babylon-burn",
             "title": "Babylon Burn",
             "category": "Album Critical Fire",
-            "image": "/asset_gambar/art-critical-fire.jpg",
+            "image": "/asset_gambar/art-album-critical-fire.png",
             "excerpt": "",
             "audio": "/discography/babylon-burn.mp3"
         },
