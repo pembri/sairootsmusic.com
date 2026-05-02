@@ -122,7 +122,7 @@ jobs:
           // TAMBAH LINK VIDEO COVER (SESUAIKAN DENGAN ?video= BIAR GAK 404)
           const covers = parseCovers();
           covers.forEach(slug => {
-            urls.add(`${BASE_URL}/video_cover.html?video=${slug}`);
+            urls.add(`${BASE_URL}/video_cover?video=${slug}`);
           });
 
           // Generate XML
