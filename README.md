@@ -11,21 +11,22 @@ SAI Roots adalah artis solo (Solo Artist) beraliran **Reggae, Rap, dan Indie** a
 
 ## 🌐 Link Resmi
 Pantau terus karya terbaru kami melalui platform berikut:
-* [Official Website](https://sairootsmusic.github.io)
+* [Official Website](https://sairootsmusic.com)
 * [Spotify](https://open.spotify.com/artist/0xOPCtZvhXVd9RTbU1aYTr)
 * [Apple Music](https://music.apple.com/id/artist/sai-roots/1892187423)
 * [YouTube Official](https://www.youtube.com/@sairoots)
 * [YouTube Topic Channel](https://www.youtube.com/@sairoots)
 * [Spotify](https://open.spotify.com/artist/0xOPCtZvhXVd9RTbU1aYTr)
+* [Deezer](https://link.deezer.com/s/3366qh6efN8QoSqSPCEsB)
 * [SoundCloud](https://m.soundcloud.com/sairoots)
 
 ## 📁 Struktur Repositori
-* `/photos`: Aset visual resmi (Foto profil Ahmad Supembri & SAI Roots).
+* `/asset_gambar`: Aset visual resmi (Foto profil Ahmad Supembri & SAI Roots).
 * `index.html`: Kode utama website dengan optimasi JSON-LD Schema.
-* `music/`: Dokumentasi diskografi resmi.
+* `discography/`: Dokumentasi diskografi resmi.
 * `lyric/`: Library lirik lagu resmi.
-* `tentang/`: Info Tentang SAI Roots.
-* `kontak/`: Halaman Contact Us.
+* `about/`: Info Tentang SAI Roots.
+* `contact/`: Halaman Contact Us.
 
 ## ⚠️ PEMBERITAHUAN HAK CIPTA (COPYRIGHT)
 Seluruh konten dalam repositori ini, termasuk namun tidak terbatas pada **Kode Sumber (Source Code), Foto, Gambar, Lirik, dan Musik**, dilindungi secara hukum.
