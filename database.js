@@ -226,7 +226,7 @@ const sairootsDB = {
             "id": "blaze-it-up",
             "title": "Blaze It Up",
             "category": "Album Critical Fire",
-            "image": "/asset_gambar/art-critical-fire.jpg",
+            "image": "/asset_gambar/art-album-critical-fire.png",
             "excerpt": "",
             "audio": "/discography/blaze-it-up.mp3"
         },
