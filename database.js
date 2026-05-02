@@ -81,7 +81,7 @@ const sairootsDB = {
             "id": "lirik-bayang-singgasana",
             "title": "Lirik Bayang Singgasana",
             "category": "Album - Critical Fire",
-            "image": "/asset_gambar/art-critical-fire.jpg",
+            "image": "/asset_gambar/art-album-critical-fire.png",
             "excerpt": ""
         },
         {
