@@ -258,7 +258,7 @@ const sairootsDB = {
             "id": "ormas-tipu-tipu",
             "title": "Ormas Tipu-tipu",
             "category": "Album Critical Fire",
-            "image": "/asset_gambar/art-critical-fire.jpg",
+            "image": "/asset_gambar/art-album-critical-fire.png",
             "excerpt": "",
             "audio": "/asset_gambar/art-album-critical-fire.png"
         },
