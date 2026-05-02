@@ -4,6 +4,15 @@
 const sairootsDB = {
     "articles": [
         {
+            "id": "rilisan-album-critical-fire",
+            "title": "Rilisan Album Critical Fire",
+            "category": "Article",
+            "image": "/asset_gambar/art-album-critical-fire.png",
+            "excerpt": "",
+            "color": "green",
+            "date": "3 Mei 2026"
+        },
+        {
             "id": "profil-sai-roots",
             "title": "Profil SAI Roots",
             "category": "Article",
