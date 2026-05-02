@@ -109,7 +109,7 @@ const sairootsDB = {
             "id": "lirik-jamaican-sound",
             "title": "Lirik Jamaican Sound",
             "category": "Album - Critical Fire",
-            "image": "/asset_gambar/art-critical-fire.jpg",
+            "image": "/asset_gambar/art-album-critical-fire.png",
             "excerpt": ""
         },
         {
