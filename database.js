@@ -88,7 +88,7 @@ const sairootsDB = {
             "id": "lirik-blaze-it-up",
             "title": "Lirik Blaze It Up",
             "category": "Album - Critical Fire",
-            "image": "/asset_gambar/art-critical-fire.jpg",
+            "image": "/asset_gambar/art-album-critical-fire.png",
             "excerpt": ""
         },
         {
