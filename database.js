@@ -260,7 +260,7 @@ const sairootsDB = {
             "category": "Album Critical Fire",
             "image": "/asset_gambar/art-critical-fire.jpg",
             "excerpt": "",
-            "audio": "/discography/ormas-tipu-tipu.mp3"
+            "audio": "/asset_gambar/art-album-critical-fire.png"
         },
         {
             "id": "propaganda",
