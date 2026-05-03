@@ -181,7 +181,7 @@ const sairootsDB = {
             "category": "Single",
             "image": "/asset_gambar/art-dari-jauh.png",
             "excerpt": "",
-            "audio": "/discography/art-dari-jauh.mp3"
+            "audio": "/discography/dari-jauh.mp3"
         },
         {
             "id": "jurus-liar",
