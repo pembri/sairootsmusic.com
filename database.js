@@ -32,7 +32,7 @@ const sairootsDB = {
         },
         {
             "id": "mars-ikspi-kera-sakti",
-            "title": "Mars IKSPI Kera Sakti",
+            "title": "Lirik Mars IKSPI Kera Sakti",
             "category": "Single Cover",
             "image": "/asset_gambar/art-mars-ikspi.jpg",
             "excerpt": ""
