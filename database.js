@@ -53,7 +53,7 @@ const sairootsDB = {
         },
         {
             "id": "manusia-berbayang-kera",
-            "title": "Manusia Berbayang Kera",
+            "title": "Lirik Manusia Berbayang Kera",
             "category": "Album - Sience 1980",
             "image": "/asset_gambar/art-sience-1980.jpg",
             "excerpt": ""
