@@ -39,7 +39,7 @@ const sairootsDB = {
         },
         {
             "id": "konsisten-kera-sakti",
-            "title": "Konsisten Kera Sakti",
+            "title": "Lirik Konsisten Kera Sakti",
             "category": "Album - Sience 1980",
             "image": "/asset_gambar/art-sience-1980.jpg",
             "excerpt": ""
