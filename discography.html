@@ -240,6 +240,18 @@
         let isRepeat = false;
         let isShuffle = false;
 
+        // FUNGSI BARU: Update Canonical secara otomatis
+        window.updateCanonical = function(url) {
+            let canonical = document.getElementById('dynamic-canonical');
+            if (!canonical) {
+                canonical = document.createElement('link');
+                canonical.id = 'dynamic-canonical';
+                canonical.rel = 'canonical';
+                document.head.appendChild(canonical);
+            }
+            canonical.href = url;
+        };
+
         window.createSlug = function(title) {
             return title.toLowerCase().replace(/[^a-z0-9]+/g, '-').replace(/(^-|-$)+/g, '');
         };
@@ -255,7 +267,6 @@
             fullscreenPlayer.classList.remove('translate-y-full');
             document.body.style.overflow = 'hidden';
             
-            // KEMBALIKAN URL SAAT MAXIMIZE
             if (currentTrackIndex !== -1 && typeof sairootsDB !== 'undefined') {
                 const track = sairootsDB.discography[currentTrackIndex];
                 const slug = createSlug(track.title);
@@ -268,7 +279,6 @@
             fullscreenPlayer.classList.add('translate-y-full');
             document.body.style.overflow = 'auto';
             
-            // BERSIHKAN URL SAAT MINIMIZE
             const cleanUrl = window.location.protocol + "//" + window.location.host + window.location.pathname;
             window.history.pushState({path: cleanUrl}, '', cleanUrl);
         };
@@ -296,7 +306,11 @@
             }
         };
 
-        window.playTrack = function(index) {
+        // PERBAIKAN: Fungsi playTrack sekarang menerima parameter event untuk SEO
+        window.playTrack = function(index, event) {
+            if(event) {
+                event.preventDefault(); 
+            }
             if (typeof sairootsDB === 'undefined') return;
             const track = sairootsDB.discography[index];
             if (!track) return;
@@ -325,6 +339,10 @@
             
             const metaDesc = document.querySelector('meta[name="description"]');
             if (metaDesc) metaDesc.setAttribute('content', `Dengarkan lagu ${track.title} dari SAI Roots - ${track.category}`);
+
+            // PERBAIKAN: Update canonical tag secara otomatis saat lagu diputar
+            const trackUrl = window.location.protocol + "//" + window.location.host + window.location.pathname + '?track=' + createSlug(track.title);
+            updateCanonical(trackUrl);
         };
 
         window.playNext = function() {
@@ -335,7 +353,7 @@
             } else if (nextIndex >= sairootsDB.discography.length) {
                 nextIndex = 0;
             }
-            playTrack(nextIndex);
+            playTrack(nextIndex); // event otomatis terabaikan jadi aman
         };
 
         window.playPrev = function() {
@@ -448,6 +466,7 @@
 
             const fuse = new Fuse(allSearchData, { keys: ['title', 'excerpt', 'category', 'type'], threshold: 0.3 });
 
+            // PERBAIKAN: renderDiscography kini memakai <a> tags valid untuk di-crawl Googlebot
             window.renderDiscography = function() {
                 const list = document.getElementById('disco-list');
                 if(!list) return;
@@ -455,22 +474,25 @@
                 if (typeof sairootsDB === 'undefined' || !sairootsDB.discography) return;
 
                 sairootsDB.discography.forEach((track, index) => {
+                    const slug = createSlug(track.title);
                     const html = `
                         <div class="group bg-white/5 border border-white/5 hover:bg-white/10 transition-all p-4 flex items-center justify-between">
-                            <div class="flex items-center gap-6 min-w-0">
-                                <div class="relative w-16 h-16 shrink-0 group-hover:scale-105 transition-transform duration-300">
+                            <div class="flex items-center gap-6 min-w-0 flex-1">
+                                <a href="?track=${slug}" onclick="playTrack(${index}, event)" class="relative w-16 h-16 shrink-0 group-hover:scale-105 transition-transform duration-300 block">
                                     <img src="${track.image}" class="w-full h-full object-cover brightness-100">
-                                    <button onclick="playTrack(${index})" class="absolute inset-0 flex items-center justify-center bg-black/40 opacity-0 group-hover:opacity-100 transition-opacity">
+                                    <div class="absolute inset-0 flex items-center justify-center bg-black/40 opacity-0 group-hover:opacity-100 transition-opacity">
                                         <i class="fas fa-play text-white text-lg"></i>
-                                    </button>
-                                </div>
-                                <div class="min-w-0">
+                                    </div>
+                                </a>
+                                <div class="min-w-0 flex-1">
                                     <span class="text-[10px] text-rasta-yellow font-bold uppercase tracking-widest">${track.category}</span>
-                                    <h3 class="text-xl font-display text-white truncate">${track.title}</h3>
+                                    <a href="?track=${slug}" onclick="playTrack(${index}, event)" class="block hover:text-rasta-green transition-colors">
+                                        <h3 class="text-xl font-display text-white truncate">${track.title}</h3>
+                                    </a>
                                     <p class="text-xs text-gray-500 line-clamp-1">${track.excerpt}</p>
                                 </div>
                             </div>
-                            <div class="flex items-center gap-4 relative">
+                            <div class="flex items-center gap-4 relative shrink-0 ml-4">
                                 <button onclick="shareTrackFromList(${index}, event)" class="text-gray-500 hover:text-rasta-green transition p-2">
                                     <i class="fas fa-share-alt"></i>
                                 </button>
@@ -506,31 +528,22 @@
 
             searchInput.addEventListener('input', (e) => showSearchResults(e.target.value.trim()));
 
+            // PERBAIKAN: Set canonical sesuai URL saat halaman dimuat pertama kali
             window.addEventListener('load', () => {
-    renderDiscography();
-    
-    const urlParams = new URLSearchParams(window.location.search);
-    const trackSlug = urlParams.get('track');
-
-    // --- TAMBAHKAN LOGIKA CANONICAL DI SINI ---
-    let canonicalTag = document.querySelector('link[rel="canonical"]');
-    if (!canonicalTag) {
-        // Jika tag tidak ada, buat baru
-        canonicalTag = document.createElement('link');
-        canonicalTag.setAttribute('rel', 'canonical');
-        document.head.appendChild(canonicalTag);
-    }
-    // Set URL kanonikal sesuai dengan URL yang sedang dibuka (termasuk ?track=...)
-    canonicalTag.setAttribute('href', window.location.origin + window.location.pathname + (trackSlug ? '?track=' + trackSlug : ''));
-    // ------------------------------------------
-
-    if (trackSlug && typeof sairootsDB !== 'undefined') {
-        const index = sairootsDB.discography.findIndex(t => createSlug(t.title) === trackSlug);
-        if (index !== -1) { 
-            setTimeout(() => playTrack(index), 600); 
-        }
-    }
-});
+                renderDiscography();
+                const urlParams = new URLSearchParams(window.location.search);
+                const trackSlug = urlParams.get('track');
+                
+                if (trackSlug) {
+                    updateCanonical("https://sairootsmusic.com/discography?track=" + trackSlug);
+                    if (typeof sairootsDB !== 'undefined') {
+                        const index = sairootsDB.discography.findIndex(t => createSlug(t.title) === trackSlug);
+                        if (index !== -1) { setTimeout(() => playTrack(index), 600); }
+                    }
+                } else {
+                    updateCanonical("https://sairootsmusic.com/discography");
+                }
+            });
         } catch (error) { console.warn("Menunggu database.js...", error); }
     </script>
 </body>
