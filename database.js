@@ -152,6 +152,14 @@ const sairootsDB = {
     ],
     "discography": [
         {
+            "id": "mars-ikspi",
+            "title": "Mars IKSPI Kera Sakti",
+            "category": "Single",
+            "image": "/asset_gambar/mars-ikspi.jpg",
+            "excerpt": "",
+            "audio": "/discography/mars-ikspi.mp3"
+        },
+        {
             "id": "konsisten-kera-sakti",
             "title": "Konsisten Kera Sakti",
             "category": "Album Sience 1980",
