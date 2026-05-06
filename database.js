@@ -152,6 +152,14 @@ const sairootsDB = {
     ],
     "discography": [
         {
+            "id": "salam-jiensho",
+            "title": "Salam Jiensho",
+            "category": "Album Sience 1980",
+            "image": "/asset_gambar/art-sience-1980.jpg",
+            "excerpt": "",
+            "audio": "/discography/salam-jiensho.mp3"
+        },
+        {
             "id": "manusia-berbayang-kera",
             "title": "Manusia Berbayang Kera",
             "category": "Album Sience 1980",
