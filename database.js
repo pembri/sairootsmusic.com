@@ -4,15 +4,6 @@
 const sairootsDB = {
     "articles": [
         {
-            "id": "konsisten-kera-sakti",
-            "title": "Konsisten Kera Sakti",
-            "category": "Album - Sience 1980",
-            "image": "/asset_gambar/art-sience-1980.jpg",
-            "excerpt": "",
-            "color": "green",
-            "date": "6 Mei 2026"
-        },
-        {
             "id": "rilisan-album-critical-fire",
             "title": "Rilisan Album Critical Fire",
             "category": "Article",
