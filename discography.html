@@ -11,8 +11,7 @@
     <link rel="icon" type="image/png" sizes="192x192" href="/android-chrome-192x192.png">
     <link rel="icon" type="image/png" sizes="512x512" href="/android-chrome-512x512.png">
     <link rel="manifest" href="/site.webmanifest">
-    <link rel="canonical" href="https://sairootsmusic.com/discography">
-
+    
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no">
     <title>Discography | SAI Roots</title>
@@ -508,14 +507,30 @@
             searchInput.addEventListener('input', (e) => showSearchResults(e.target.value.trim()));
 
             window.addEventListener('load', () => {
-                renderDiscography();
-                const urlParams = new URLSearchParams(window.location.search);
-                const trackSlug = urlParams.get('track');
-                if (trackSlug && typeof sairootsDB !== 'undefined') {
-                    const index = sairootsDB.discography.findIndex(t => createSlug(t.title) === trackSlug);
-                    if (index !== -1) { setTimeout(() => playTrack(index), 600); }
-                }
-            });
+    renderDiscography();
+    
+    const urlParams = new URLSearchParams(window.location.search);
+    const trackSlug = urlParams.get('track');
+
+    // --- TAMBAHKAN LOGIKA CANONICAL DI SINI ---
+    let canonicalTag = document.querySelector('link[rel="canonical"]');
+    if (!canonicalTag) {
+        // Jika tag tidak ada, buat baru
+        canonicalTag = document.createElement('link');
+        canonicalTag.setAttribute('rel', 'canonical');
+        document.head.appendChild(canonicalTag);
+    }
+    // Set URL kanonikal sesuai dengan URL yang sedang dibuka (termasuk ?track=...)
+    canonicalTag.setAttribute('href', window.location.origin + window.location.pathname + (trackSlug ? '?track=' + trackSlug : ''));
+    // ------------------------------------------
+
+    if (trackSlug && typeof sairootsDB !== 'undefined') {
+        const index = sairootsDB.discography.findIndex(t => createSlug(t.title) === trackSlug);
+        if (index !== -1) { 
+            setTimeout(() => playTrack(index), 600); 
+        }
+    }
+});
         } catch (error) { console.warn("Menunggu database.js...", error); }
     </script>
 </body>
