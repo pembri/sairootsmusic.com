@@ -60,7 +60,7 @@ const sairootsDB = {
         },
         {
             "id": "raja-pelet",
-            "title": "Raja Pelet",
+            "title": "Lirik Raja Pelet",
             "category": "Album - Sience 1980",
             "image": "/asset_gambar/art-sience-1980.jpg",
             "excerpt": ""
