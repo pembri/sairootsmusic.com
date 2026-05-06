@@ -152,6 +152,14 @@ const sairootsDB = {
     ],
     "discography": [
         {
+            "id": "masih-bertaring",
+            "title": "Masih Bertaring",
+            "category": "Single",
+            "image": "/asset_gambar/art-masih-bertaring.jpg",
+            "excerpt": "",
+            "audio": "/discography/masih-bertaring.mp3"
+        },
+        {
             "id": "mars-ikspi",
             "title": "Mars IKSPI Kera Sakti",
             "category": "Single",
