@@ -183,7 +183,7 @@ const sairootsDB = {
         {
             "id": "mars-ikspi",
             "title": "Mars IKSPI Kera Sakti",
-            "category": "Single",
+            "category": "Single Cover",
             "image": "/asset_gambar/art-mars-ikspi.jpg",
             "excerpt": "",
             "audio": "/discography/mars-ikspi.mp3"
