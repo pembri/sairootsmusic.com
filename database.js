@@ -152,6 +152,14 @@ const sairootsDB = {
     ],
     "discography": [
         {
+            "id": "manusia-berbayang-kera",
+            "title": "Manusia Berbayang Kera",
+            "category": "Album Sience 1980",
+            "image": "/asset_gambar/art-sience-1980.jpg",
+            "excerpt": "",
+            "audio": "/discography/manusia-berbayang-kera.mp3"
+        },
+        {
             "id": "raja-pelet",
             "title": "Raja Pelet",
             "category": "Album Sience 1980",
