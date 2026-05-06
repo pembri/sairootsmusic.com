@@ -177,7 +177,7 @@ const sairootsDB = {
             "id": "mars-ikspi",
             "title": "Mars IKSPI Kera Sakti",
             "category": "Single",
-            "image": "/asset_gambar/mars-ikspi.jpg",
+            "image": "/asset_gambar/art-mars-ikspi.jpg",
             "excerpt": "",
             "audio": "/discography/mars-ikspi.mp3"
         },
