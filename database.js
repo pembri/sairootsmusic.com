@@ -24,6 +24,13 @@ const sairootsDB = {
     ],
     "lyrics": [
         {
+            "id": "konsisten-kera-sakti",
+            "title": "Konsisten Kera Sakti",
+            "category": "Album - Sience 1980",
+            "image": "/asset_gambar/art-sience-1980.jpg",
+            "excerpt": ""
+        },
+        {
             "id": "salam-jiensho",
             "title": "Salam JienSho",
             "category": "Album - Sience 1980",
