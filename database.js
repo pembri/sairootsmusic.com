@@ -24,6 +24,13 @@ const sairootsDB = {
     ],
     "lyrics": [
         {
+            "id": "mars-ikspi-kera-sakti",
+            "title": "Mars IKSPI Kera Sakti",
+            "category": "Single Cover",
+            "image": "/asset_gambar/art-mars-ikspi.jpg",
+            "excerpt": ""
+        },
+        {
             "id": "konsisten-kera-sakti",
             "title": "Konsisten Kera Sakti",
             "category": "Album - Sience 1980",
