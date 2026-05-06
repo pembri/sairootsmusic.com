@@ -24,6 +24,13 @@ const sairootsDB = {
     ],
     "lyrics": [
         {
+            "id": "lirik-masih-bertaring",
+            "title": "Lirik Masih Bertaring",
+            "category": "Single",
+            "image": "/asset_gambar/art-masih-bertaring.jpg",
+            "excerpt": ""
+        },
+        {
             "id": "mars-ikspi-kera-sakti",
             "title": "Mars IKSPI Kera Sakti",
             "category": "Single Cover",
