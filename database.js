@@ -34,7 +34,7 @@ const sairootsDB = {
             "id": "raja-pelet",
             "title": "Raja Pelet",
             "category": "Album - Sience 1980",
-            "image": "/asset_gambar/art-sience-1980-fire.jpg",
+            "image": "/asset_gambar/art-sience-1980.jpg",
             "excerpt": ""
         },
         {
