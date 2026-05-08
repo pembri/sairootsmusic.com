@@ -24,6 +24,13 @@ const sairootsDB = {
     ],
     "lyrics": [
         {
+            "id": "lirik-rima-berlapis",
+            "title": "Lirik Rima Berlapis",
+            "category": "Single",
+            "image": "/asset_gambar/art-rima-berlapis.jpg",
+            "excerpt": ""
+        },
+        {
             "id": "lirik-masih-bertaring",
             "title": "Lirik Masih Bertaring",
             "category": "Single",
