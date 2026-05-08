@@ -194,6 +194,14 @@ const sairootsDB = {
     ],
     "discography": [
         {
+            "id": "rima-berlapis",
+            "title": "Rima Berlapis",
+            "category": "Single",
+            "image": "/asset_gambar/art-rima-berlapis.jpg",
+            "excerpt": "",
+            "audio": "/discography/rima-berlapis.mp3"
+        },
+        {
             "id": "masih-bertaring",
             "title": "Masih Bertaring",
             "category": "Single",
