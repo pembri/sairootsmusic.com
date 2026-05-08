@@ -397,13 +397,14 @@
             quill.root.innerHTML = '';
             document.getElementById('edit-img-note').classList.add('hidden');
             document.getElementById('edit-audio-note').classList.add('hidden');
-            
+    
             const btn = document.getElementById('btn-publish');
+            btn.disabled = false; 
             btn.innerHTML = '<i class="fas fa-rocket mr-2"></i> Publish Konten';
             btn.classList.replace('bg-rasta-yellow', 'bg-rasta-green');
             btn.classList.replace('text-black', 'text-white');
             showStatus("Batal edit.", "success");
-        }
+          }
 
         // GENERATOR TEMPLATE TELAH DIBERSIHKAN DARI KARAKTER GAIB, TAMPILAN 100% IDENTIK
         function generateHTMLTemplate(title, type, contentHTML) {
