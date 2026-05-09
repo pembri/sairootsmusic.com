@@ -201,6 +201,14 @@ const sairootsDB = {
     ],
     "discography": [
         {
+            "id": "dari-kingston",
+            "title": "Dari Kingston",
+            "category": "Single",
+            "image": "/asset_gambar/art-dari-kingston.jpg",
+            "excerpt": "",
+            "audio": "/discography/dari-kingston.mp3"
+        },
+        {
             "id": "rima-berlapis",
             "title": "Rima Berlapis",
             "category": "Single",
