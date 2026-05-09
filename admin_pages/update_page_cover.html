@@ -1,0 +1,162 @@
+<!DOCTYPE html>
+<html lang="id">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>SAI Roots | Cover Page Generator</title>
+    <script src="https://cdn.tailwindcss.com"></script>
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.5.1/css/all.min.css">
+    <style>
+        body { background-color: #050505; color: #f0f0f0; font-family: 'Inter', sans-serif; }
+        .rasta-border { border-bottom: 3px solid; border-image: linear-gradient(90deg, #2D8659 0%, #FBBF24 50%, #DC2626 100%) 1; }
+        ::-webkit-scrollbar { width: 5px; }
+        ::-webkit-scrollbar-track { background: #000; }
+        ::-webkit-scrollbar-thumb { background: #333; border-radius: 10px; }
+    </style>
+</head>
+<body class="p-6">
+
+    <div class="max-w-2xl mx-auto bg-neutral-900 rounded-xl shadow-2xl overflow-hidden border border-white/5">
+        <div class="p-6 rasta-border">
+            <h1 class="text-2xl font-bold text-white uppercase tracking-tighter"><i class="fas fa-video text-rasta-yellow mr-2"></i> Cover Page Generator</h1>
+            <p class="text-gray-400 text-[10px] uppercase tracking-widest mt-1">Otomatisasi File Fisik /cover/ Khusus Video</p>
+        </div>
+
+        <div class="p-6 space-y-6">
+            <div id="setup-section" class="space-y-4">
+                <div>
+                    <label class="block text-[10px] font-bold text-gray-500 uppercase mb-2 tracking-widest">GitHub API Token</label>
+                    <div class="flex gap-2">
+                        <input type="password" id="gh-token" placeholder="ghp_xxxxxxxxxxxx" class="flex-1 bg-black border border-white/10 rounded px-4 py-3 focus:outline-none focus:border-rasta-yellow text-sm font-mono">
+                        <button onclick="saveToken()" class="bg-rasta-green text-white px-6 py-2 rounded text-xs font-black hover:bg-opacity-80 transition-all uppercase">Simpan</button>
+                    </div>
+                </div>
+            </div>
+
+            <div class="grid grid-cols-2 gap-4">
+                <div class="bg-black/40 p-4 border border-white/5 rounded">
+                    <p class="text-[10px] text-gray-500 uppercase mb-1">Total Cover Terdeteksi</p>
+                    <h2 id="count-cover" class="text-2xl font-display text-rasta-yellow">0</h2>
+                </div>
+                <div class="bg-black/40 p-4 border border-white/5 rounded">
+                    <p class="text-[10px] text-gray-500 uppercase mb-1">Status Database</p>
+                    <h2 id="db-status" class="text-sm font-bold text-white">Checking...</h2>
+                </div>
+            </div>
+
+            <button id="btn-generate" onclick="startProcess()" class="w-full bg-white text-black font-black py-4 rounded hover:bg-rasta-yellow transition-all tracking-[0.2em] uppercase text-xs">
+                Update Semua Halaman Cover
+            </button>
+
+            <div id="log-container" class="bg-black rounded border border-white/10 p-4 h-64 overflow-y-auto font-mono text-[10px] space-y-1">
+                <div class="text-gray-600 tracking-tighter font-light">-- Menunggu Perintah --</div>
+            </div>
+        </div>
+    </div>
+
+    <script src="/database.js"></script>
+
+    <script>
+        const REPO = "pembri/sairootsmusic.com";
+        const logContainer = document.getElementById('log-container');
+        const tokenInput = document.getElementById('gh-token');
+
+        window.onload = () => {
+            const saved = localStorage.getItem('gh_token_sairoots');
+            if (saved) tokenInput.value = saved;
+
+            if (typeof coverVideos !== 'undefined') {
+                document.getElementById('count-cover').innerText = coverVideos.length;
+                document.getElementById('db-status').innerText = "COVERS READY";
+                document.getElementById('db-status').classList.add('text-rasta-green');
+            } else {
+                document.getElementById('db-status').innerText = "DB ERROR";
+                document.getElementById('db-status').classList.add('text-rasta-red');
+            }
+        };
+
+        function saveToken() {
+            if (tokenInput.value.trim()) {
+                localStorage.setItem('gh_token_sairoots', tokenInput.value.trim());
+                alert("Token tersimpan!");
+            }
+        }
+
+        function addLog(msg, color = "text-gray-400") {
+            const div = document.createElement('div');
+            div.className = `${color} border-b border-white/5 pb-1`;
+            div.innerHTML = `<span class="text-gray-600 mr-2">[${new Date().toLocaleTimeString()}]</span> ${msg}`;
+            logContainer.appendChild(div);
+            logContainer.scrollTop = logContainer.scrollHeight;
+        }
+
+        async function uploadToGitHub(path, content, message) {
+            const token = localStorage.getItem('gh_token_sairoots');
+            const url = `https://api.github.com/repos/${REPO}/contents/${path}`;
+            
+            let sha = null;
+            try {
+                const check = await fetch(url, { headers: { "Authorization": `token ${token}` } });
+                if (check.ok) {
+                    const data = await check.json();
+                    sha = data.sha;
+                }
+            } catch (e) {}
+
+            const response = await fetch(url, {
+                method: "PUT",
+                headers: { "Authorization": `token ${token}`, "Content-Type": "application/json" },
+                body: JSON.stringify({ message: message, content: btoa(unescape(encodeURIComponent(content))), sha: sha })
+            });
+
+            return response.ok;
+        }
+
+        async function startProcess() {
+            const token = localStorage.getItem('gh_token_sairoots');
+            if (!token) return alert("Input Token GitHub dulu!");
+            if (!coverVideos || coverVideos.length === 0) return addLog("Data cover tidak ditemukan!", "text-rasta-red");
+
+            const btn = document.getElementById('btn-generate');
+            btn.disabled = true;
+            btn.innerText = "PROSES SEDANG BERJALAN...";
+            
+            for (const video of coverVideos) {
+                // Langsung ambil slug dari database!
+                const fileName = `cover/${video.slug}.html`;
+                
+                addLog(`Sinkronisasi: ${video.title}...`);
+
+                // Template SEO Ringkas
+                const htmlContent = `<!DOCTYPE html>
+<html lang="id">
+<head>
+    <meta charset="UTF-8">
+    <title>${video.title} | SAI Roots</title>
+    <meta name="description" content="Tonton video cover: ${video.title} dari SAI Roots.">
+    <meta property="og:title" content="${video.title} | SAI Roots">
+    <meta property="og:image" content="${video.thumbnail}">
+    <link rel="canonical" href="https://sairootsmusic.com/cover/${video.slug}">
+    <script>
+        window.location.href = "/video_cover?video=${video.slug}";
+    <\/script>
+</head>
+<body>
+    <h1>Cover SAI Roots - ${video.title}</h1>
+    <a href="/video_cover?video=${video.slug}">Tonton videonya di sini</a>
+</body>
+</html>`;
+
+                const success = await uploadToGitHub(fileName, htmlContent, `Auto Generate Cover Page: ${video.slug}`);
+                
+                if (success) addLog(`[OK] ${fileName} berhasil di-push.`, "text-rasta-green");
+                else addLog(`[FAIL] ${fileName} gagal diunggah.`, "text-rasta-red");
+            }
+
+            addLog("SELESAI: Semua video sudah punya halaman SEO.", "text-rasta-yellow font-bold text-sm");
+            btn.disabled = false;
+            btn.innerText = "Update Semua Halaman Cover";
+        }
+    </script>
+</body>
+</html>
