@@ -473,7 +473,7 @@
             <a href="/" class="text-3xl font-display hover:text-rasta-green transition duration-300">Home</a>
             <a href="/discography" class="text-3xl font-display hover:text-rasta-yellow transition duration-300">Discography</a>
             <a href="/lyric" class="text-3xl font-display hover:text-rasta-red transition duration-300">Lyric</a>
-            <a href="/video_cover" class="text-3xl font-display hover:text-rasta-yellow transition duration-300">Covers</a>
+            <a href="/video_cover" class="text-3xl font-display hover:text-rasta-yellow transition duration-300">Covers</a>            
             <div class="w-full border-t border-white/20 my-3"></div>
             <a href="/about" class="text-base font-sans hover:text-rasta-green transition duration-300">About</a>
             <a href="/privacy" class="text-base font-sans hover:text-rasta-yellow transition duration-300">Privacy Policy</a>
@@ -624,6 +624,40 @@
             console.warn("Menunggu database.js...", error);
         }
         <\/script>
+
+        } catch (error) {
+            console.warn("Menunggu database.js...", error);
+        }
+    <\/script>
+
+    <script>
+        document.addEventListener("DOMContentLoaded", () => {
+            let currentPath = window.location.pathname;
+            currentPath = currentPath.replace('.html', '');
+            if (currentPath === '') currentPath = '/';
+
+            const navLinks = document.querySelectorAll('#main-nav a');
+
+            navLinks.forEach(link => {
+                let linkPath = new URL(link.href).pathname;
+                linkPath = linkPath.replace('.html', '');
+                if (linkPath === '') linkPath = '/';
+
+                let isMatch = false;
+                if (linkPath === '/') {
+                    if (currentPath === '/' || currentPath === '/index') isMatch = true;
+                } else {
+                    if (currentPath === linkPath) isMatch = true;
+                }
+
+                if (isMatch) {
+                    if (link.classList.contains('hover:text-rasta-green')) link.classList.add('text-rasta-green');
+                    if (link.classList.contains('hover:text-rasta-yellow')) link.classList.add('text-rasta-yellow');
+                    if (link.classList.contains('hover:text-rasta-red')) link.classList.add('text-rasta-red');
+                }
+            });
+        });
+    <\/script>
 </body>
 </html>`;
         }
