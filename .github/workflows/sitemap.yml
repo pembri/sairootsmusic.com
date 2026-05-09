@@ -1,148 +1,81 @@
-name: Generate Sitemap
+name: Generate Sitemap Otomatis
 
 on:
   push:
     branches:
-      - main
-  workflow_dispatch:
+      - main # Ganti jadi 'master' jika branch utamamu bernama master
+    paths:
+      - '**/*.html' # Action ini cuma jalan kalau ada perubahan/penambahan file HTML
+  workflow_dispatch: # Tombol manual buat nge-trigger action kapan saja
 
 permissions:
-  contents: write
+  contents: write # Izin penting agar bot bisa push sitemap.xml ke repositori
 
 jobs:
-  generate-sitemap:
+  update-sitemap:
     runs-on: ubuntu-latest
-
     steps:
       - name: Checkout Repository
         uses: actions/checkout@v4
-        with:
-          fetch-depth: 0
-          token: ${{ secrets.GITHUB_TOKEN }}
-
-      - name: Setup Node.js
-        uses: actions/setup-node@v4
-        with:
-          node-version: '20'
 
       - name: Generate sitemap.xml
         run: |
-          cat << 'EOF' > generate-sitemap.js
-          const fs = require('fs');
-          const path = require('path');
+          cat << 'EOF' > generate_sitemap.py
+          import os
 
-          const BASE_URL = 'https://sairootsmusic.com';
-          const ROOT_DIR = '.';
+          BASE_URL = "https://sairootsmusic.com"
+          EXCLUDE_DIRS = ["admin_pages", ".git", ".github"]
+          EXCLUDE_FILES = ["404.html"]
 
-          // === DAFTAR HITAM (TIDAK ADA YANG DIUBAH - AMAN COK) ===
-          const BLACKLIST_FOLDERS = ['admin_pages', 'node_modules', '.git', '.github'];
-          const BLACKLIST_FILES = ['404.html'];
+          urls = []
+          for root, dirs, files in os.walk("."):
+              # Hapus folder rahasia dari pencarian
+              dirs[:] = [d for d in dirs if not any(d.startswith(ex) for ex in EXCLUDE_DIRS)]
+              
+              for file in files:
+                  if file.endswith(".html") and file not in EXCLUDE_FILES:
+                      filepath = os.path.relpath(os.path.join(root, file), ".")
+                      
+                      # Pengamanan lapis kedua: pastikan admin_pages benar-benar tidak masuk
+                      if filepath.startswith("admin_pages/") or "admin_pages" in filepath:
+                          continue
 
-          const today = new Date().toISOString().split('T')[0];
-          const urls = new Set();
+                      # Mengubah format jadi Clean URL (tanpa .html)
+                      url_path = filepath.replace("\\", "/")
+                      if url_path == "index.html":
+                          url_path = ""
+                      elif url_path.endswith("/index.html"):
+                          url_path = url_path[:-11]
+                      elif url_path.endswith(".html"):
+                          url_path = url_path[:-5]
 
-          function scanDir(dir) {
-            const items = fs.readdirSync(dir, { withFileTypes: true });
-            for (const item of items) {
-              const fullPath = path.join(dir, item.name);
-              if (item.isDirectory()) {
-                if (BLACKLIST_FOLDERS.includes(item.name)) continue;
-                if (item.name.startsWith('.')) continue;
-                scanDir(fullPath);
-              } else if (item.isFile() && item.name.endsWith('.html')) {
-                if (BLACKLIST_FILES.includes(item.name)) continue;
-                
-                let relativePath = path.relative(ROOT_DIR, fullPath).replace(/\\/g, '/');
-                let cleanPath = relativePath.replace(/\/index\.html$/, '/').replace(/\.html$/, '');
-                
-                if (cleanPath === 'index') {
-                  urls.add(BASE_URL + '/');
-                } else {
-                  urls.add(`${BASE_URL}/${cleanPath}`);
-                }
-              }
-            }
-          }
+                      final_url = f"{BASE_URL}/{url_path}".rstrip('/')
+                      if final_url == BASE_URL + "/":
+                          final_url = BASE_URL
+                          
+                      urls.append(final_url)
 
-          function slugify(text) {
-            return text.toString().toLowerCase()
-              .replace(/\s+/g, '-')
-              .replace(/[^\w\-]+/g, '')
-              .replace(/\-\-+/g, '-')
-              .replace(/^-+/, '')
-              .replace(/-+$/, '');
-          }
+          # Urutkan abjad biar sitemap rapi
+          urls.sort()
 
-          function parseDiscography() {
-            if (!fs.existsSync(path.join(ROOT_DIR, 'database.js'))) return [];
-            const dbContent = fs.readFileSync(path.join(ROOT_DIR, 'database.js'), 'utf8');
-            const dbStart = dbContent.indexOf('const sairootsDB = {');
-            if (dbStart === -1) return [];
-            const dbEnd = dbContent.indexOf('};', dbStart) + 2;
-            const dbString = dbContent.substring(dbStart, dbEnd);
-            const discographyStart = dbString.indexOf('"discography":');
-            if (discographyStart === -1) return [];
-            const discographyBlock = dbString.substring(discographyStart);
-            const titleRegex = /["']?title["']?\s*:\s*["'`]([^"'`]+)["'`]/g;
-            const titles = [];
-            let match;
-            while ((match = titleRegex.exec(discographyBlock)) !== null) {
-              titles.push(match[1]);
-            }
-            return titles;
-          }
-
-          // === FUNGSI AMBIL SLUG VIDEO (SUDAH DISESUAIKAN KE ?video=) ===
-          function parseCovers() {
-            if (!fs.existsSync(path.join(ROOT_DIR, 'database.js'))) return [];
-            const dbContent = fs.readFileSync(path.join(ROOT_DIR, 'database.js'), 'utf8');
-            const cvStart = dbContent.indexOf('const coverVideos = [');
-            if (cvStart === -1) return [];
-            const cvEnd = dbContent.indexOf('];', cvStart) + 2;
-            const cvString = dbContent.substring(cvStart, cvEnd);
-            const slugRegex = /["']?slug["']?\s*:\s*["'`]([^"'`]+)["'`]/g;
-            const slugs = [];
-            let match;
-            while ((match = slugRegex.exec(cvString)) !== null) {
-              slugs.push(match[1]);
-            }
-            return slugs;
-          }
-
-          // Eksekusi
-          scanDir(ROOT_DIR);
-          
-          // Tambah Link Discography
-          const tracks = parseDiscography();
-          tracks.forEach(title => {
-            const slug = slugify(title);
-            urls.add(`${BASE_URL}/discography?track=${slug}`);
-          });
-
-          // TAMBAH LINK VIDEO COVER (SESUAIKAN DENGAN ?video= BIAR GAK 404)
-          const covers = parseCovers();
-          covers.forEach(slug => {
-            urls.add(`${BASE_URL}/video_cover?video=${slug}`);
-          });
-
-          // Generate XML
-          let xml = '<?xml version="1.0" encoding="UTF-8"?>\n';
-          xml += '<urlset xmlns="http://www.sitemaps.org/schemas/sitemap/0.9">\n';
-          [...urls].sort().forEach(url => {
-            xml += '  <url>\n    <loc>' + url + '</loc>\n    <lastmod>' + today + '</lastmod>\n    <priority>0.8</priority>\n  </url>\n';
-          });
-          xml += '</urlset>\n';
-
-          fs.writeFileSync('sitemap.xml', xml);
-          console.log('Sitemap FIX! Track: ' + tracks.length + ' | Cover: ' + covers.length);
+          # Tulis ke file sitemap.xml
+          with open("sitemap.xml", "w", encoding="utf-8") as f:
+              f.write('<?xml version="1.0" encoding="UTF-8"?>\n')
+              f.write('<urlset xmlns="http://www.sitemaps.org/schemas/sitemap/0.9">\n')
+              for url in urls:
+                  f.write('  <url>\n')
+                  f.write(f'    <loc>{url}</loc>\n')
+                  f.write('  </url>\n')
+              f.write('</urlset>\n')
           EOF
+          python3 generate_sitemap.py
+          rm generate_sitemap.py
 
-          node generate-sitemap.js
-
-      - name: Commit & Push sitemap.xml
+      - name: Commit & Push Sitemap
         run: |
-          git config --local user.name "github-actions[bot]"
-          git config --local user.email "github-actions[bot]@users.noreply.github.com"
+          git config --global user.name 'github-actions[bot]'
+          git config --global user.email 'github-actions[bot]@users.noreply.github.com'
           git add sitemap.xml
-          git diff --staged --quiet || git commit -m "Auto-update sitemap.xml [skip ci]"
+          # Cek apakah ada perubahan, kalau ada baru commit & push
+          git commit -m "Auto-update sitemap.xml (SEO Optimized) [skip ci]" || exit 0
           git push
