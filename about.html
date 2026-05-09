@@ -242,5 +242,34 @@
             console.warn("Menunggu database.js...", error);
         }
     </script>
+
+    <script>
+        document.addEventListener("DOMContentLoaded", () => {
+            let currentPath = window.location.pathname;
+            currentPath = currentPath.replace(/\.html$/, '');
+            if (currentPath === '') currentPath = '/';
+
+            const navLinks = document.querySelectorAll('#main-nav a');
+
+            navLinks.forEach(link => {
+                let linkPath = new URL(link.href).pathname;
+                linkPath = linkPath.replace(/\.html$/, '');
+                if (linkPath === '') linkPath = '/';
+
+                let isMatch = false;
+                if (linkPath === '/') {
+                    if (currentPath === '/' || currentPath === '/index') isMatch = true;
+                } else {
+                    if (currentPath === linkPath) isMatch = true;
+                }
+
+                if (isMatch) {
+                    if (link.classList.contains('hover:text-rasta-green')) link.classList.add('text-rasta-green');
+                    if (link.classList.contains('hover:text-rasta-yellow')) link.classList.add('text-rasta-yellow');
+                    if (link.classList.contains('hover:text-rasta-red')) link.classList.add('text-rasta-red');
+                }
+            });
+        });
+    </script>
 </body>
 </html>
