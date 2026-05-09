@@ -24,6 +24,13 @@ const sairootsDB = {
     ],
     "lyrics": [
         {
+            "id": "lirik-dari-kingston",
+            "title": "Lirik Dari Kingston",
+            "category": "Single",
+            "image": "/asset_gambar/art-dari-kingston.jpg",
+            "excerpt": ""
+        },
+        {
             "id": "lirik-rima-berlapis",
             "title": "Lirik Rima Berlapis",
             "category": "Single",
