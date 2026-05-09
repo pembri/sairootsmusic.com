@@ -4,6 +4,15 @@
 const sairootsDB = {
     "articles": [
         {
+            "id": "riview-single-jurus-liar",
+            "title": "Riview Single Jurus Liar",
+            "category": "Article",
+            "image": "/asset_gambar/art-jurus-liar.jpg",
+            "excerpt": "",
+            "color": "green",
+            "date": "10 Mei 2026"
+        },
+        {
             "id": "rilisan-album-critical-fire",
             "title": "Rilisan Album Critical Fire",
             "category": "Article",
