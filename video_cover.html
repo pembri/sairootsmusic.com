@@ -11,7 +11,7 @@
     <link rel="icon" type="image/png" sizes="192x192" href="/android-chrome-192x192.png">
     <link rel="icon" type="image/png" sizes="512x512" href="/android-chrome-512x512.png">
     <link rel="manifest" href="/site.webmanifest">
-    <link rel="canonical" href="https://sairootsmusic.com/cover">
+    <link rel="canonical" href="https://sairootsmusic.com/video_cover">
 
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no">
@@ -103,10 +103,10 @@
         </nav>
 </div>
 
-<main class="pt-32 pb-20 container mx-auto px-6 min-h-screen" id="app-container">
-    </main>
+<main class="pt-32 pb-20 container mx-auto px-6 min-h-[70vh]" id="app-container">
+</main>
 
-<footer id="footer" class="border-t border-white/5 py-12 bg-black">
+<footer id="footer" class="border-t border-white/5 py-12 bg-black mt-auto">
     <div class="container mx-auto px-6 text-center">
         <p class="text-gray-600 text-[10px] tracking-[0.3em] uppercase mb-6">Stream Our Music</p>
 
@@ -132,7 +132,7 @@
     </div>
 </footer>
 
-<script src="./database.js"></script>
+<script src="/database.js"></script>
 
 <script>
 // --- KONFIGURASI MENU & SEARCH ---
@@ -161,7 +161,6 @@ menuBtn.addEventListener('click', toggleMenu);
 searchInput.addEventListener('click', e => e.stopPropagation());
 
 try {
-    // 1. Gabungkan data pencarian secara dinamis
     let allSearchData = [];
     if (typeof sairootsDB !== 'undefined') {
         const articles = sairootsDB.articles.map(a => ({
@@ -171,23 +170,21 @@ try {
             type: "Lyric", title: `${l.title} (Lyrics)`, url: `/lyric/${l.id}`, excerpt: l.excerpt, category: l.category
         }));
         const disco = sairootsDB.discography.map(d => ({
-            type: "Discography", title: d.title, url: `/discography?track=${d.id}`, excerpt: d.excerpt, category: d.category
+            type: "Discography", title: d.title, url: `/track/${d.id}`, excerpt: d.excerpt, category: d.category
         }));
         allSearchData = [...articles, ...lyrics, ...disco];
     }
 
-    // --- INI YANG WAJIB LO TAMBAHIN BIAR VIDEO COVER MUNCUL DI SEARCH ---
     if (typeof coverVideos !== 'undefined' && coverVideos.length > 0) {
         const formattedCovers = coverVideos.map(video => ({
             type: 'Cover', 
             title: video.title, 
-            url: `/video_cover?video=${video.slug}`, // Link ini biar gak 404
+            url: `/cover/${video.slug}`, // URL Bersih Langsung dari Database
             excerpt: video.description, 
             category: 'Playlist Cover'
         }));
         allSearchData = [...allSearchData, ...formattedCovers];
     }
-    // ------------------------------------------------------------------
 
     const fuse = new Fuse(allSearchData, { 
         keys: ['title', 'excerpt', 'category', 'type'], 
@@ -248,8 +245,6 @@ try {
 }
 
 // --- LOGIKA APLIKASI SINGLE PAGE (VIDEO COVERS) ---
-
-// Fallback data sementara jika database.js belum memuat coverVideos
 if (typeof coverVideos === 'undefined') {
     window.coverVideos = []; 
 }
@@ -276,7 +271,7 @@ function renderListView() {
         html += `<div class="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-8">`;
         coverVideos.forEach((video, index) => {
             html += `
-                <div class="bg-white/5 border border-white/10 group cursor-pointer hover:border-rasta-green transition-all duration-300" onclick="navigateToVideo('${video.slug}')">
+                <div class="bg-white/5 border border-white/10 group cursor-pointer hover:border-rasta-green transition-all duration-300" onclick="navigateToVideo('${video.slug}', event)">
                     <div class="relative overflow-hidden aspect-video">
                         <img src="${video.thumbnail}" alt="${video.title}" class="w-full h-full object-cover group-hover:scale-105 transition-transform duration-500">
                         <div class="absolute inset-0 bg-black/40 group-hover:bg-transparent transition-colors flex items-center justify-center">
@@ -300,7 +295,7 @@ function renderPlayerView(videoSlug) {
     currentVideoIndex = coverVideos.findIndex(v => v.slug === videoSlug);
     
     if (currentVideoIndex === -1) {
-        renderListView(); // Jika tidak ketemu, balik ke awal
+        renderListView(); 
         return;
     }
 
@@ -310,7 +305,7 @@ function renderPlayerView(videoSlug) {
 
     let html = `
         <div class="mb-6">
-            <button onclick="navigateToList()" class="text-gray-400 hover:text-white transition flex items-center gap-2 text-sm uppercase tracking-widest">
+            <button onclick="navigateToList(event)" class="text-gray-400 hover:text-white transition flex items-center gap-2 text-sm uppercase tracking-widest">
                 <i class="fas fa-arrow-left"></i> Kembali ke Daftar
             </button>
         </div>
@@ -331,11 +326,10 @@ function renderPlayerView(videoSlug) {
                 <div class="flex flex-col gap-4 overflow-y-auto max-h-[600px] pr-2 custom-scrollbar">
     `;
 
-    // Render video lain selain yang sedang diputar
     coverVideos.forEach((v, idx) => {
         if (v.slug !== videoSlug) {
             html += `
-                <div class="flex gap-3 cursor-pointer group" onclick="navigateToVideo('${v.slug}')">
+                <div class="flex gap-3 cursor-pointer group" onclick="navigateToVideo('${v.slug}', event)">
                     <div class="w-32 shrink-0 aspect-video relative overflow-hidden border border-white/10">
                         <img src="${v.thumbnail}" class="w-full h-full object-cover group-hover:scale-110 transition duration-300">
                     </div>
@@ -356,61 +350,61 @@ function renderPlayerView(videoSlug) {
 
     appContainer.innerHTML = html;
 
-    // Inisialisasi atau Update YouTube Player
     if (typeof YT !== 'undefined' && YT.Player) {
-        if (ytPlayer) {
-            ytPlayer.destroy();
-        }
+        if (ytPlayer) ytPlayer.destroy();
         ytPlayer = new YT.Player('yt-player', {
             videoId: video.videoId,
             playerVars: { 'autoplay': 1, 'rel': 0 },
-            events: {
-                'onStateChange': onPlayerStateChange
-            }
+            events: { 'onStateChange': onPlayerStateChange }
         });
     }
 }
 
-// Fungsi Pemicu YouTube API
 function onYouTubeIframeAPIReady() {
-    // Jika halaman diload dengan URL video, player akan diinit di renderPlayerView
     checkRoute();
 }
 
-// Deteksi Video Selesai -> Auto Play Next
 function onPlayerStateChange(event) {
-    if (event.data === YT.PlayerState.ENDED) {
-        playNextVideo();
-    }
+    if (event.data === YT.PlayerState.ENDED) playNextVideo();
 }
 
 function playNextVideo() {
     if (currentVideoIndex !== -1 && coverVideos.length > 0) {
         let nextIndex = currentVideoIndex + 1;
-        // Loop balik ke awal jika sudah di akhir playlist
-        if (nextIndex >= coverVideos.length) {
-            nextIndex = 0;
-        }
+        if (nextIndex >= coverVideos.length) nextIndex = 0;
         navigateToVideo(coverVideos[nextIndex].slug);
     }
 }
 
-// Fungsi Navigasi SPA
-function navigateToVideo(slug) {
-    const newUrl = window.location.protocol + "//" + window.location.host + '/video_cover?video=' + slug;
+// --- FUNGSI SPA (PUSHSTATE AJAIB) ---
+function navigateToVideo(slug, event) {
+    if(event) event.preventDefault();
+    const newUrl = window.location.protocol + "//" + window.location.host + '/cover/' + slug;
     history.pushState({ view: 'player', slug: slug }, '', newUrl);
     renderPlayerView(slug);
 }
 
-function navigateToList() {
-    history.pushState({ view: 'list' }, '', '/video_cover');
+function navigateToList(event) {
+    if(event) event.preventDefault();
+    const newUrl = window.location.protocol + "//" + window.location.host + '/video_cover';
+    history.pushState({ view: 'list' }, '', newUrl);
     renderListView();
 }
 
-// Router untuk mengecek URL saat halaman dimuat atau tombol back ditekan
+// Router untuk mendeteksi URL fisik /cover/
 function checkRoute() {
-    const urlParams = new URLSearchParams(window.location.search);
-    const videoSlug = urlParams.get('video'); // Nangkep tulisan setelah ?video=
+    let currentPath = window.location.pathname;
+    let videoSlug = null;
+    
+    // Deteksi jika dibuka lewat link fisik SEO (/cover/judul-video)
+    if (currentPath.includes('/cover/')) {
+        videoSlug = currentPath.split('/cover/')[1];
+        videoSlug = videoSlug.replace(/\.html$/, '').replace(/\/$/, '');
+    } else {
+        // Fallback untuk link query jadul
+        const urlParams = new URLSearchParams(window.location.search);
+        videoSlug = urlParams.get('video');
+    }
 
     if (videoSlug) {
         renderPlayerView(videoSlug);
@@ -419,17 +413,11 @@ function checkRoute() {
     renderListView();
 }
 
-// Event listener untuk tombol Back/Forward di browser
-window.addEventListener('popstate', (event) => {
-    checkRoute();
-});
+window.addEventListener('popstate', () => { checkRoute(); });
 
-// Inisialisasi awal jika API YouTube terlambat atau sudah siap
 document.addEventListener('DOMContentLoaded', () => {
-    // Tunggu sedikit untuk memastikan data database.js termuat
     setTimeout(checkRoute, 100);
 });
-
 </script>
 
     <script>
@@ -449,10 +437,13 @@ document.addEventListener('DOMContentLoaded', () => {
                 if (linkPath === '/') {
                     if (currentPath === '/' || currentPath === '/index') isMatch = true;
                 } else {
-                    if (currentPath === linkPath) isMatch = true;
+                    // Paksa menu "Covers" nyala kalau lagi buka video cover spesifik
+                    if (currentPath === linkPath || currentPath.includes('/cover/')) isMatch = true;
                 }
 
-                if (isMatch) {
+                if (isMatch && linkPath === '/video_cover') {
+                    link.classList.add('text-rasta-yellow');
+                } else if (isMatch) {
                     if (link.classList.contains('hover:text-rasta-green')) link.classList.add('text-rasta-green');
                     if (link.classList.contains('hover:text-rasta-yellow')) link.classList.add('text-rasta-yellow');
                     if (link.classList.contains('hover:text-rasta-red')) link.classList.add('text-rasta-red');
