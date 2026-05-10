@@ -253,10 +253,6 @@
             canonical.href = url;
         };
 
-        window.createSlug = function(title) {
-            return title.toLowerCase().replace(/[^a-z0-9]+/g, '-').replace(/(^-|-$)+/g, '');
-        };
-
         window.formatTime = function(seconds) {
             if (isNaN(seconds)) return "0:00";
             const m = Math.floor(seconds / 60);
@@ -270,8 +266,7 @@
             
             if (currentTrackIndex !== -1 && typeof sairootsDB !== 'undefined') {
                 const track = sairootsDB.discography[currentTrackIndex];
-                const slug = createSlug(track.title);
-                // Ganti Parameter ke URL Fisik (Clean URL)
+                const slug = track.id; // LANGSUNG BACA ID DARI DATABASE
                 const trackUrl = window.location.protocol + "//" + window.location.host + "/track/" + slug;
                 window.history.pushState({path: trackUrl}, '', trackUrl);
             }
@@ -280,7 +275,6 @@
         window.closeFullscreenPlayer = function() {
             fullscreenPlayer.classList.add('translate-y-full');
             document.body.style.overflow = 'auto';
-            // Saat diminimize, URL kembali ke halaman list agar SEO list utama aman
             const cleanUrl = window.location.protocol + "//" + window.location.host + "/discography";
             window.history.pushState({path: cleanUrl}, '', cleanUrl);
         };
@@ -309,7 +303,6 @@
         };
 
         window.playTrack = function(index, event) {
-            // Mencegah Browser Refresh Saat Klik Link Lagu!
             if(event) {
                 event.preventDefault(); 
             }
@@ -342,8 +335,7 @@
             const metaDesc = document.querySelector('meta[name="description"]');
             if (metaDesc) metaDesc.setAttribute('content', `Dengarkan lagu ${track.title} dari SAI Roots - ${track.category}`);
 
-            // Update Canonical dan Push URL Baru Tanpa Loading
-            const slug = createSlug(track.title);
+            const slug = track.id; // LANGSUNG BACA ID DARI DATABASE
             const trackUrl = window.location.protocol + "//" + window.location.host + "/track/" + slug;
             window.history.pushState({path: trackUrl}, '', trackUrl);
             updateCanonical(trackUrl);
@@ -385,7 +377,7 @@
         window.shareTrack = async function() {
             if (currentTrackIndex === -1 || typeof sairootsDB === 'undefined') return;
             const track = sairootsDB.discography[currentTrackIndex];
-            const slug = createSlug(track.title);
+            const slug = track.id; // LANGSUNG BACA ID
             const shareUrl = window.location.protocol + "//" + window.location.host + "/track/" + slug;
             
             const shareData = {
@@ -412,7 +404,7 @@
             if (typeof sairootsDB === 'undefined') return;
             
             const track = sairootsDB.discography[index];
-            const slug = createSlug(track.title);
+            const slug = track.id; // LANGSUNG BACA ID
             const trackUrl = window.location.protocol + "//" + window.location.host + "/track/" + slug;
             
             const shareData = {
@@ -459,8 +451,7 @@
             if (typeof sairootsDB !== 'undefined') {
                 const articles = sairootsDB.articles.map(a => ({ type: "Article", title: a.title, url: `/article/${a.id}`, excerpt: a.excerpt, category: a.category }));
                 const lyrics = sairootsDB.lyrics.map(l => ({ type: "Lyric", title: `${l.title} (Lyrics)`, url: `/lyric/${l.id}`, excerpt: l.excerpt, category: l.category }));
-                // Ganti pencarian agar mengarah ke file /track/ yang bersih
-                const disco = sairootsDB.discography.map(d => ({ type: "Discography", title: d.title, url: `/track/${createSlug(d.title)}`, excerpt: d.excerpt, category: d.category }));
+                const disco = sairootsDB.discography.map(d => ({ type: "Discography", title: d.title, url: `/track/${d.id}`, excerpt: d.excerpt, category: d.category }));
                 allSearchData = [...articles, ...lyrics, ...disco];
             }
 
@@ -478,8 +469,8 @@
                 if (typeof sairootsDB === 'undefined' || !sairootsDB.discography) return;
 
                 sairootsDB.discography.forEach((track, index) => {
-                    const slug = createSlug(track.title);
-                    const trackUrl = `/track/${slug}`; // URL Clean
+                    const slug = track.id; // LANGSUNG BACA ID DARI DATABASE
+                    const trackUrl = `/track/${slug}`; 
 
                     const html = `
                         <div class="group bg-white/5 border border-white/5 hover:bg-white/10 transition-all p-4 flex items-center justify-between">
@@ -534,29 +525,26 @@
 
             searchInput.addEventListener('input', (e) => showSearchResults(e.target.value.trim()));
 
-            // Inisialisasi Deteksi URL (Cocok untuk Discography maupun File Single Fisik)
             window.addEventListener('load', () => {
                 renderDiscography();
                 
                 let currentPath = window.location.pathname;
                 let trackSlug = null;
                 
-                // Deteksi apakah sedang membuka file fisik lagu (contoh: /track/autopsi-mic.html)
                 if (currentPath.includes('/track/')) {
                     trackSlug = currentPath.split('/track/')[1];
                     trackSlug = trackSlug.replace(/\.html$/, ''); 
                     trackSlug = trackSlug.replace(/\/$/, ''); 
                 } else {
-                    // Fallback untuk link lama yang memakai ?track=slug
                     const urlParams = new URLSearchParams(window.location.search);
                     trackSlug = urlParams.get('track');
                 }
 
                 if (trackSlug && typeof sairootsDB !== 'undefined') {
                     updateCanonical("https://sairootsmusic.com/track/" + trackSlug);
-                    const index = sairootsDB.discography.findIndex(t => createSlug(t.title) === trackSlug);
+                    // PENCARIAN BERDASARKAN ID, BUKAN JUDUL
+                    const index = sairootsDB.discography.findIndex(t => t.id === trackSlug);
                     if (index !== -1) { 
-                        // Putar lagu otomatis karena halamannya dibuka langsung
                         setTimeout(() => playTrack(index), 600); 
                     }
                 } else {
@@ -583,7 +571,6 @@
                 if (linkPath === '/') {
                     if (currentPath === '/' || currentPath === '/index') isMatch = true;
                 } else {
-                    // Paksa menu discography nyala saat membuka lagu
                     if (currentPath === linkPath || currentPath.includes('/track/')) isMatch = true;
                 }
 
