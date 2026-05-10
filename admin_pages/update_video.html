@@ -277,12 +277,13 @@ async function startSync(previewOnly = false) {
 
                 const thumb = snippet.thumbnails;
                 videoData.push({
-                    title: snippet.title,
-                    slug: createSlug(snippet.title),
-                    videoId: videoId,
-                    thumbnail: thumb?.maxres?.url || thumb?.standard?.url || thumb?.high?.url || thumb?.medium?.url || '',
-                    description: snippet.description || ''
-                });
+    title: snippet.title,
+    slug: createSlug(snippet.title),
+    videoId: videoId,
+    thumbnail: `https://i.ytimg.com/vi/${videoId}/sddefault.jpg`,
+    description: snippet.description || ''
+});
+
             });
 
             nextPageToken = ytJson.nextPageToken || null;
