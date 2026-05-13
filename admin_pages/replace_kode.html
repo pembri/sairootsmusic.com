@@ -39,7 +39,12 @@
             text-align: center;
             border-bottom: 2px solid var(--border-color);
             padding-bottom: 15px;
+            color: var(--text-main);
         }
+
+        h1 span.r { color: var(--accent-red); }
+        h1 span.y { color: var(--accent-yellow); }
+        h1 span.g { color: var(--accent-green); }
 
         .form-group {
             margin-bottom: 20px;
@@ -78,56 +83,68 @@
             display: flex;
             gap: 10px;
             margin-top: 20px;
+            flex-wrap: wrap;
         }
 
         button {
-            flex: 1;
+            flex: 1 1 30%;
             padding: 15px;
-            font-size: 14px;
+            font-size: 15px;
             font-weight: bold;
             border: none;
             border-radius: 4px;
             cursor: pointer;
-            transition: opacity 0.2s;
+            transition: opacity 0.2s, transform 0.1s;
         }
 
-        button:hover {
-            opacity: 0.9;
+        button:active {
+            transform: scale(0.98);
         }
 
+        button:hover { opacity: 0.9; }
         button:disabled {
-            background-color: #555 !important;
-            color: #888 !important;
+            background-color: #444 !important;
+            color: #777 !important;
             cursor: not-allowed;
+            transform: none;
         }
 
         #btnScan { background-color: var(--accent-yellow); color: #121212; }
         #btnReplace { background-color: var(--accent-green); color: #fff; }
         #btnUndo { background-color: var(--accent-red); color: #fff; }
 
+        /* Fitur Dinamis - Disembunyikan secara default */
+        #replaceSection {
+            display: none;
+            margin-top: 25px;
+            padding-top: 20px;
+            border-top: 1px dashed var(--border-color);
+        }
+
         .log-container {
             margin-top: 30px;
             background: #000;
             border-left: 4px solid var(--accent-green);
             padding: 15px;
-            height: 300px;
+            height: 350px;
             overflow-y: auto;
             border-radius: 0 4px 4px 0;
             font-family: 'Courier New', Courier, monospace;
-            font-size: 14px;
+            font-size: 13px;
             white-space: pre-wrap;
             word-wrap: break-word;
         }
 
         .log-error { color: var(--accent-red); }
         .log-success { color: var(--accent-green); }
-        .log-info { color: var(--accent-yellow); }
+        .log-info { color: #2196F3; }
+        .log-warn { color: var(--accent-yellow); }
     </style>
 </head>
 <body>
 
 <div class="container">
-    <h1>[ GitHub File Replacer - Safe Mode ]</h1>
+    <h1>[ <span class="r">R</span><span class="y">Y</span><span class="g">G</span> File Replacer ]</h1>
     
     <div class="grid-2">
         <div class="form-group">
@@ -146,28 +163,32 @@
     </div>
 
     <div class="form-group">
-        <label for="oldText">Teks Lama (Yang Ingin Diganti)</label>
-        <textarea id="oldText" rows="3" placeholder="Contoh: https://link.deezer.com/s/3366qh6efN8QoSqSPCEsB"></textarea>
-    </div>
-
-    <div class="form-group">
-        <label for="newText">Teks Baru (Pengganti)</label>
-        <textarea id="newText" rows="3" placeholder="Contoh: https://www.deezer.com/artist/384508281"></textarea>
+        <label for="oldText">Teks Lama (Yang Ingin Dicari)</label>
+        <textarea id="oldText" rows="3" placeholder="Contoh: https://link.deezer.com/s/xxxx"></textarea>
     </div>
 
     <div class="button-group">
-        <button id="btnScan">1. Scan Files</button>
-        <button id="btnReplace" disabled>2. Replace & Commit</button>
+        <button id="btnScan">1. Scan Files (.html)</button>
         <button id="btnUndo" disabled>3. PANIC! Kembalikan Kode</button>
     </div>
 
-    <div class="log-container" id="logArea">Sistem siap. Silakan Scan Files terlebih dahulu...</div>
+    <div id="replaceSection">
+        <div class="form-group">
+            <label for="newText" style="color: var(--accent-green);">Teks Baru (Pengganti)</label>
+            <textarea id="newText" rows="3" placeholder="Masukkan kode/teks penggantinya di sini..."></textarea>
+        </div>
+        <div class="button-group">
+            <button id="btnReplace">2. Replace & Commit ke GitHub</button>
+        </div>
+    </div>
+
+    <div class="log-container" id="logArea">Terminal siap. Sistem menggunakan localStorage untuk anti-refresh.</div>
 </div>
 
 <script>
     let filesReadyToUpdate = [];
-    let filesSuccessfullyReplaced = [];
-
+    
+    // UI Elements
     const UI = {
         token: document.getElementById('token'),
         repo: document.getElementById('repo'),
@@ -177,15 +198,19 @@
         btnScan: document.getElementById('btnScan'),
         btnReplace: document.getElementById('btnReplace'),
         btnUndo: document.getElementById('btnUndo'),
-        logArea: document.getElementById('logArea')
+        logArea: document.getElementById('logArea'),
+        replaceSection: document.getElementById('replaceSection')
     };
 
-    // Auto-load Token dari Local Storage pas halaman dibuka
+    // Auto-load Token & Cek Backup saat halaman dibuka/di-refresh
     window.onload = () => {
-        const savedToken = localStorage.getItem('github_token_sairoots');
-        if (savedToken) {
-            UI.token.value = savedToken;
-            log('Token API berhasil diload otomatis dari perangkat ini.', 'info');
+        const savedToken = localStorage.getItem('ryg_github_token');
+        if (savedToken) UI.token.value = savedToken;
+
+        const savedUndoData = localStorage.getItem('ryg_undo_backup');
+        if (savedUndoData && JSON.parse(savedUndoData).length > 0) {
+            UI.btnUndo.disabled = false;
+            log('MENDETEKSI DATA BACKUP DI BROWSER! Tombol "PANIC" aktif. Jika sebelumnya ada replace yang salah, klik tombol tersebut untuk undo.', 'warn');
         }
     };
 
@@ -197,17 +222,15 @@
         UI.logArea.scrollTop = UI.logArea.scrollHeight;
     }
 
+    // Encoder/Decoder Base64 UTF-8 (Aman untuk karakter khusus & emoji)
     function b64DecodeUnicode(str) {
         return decodeURIComponent(atob(str).split('').map(function(c) {
             return '%' + ('00' + c.charCodeAt(0).toString(16)).slice(-2);
         }).join(''));
     }
-
     function b64EncodeUnicode(str) {
         return btoa(encodeURIComponent(str).replace(/%([0-9A-F]{2})/g,
-            function toSolidBytes(match, p1) {
-                return String.fromCharCode('0x' + p1);
-        }));
+            function toSolidBytes(match, p1) { return String.fromCharCode('0x' + p1); }));
     }
 
     async function apiRequest(endpoint, method = 'GET', body = null) {
@@ -227,7 +250,7 @@
         return response.json();
     }
 
-    // TAHAP 1: SCANNING
+    // TAHAP 1: SCAN FILES
     UI.btnScan.addEventListener('click', async () => {
         const token = UI.token.value.trim();
         const repo = UI.repo.value.trim();
@@ -239,19 +262,16 @@
             return;
         }
 
-        // Simpan token ke Local Storage biar next time nggak perlu ngisi lagi
-        localStorage.setItem('github_token_sairoots', token);
+        // Simpan token ke localStorage
+        localStorage.setItem('ryg_github_token', token);
 
-        UI.logArea.innerHTML = ''; 
-        UI.btnReplace.disabled = true;
-        UI.btnUndo.disabled = true;
+        UI.replaceSection.style.display = 'none'; // Sembunyikan menu replace
         filesReadyToUpdate = [];
-        filesSuccessfullyReplaced = [];
         UI.btnScan.disabled = true;
         UI.btnScan.textContent = "Scanning...";
+        log(`\nMemulai scan di ${repo} (branch: ${branch})...`, 'info');
 
         try {
-            log(`Mengambil daftar file .html dari ${repo}...`, 'info');
             const treeData = await apiRequest(`/repos/${repo}/git/trees/${branch}?recursive=1`);
             const htmlFiles = treeData.tree.filter(file => file.type === 'blob' && file.path.endsWith('.html'));
             
@@ -264,32 +284,33 @@
                 if (content.includes(oldText)) {
                     const matchCount = content.split(oldText).length - 1;
                     totalMatches += matchCount;
-                    const newContent = content.split(oldText).join(UI.newText.value);
 
-                    // Simpan 'originalContent' buat fitur Undo nanti
+                    // Siapkan data gantung di memori
                     filesReadyToUpdate.push({
                         path: file.path,
                         oldSha: fileData.sha, 
-                        originalContent: content,
-                        newContent: newContent
+                        originalContent: content // Ini untuk Undo nanti
                     });
-
-                    log(`>> Ketemu ${matchCount} kecocokan di: ${file.path}`, 'success');
+                    log(`>> Ditemukan ${matchCount} kecocokan di: ${file.path}`, 'success');
                 }
             }
 
             if (filesReadyToUpdate.length > 0) {
-                log(`\nScan selesai. ${totalMatches} teks ditemukan di ${filesReadyToUpdate.length} file.`, 'info');
-                UI.btnReplace.disabled = false;
+                log(`\nScan selesai. Teks ditemukan di ${filesReadyToUpdate.length} file.`, 'info');
+                log(`Memunculkan Menu Replace...`, 'warn');
+                // Tampilkan menu dinamis
+                UI.replaceSection.style.display = 'block';
+                // Jika mau replace, berarti data undo sebelumnya mending diamankan/direset dulu untuk sesi ini
+                UI.btnUndo.disabled = true; 
             } else {
-                log(`Teks tidak ditemukan di file manapun.`, 'info');
+                log(`Scan selesai. Teks tidak ditemukan di file manapun.`, 'warn');
             }
 
         } catch (error) {
-            log(`Error Scan: ${error.message}`, 'error');
+            log(`Error: ${error.message}`, 'error');
         } finally {
             UI.btnScan.disabled = false;
-            UI.btnScan.textContent = "1. Scan Files";
+            UI.btnScan.textContent = "1. Scan Files (.html)";
         }
     });
 
@@ -297,74 +318,98 @@
     UI.btnReplace.addEventListener('click', async () => {
         const repo = UI.repo.value.trim();
         const branch = UI.branch.value.trim();
+        const oldText = UI.oldText.value;
+        const newText = UI.newText.value;
         
         UI.btnReplace.disabled = true;
         UI.btnScan.disabled = true;
-        UI.btnReplace.textContent = "Committing...";
+        UI.btnReplace.textContent = "Committing to GitHub...";
 
         log(`\nMemulai proses Replace & Commit...`, 'info');
+        
+        let backupData = []; // Data yang akan disave ke localStorage
 
         for (const file of filesReadyToUpdate) {
             try {
-                const base64Content = b64EncodeUnicode(file.newContent);
+                // Proses replace teks
+                const replacedContent = file.originalContent.split(oldText).join(newText);
+                const base64Content = b64EncodeUnicode(replacedContent);
+                
+                // Commit ke github
                 const response = await apiRequest(`/repos/${repo}/contents/${file.path}`, 'PUT', {
-                    message: `Auto-replace: Update teks via HTML Replacer Tool`,
+                    message: `Auto-replace: Teks via HTML Replacer Tool`,
                     content: base64Content,
                     sha: file.oldSha,
                     branch: branch
                 });
                 
-                // Simpan SHA baru setelah diupdate ke GitHub untuk keperluan Undo
-                file.newSha = response.content.sha;
-                filesSuccessfullyReplaced.push(file);
+                // Simpan SHA yang BARU dari response github + KONTEN ASLI
+                backupData.push({
+                    path: file.path,
+                    currentSha: response.content.sha, // Butuh SHA terbaru untuk nimpa ulang saat Undo
+                    originalContent: file.originalContent
+                });
                 
-                log(`>> Berhasil commit: ${file.path}`, 'success');
+                log(`>> Berhasil update: ${file.path}`, 'success');
             } catch (error) {
-                log(`>> Gagal commit ${file.path}: ${error.message}`, 'error');
+                log(`>> Gagal update ${file.path}: ${error.message}`, 'error');
             }
         }
 
-        if (filesSuccessfullyReplaced.length > 0) {
-            log(`\nPROSES SELESAI. Jika ada error di web, jangan tutup tab ini! Klik "3. PANIC! Kembalikan Kode" untuk membatalkan.`, 'info');
-            UI.btnUndo.disabled = false; // Aktifkan tombol Undo
+        // Simpan backup ke localStorage sebagai pertahanan dari Refresh
+        if (backupData.length > 0) {
+            localStorage.setItem('ryg_undo_backup', JSON.stringify(backupData));
+            log(`\nSELESAI! Data original otomatis dibackup di browser.`, 'warn');
+            log(`Buka website sekarang. Kalau tampilannya hancur, klik tombol merah "PANIC! Kembalikan Kode" (Bahkan jika tab ini di-refresh, tombol tetap bisa dipakai).`, 'info');
+            UI.btnUndo.disabled = false; // Aktifkan tombol sakti
         }
         
+        UI.replaceSection.style.display = 'none'; // Sembunyikan form replace lagi
         filesReadyToUpdate = [];
         UI.btnScan.disabled = false;
-        UI.btnReplace.textContent = "2. Replace & Commit";
+        UI.btnReplace.textContent = "2. Replace & Commit ke GitHub";
     });
 
-    // TAHAP 3: UNDO / KEMBALIKAN KODE
+    // TAHAP 3: UNDO / PANIC KEMBALIKAN KODE
     UI.btnUndo.addEventListener('click', async () => {
-        const confirmUndo = confirm("Yakin ingin membatalkan perubahan dan mengembalikan kode ke aslinya?");
+        const confirmUndo = confirm("YAKIN UNDO? Kodingan web akan dikembalikan persis ke keadaan sebelum Replace terakhir dilakukan.");
         if (!confirmUndo) return;
 
         const repo = UI.repo.value.trim();
         const branch = UI.branch.value.trim();
+        const savedData = localStorage.getItem('ryg_undo_backup');
+        
+        if (!savedData) {
+            log("Tidak ada data backup ditemukan!", "error");
+            return;
+        }
+
+        const undoQueue = JSON.parse(savedData);
         
         UI.btnUndo.disabled = true;
         UI.btnUndo.textContent = "Reverting...";
-        log(`\nMemulai proses UNDO (Mengembalikan kode asli)...`, 'error');
+        log(`\nMemulai proses KEMBALIKAN KODE ASLI...`, 'error');
 
-        for (const file of filesSuccessfullyReplaced) {
+        for (const file of undoQueue) {
             try {
-                const base64Content = b64EncodeUnicode(file.originalContent); // Pake konten asli yang disimpen
+                const base64Content = b64EncodeUnicode(file.originalContent); 
                 await apiRequest(`/repos/${repo}/contents/${file.path}`, 'PUT', {
-                    message: `Auto-revert: Membatalkan perubahan sebelumnya`,
+                    message: `Auto-revert: Membatalkan perubahan dari HTML Replacer`,
                     content: base64Content,
-                    sha: file.newSha, // Gunakan SHA terbaru dari commit replace tadi
+                    sha: file.currentSha, // Pake SHA file yg sudah terganti di GitHub
                     branch: branch
                 });
-                
-                log(`>> Berhasil mengembalikan: ${file.path}`, 'success');
+                log(`>> Berhasil mengembalikan file: ${file.path}`, 'success');
             } catch (error) {
                 log(`>> Gagal mengembalikan ${file.path}: ${error.message}`, 'error');
             }
         }
 
-        log(`\nPROSES UNDO SELESAI. Kode telah dikembalikan seperti semula.`, 'info');
+        log(`\nPROSES UNDO SELESAI. Web sudah kembali seperti semula.`, 'info');
+        
+        // Bersihkan memori backup karena udah dibalikin
+        localStorage.removeItem('ryg_undo_backup');
         UI.btnUndo.textContent = "3. PANIC! Kembalikan Kode";
-        filesSuccessfullyReplaced = []; // Kosongkan daftar undo
     });
 </script>
 
