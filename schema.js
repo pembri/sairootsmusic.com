@@ -44,9 +44,8 @@
           "https://www.youtube.com/@sairoots",
           "https://open.spotify.com/artist/0xOPCtZvhXVd9RTbU1aYTr",
           "https://music.apple.com/id/artist/sai-roots/1892187423",
-          "https://www.deezer.com/artist/384508281",
-          "https://youtube.com/channel/UCnjRvftn7QD2kDqLHszImsA",
           "https://m.soundcloud.com/sairoots",
+          "https://www.deezer.com/artist/384508281",
           "https://music.amazon.com/artists/B0GTFWNC32/sai-roots",
           "https://youtube.com/channel/UCnjRvftn7QD2kDqLHszImsA"
         ]
