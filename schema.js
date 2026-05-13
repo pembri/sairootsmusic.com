@@ -43,7 +43,7 @@
           "https://musicbrainz.org/artist/acd09c55-df9b-4628-9605-446b3cf6554a",
           "https://www.youtube.com/@sairoots",
           "https://open.spotify.com/artist/0xOPCtZvhXVd9RTbU1aYTr",
-          "https://music.apple.com/id/artist/sai-roots/1892187423",
+          "https://music.apple.com/id/artist/1892187423",
           "https://m.soundcloud.com/sairoots",
           "https://www.deezer.com/artist/384508281",
           "https://music.amazon.com/artists/B0GTFWNC32/sai-roots",
