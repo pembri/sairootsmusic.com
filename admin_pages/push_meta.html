@@ -334,72 +334,93 @@
     }
 
     function generateMetaTags(path, html) {
-        // Extract Title from HTML
-        const titleMatch = html.match(/<title>(.*?)<\/title>/);
-        let pageTitle = titleMatch ? titleMatch[1] : "SAI Roots Music";
-        pageTitle = pageTitle.replace("SAI Roots | ", "").replace(" - SAI Roots", "");
+    // 1. Ambil Title asli halaman
+    const titleMatch = html.match(/<title>(.*?)<\/title>/);
+    let pageTitle = titleMatch ? titleMatch[1] : "SAI Roots Music";
+    pageTitle = pageTitle.replace("SAI Roots | ", "").replace(" - SAI Roots", "");
 
-        let description = "";
-        let tags = [];
-
-        // Context Logic
-        if (path.startsWith('lyric/')) {
-            description = `Lirik lagu ${pageTitle} oleh SAI Roots. Temukan lirik lengkap, makna lagu, dan pesan mendalam dalam balutan irama Roots Reggae dan Reggae Rap asli Jombang, Indonesia.`;
-            tags = ["Lirik", "Lyrics", "Roots Reggae", "Reggae Rap", "Jombang", "SAI Roots", pageTitle];
-        } else if (path.startsWith('track/')) {
-            description = `Dengarkan track resmi ${pageTitle} dari SAI Roots. Nikmati kualitas audio streaming musik reggae independen terbaik. Dukung musisi lokal dari Jawa Timur.`;
-            tags = ["Music", "Audio", "Reggae", "Streaming", "Independent Music", pageTitle];
-        } else if (path.startsWith('article/')) {
-            description = `Baca artikel: ${pageTitle}. Update terbaru mengenai proyek musik SAI Roots, Ahmad Supembri, dan perkembangan skena musik di Jombang.`;
-            tags = ["Article", "News", "Blog", "Update", "Ahmad Supembri", pageTitle];
-        } else if (path === 'index.html') {
-            description = "Selamat datang di website resmi SAI Roots. Proyek musik independen Roots Reggae dan Reggae Rap oleh Ahmad Supembri asal Jombang. Eksplorasi karya, visi, dan pergerakan kami.";
-            tags = ["SAI Roots", "Official Website", "Roots Reggae", "Reggae Rap", "Ahmad Supembri", "Jombang"];
-        } else {
-            description = `${pageTitle} - Halaman resmi SAI Roots (Ahmad Supembri). Platform musik Roots Reggae & Reggae Rap independen dari Jombang, Jawa Timur.`;
-            tags = ["SAI Roots", "Musician", "Indonesia", pageTitle];
-        }
-
-        // Return Object of Tags
-        return {
-            'description': description,
-            'keywords': tags.join(", "),
-            'author': 'Ahmad Supembri',
-            'og:title': pageTitle + " | SAI Roots",
-            'og:description': description,
-            'og:url': `https://sairootsmusic.com/${path}`,
-            'og:site_name': 'SAI Roots Official',
-            'og:type': path.includes('article') ? 'article' : 'website',
-            'twitter:card': 'summary_large_image',
-            'theme-color': '#0d0d0d'
-        };
+    // 2. LOGIKA CLEAN URL (Hapus .html dan index.html)
+    let cleanPath = path;
+    if (cleanPath.endsWith('index.html')) {
+        cleanPath = cleanPath.replace('index.html', ''); // Jadi folder/
+    } else if (cleanPath.endsWith('.html')) {
+        cleanPath = cleanPath.replace('.html', ''); // Hapus ekstensi
     }
+    const fullUrl = `https://sairootsmusic.com/${cleanPath}`;
+
+    // 3. DESKRIPSI & KEYWORDS (Contextual & Panjang)
+    let desc = "";
+    let keywords = "SAI Roots, Ahmad Supembri, Pembri, Roots Reggae, Reggae Rap, Jombang, Musik Independen Indonesia, Critical Fire, Musik Anywhere";
+    
+    if (path.startsWith('lyric/')) {
+        desc = `Lirik lagu ${pageTitle} dari SAI Roots. Temukan lirik lengkap, makna mendalam, dan pesan perlawanan positif dalam balutan irama Roots Reggae murni dari Jombang. Mari merayakan musik independen bersama SAI Roots.`;
+        keywords += `, Lirik, Lyrics, ${pageTitle}`;
+    } else if (path.startsWith('track/')) {
+        desc = `Streaming track resmi ${pageTitle} oleh SAI Roots. Nikmati kualitas audio tinggi musik Reggae Rap original dari Jawa Timur. Dukung pergerakan musik independen Indonesia dan dengerin karya terbaru kami di sini.`;
+        keywords += `, Music, Streaming, Audio, ${pageTitle}`;
+    } else if (path.startsWith('article/')) {
+        desc = `Baca artikel terbaru: ${pageTitle}. Update berita seputar proyek musik SAI Roots, perjalanan karier Ahmad Supembri, dan perkembangan skena musik Reggae independen di Indonesia.`;
+        keywords += `, Article, News, Berita, ${pageTitle}`;
+    } else if (path === 'index.html') {
+        desc = "Website resmi SAI Roots. Proyek musik independen Roots Reggae dan Reggae Rap oleh Ahmad Supembri (Pembri) asal Jombang, Jawa Timur. Eksplorasi album Critical Fire, lirik lagu, dan pergerakan musik kami di sini.";
+    } else {
+        desc = `Halaman resmi ${pageTitle} - SAI Roots (Ahmad Supembri). Platform musik independen yang menggabungkan Roots Reggae dan Reggae Rap dengan identitas lokal Jombang yang kuat.`;
+        keywords += `, Official, ${pageTitle}`;
+    }
+
+    // 4. RETURN SEMUA TAG (Amunisi Lengkap)
+    return {
+        'description': desc,
+        'keywords': keywords,
+        'author': 'Ahmad Supembri',
+        'robots': 'index, follow',
+        'canonical': fullUrl,
+        'og:title': `${pageTitle} | SAI Roots Official`,
+        'og:description': desc,
+        'og:url': fullUrl,
+        'og:site_name': 'SAI Roots Official',
+        'og:type': path.includes('article') ? 'article' : 'website',
+        'og:locale': 'id_ID',
+        'og:image': 'https://sairootsmusic.com/assets/img/og-image.jpg',
+        'twitter:card': 'summary_large_image',
+        'theme-color': '#0d0d0d',
+        'apple-mobile-web-app-capable': 'yes'
+    };
+}
+
 
     function injectMeta(html, tags) {
-        let headContent = html.match(/<head>([\s\S]*?)<\/head>/i)[1];
+    let headContent = html.match(/<head>([\s\S]*?)<\/head>/i)[1];
+    
+    for (const [name, value] of Object.entries(tags)) {
+        const isProperty = name.startsWith('og:');
+        const isCanonical = name === 'canonical';
+        const attr = isProperty ? 'property' : 'name';
         
-        for (const [name, value] of Object.entries(tags)) {
-            const isProperty = name.startsWith('og:');
-            const attr = isProperty ? 'property' : 'name';
-            
-            // Regex to check if tag exists
-            const regex = new RegExp(`<meta\s+${attr}=["']${name}["'][^>]*>`, 'i');
-            
-            if (name === 'description' || !regex.test(headContent)) {
-                // If description (always update) or if tag doesn't exist
-                if (regex.test(headContent)) {
-                    // Update existing
-                    headContent = headContent.replace(regex, `<meta ${attr}="${name}" content="${value}">`);
-                } else {
-                    // Append new
-                    headContent += `
-    <meta ${attr}="${name}" content="${value}">`;
-                }
+        // Handle Link Canonical khusus (Link tag, bukan Meta tag)
+        if (isCanonical) {
+            const canRegex = /<link\s+rel=["']canonical["'][^>]*>/i;
+            if (canRegex.test(headContent)) {
+                headContent = headContent.replace(canRegex, `<link rel="canonical" href="${value}">`);
+            } else {
+                headContent += `\n    <link rel="canonical" href="${value}">`;
             }
+            continue;
         }
 
-        return html.replace(/<head>([\s\S]*?)<\/head>/i, `<head>${headContent}</head>`);
+        const regex = new RegExp(`<meta\\s+${attr}=["']${name}["'][^>]*>`, 'i');
+        
+        // Upgrade Description, sisanya ditambahkan kalau belum ada
+        if (name === 'description' && regex.test(headContent)) {
+            headContent = headContent.replace(regex, `<meta ${attr}="${name}" content="${value}">`);
+        } else if (!regex.test(headContent)) {
+            headContent += `\n    <meta ${attr}="${name}" content="${value}">`;
+        }
     }
+
+    return html.replace(/<head>([\s\S]*?)<\/head>/i, `<head>${headContent}</head>`);
+}
+
 </script>
 
 </body>
