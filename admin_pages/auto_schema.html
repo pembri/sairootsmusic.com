@@ -26,7 +26,7 @@
 <div class="container">
     <div class="header">
         <h1>SAI <span>Roots</span> Schema Manger</h1>
-        <small>v2.1 - API GitHub Mode (FULL URL DATA)</small>
+        <small>v3.0 - REGEX Powered (ANTI-MELESET)</small>
     </div>
 
     <div class="panel" id="login-panel">
@@ -58,7 +58,7 @@
         c.scrollTop = c.scrollHeight;
     }
 
-    // BASE SCHEMA LAMA LU (100% UTUH, NGGAK ADA YANG DIPOTONG SAMA SEKALI)
+    // BASE SCHEMA UNIVERSAL (FULL 100% NGGAK ADA YANG DIKURANGI)
     function getUniversalSchema() {
         return [
             {
@@ -141,7 +141,6 @@
         return await res.json();
     }
 
-    // 1. SCAN REPOSITORY
     async function scanRepo() {
         try {
             log("Memulai scan repository...", "#ffcc00");
@@ -156,58 +155,97 @@
                 }
             });
 
-            log(`Ditemukan ${htmlFilesList.length} file HTML yang valid (di luar admin).`, "#ffcc00");
+            log(`Ditemukan ${htmlFilesList.length} file HTML yang valid.`, "#ffcc00");
             
             htmlFilesList.forEach(file => {
                 const info = identifyPage(file.path);
-                log(`- /${file.path} => ${info.type}`);
+                
+                // Pewarnaan log biar lu gampang ngecek mana yang lolos, mana yang WebPage
+                let colorCode = "#0f0";
+                if(info.type === "WebPage") colorCode = "#aaa"; 
+                if(info.type === "VideoObject") colorCode = "#e91e63"; // Pink untuk Cover
+                if(info.type === "MusicRecording") colorCode = "#00bcd4"; // Biru untuk Track
+                if(info.type === "MusicComposition") colorCode = "#ffeb3b"; // Kuning untuk Lirik
+                if(info.type === "Article") colorCode = "#ff9800"; // Orange untuk Artikel
+                if(info.type === "CollectionPage") colorCode = "#9c27b0"; // Ungu untuk List
+                
+                log(`- /${file.path} => [ ${info.type} ]`, colorCode);
             });
 
             document.getElementById('btn-push').style.display = 'inline-block';
-            log("Scan selesai. Siap Push Schema Masal.", "#4caf50");
+            log("Scan selesai. Silakan periksa hasil deteksi di atas.", "#4caf50");
 
         } catch (error) {
             log(error.message, "#f44336");
         }
     }
 
-    // 2. KECERDASAN DETEKSI (Clean URL & Smart Type)
+    // =========================================================================
+    // FUNGSI INI YANG GUE ROMBAK TOTAL PAKAI REGEX BRUTAL
+    // =========================================================================
     function identifyPage(path) {
-        const decodedPath = decodeURIComponent(path.toLowerCase());
+        // Ambil path asli dari GitHub, pastikan huruf kecil
+        const lowerPath = decodeURIComponent(path).toLowerCase();
         
-        let cleanUrlPath = decodedPath.replace('.html', '');
-        if (cleanUrlPath.endsWith('/index')) cleanUrlPath = cleanUrlPath.replace('/index', '');
-        const fullCleanUrl = `https://sairootsmusic.com/${cleanUrlPath === 'index' ? '' : cleanUrlPath}`;
-
         let schemaType = "WebPage";
         let specificData = {};
 
-        if (cleanUrlPath === 'index' || cleanUrlPath === '') {
+        // PENGECEKAN REGEX (Mustahil Meleset)
+        if (lowerPath === 'index.html' || lowerPath === '') {
             schemaType = "WebPage";
             specificData = { "name": "Beranda - SAI Roots Music" };
-        } else if (cleanUrlPath.includes('/lyric/')) {
+        } 
+        else if (lowerPath.match(/(^|\/)lyric\//)) {
             schemaType = "MusicComposition";
             specificData = { "composer": { "@id": "https://sairootsmusic.com/#founder" } };
-        } else if (cleanUrlPath.includes('/track/')) {
+        } 
+        else if (lowerPath.match(/(^|\/)track\//)) {
             schemaType = "MusicRecording";
             specificData = { "byArtist": { "@id": "https://sairootsmusic.com/#organization" } };
-        } else if (cleanUrlPath.includes('/cover/')) {
+        } 
+        else if (lowerPath.match(/(^|\/)cover\//)) {
             schemaType = "VideoObject";
             specificData = { "creator": { "@id": "https://sairootsmusic.com/#founder" } };
-        } else if (cleanUrlPath.includes('/article/')) {
+        } 
+        else if (lowerPath.match(/(^|\/)article\//)) {
             schemaType = "Article";
             specificData = { "author": { "@id": "https://sairootsmusic.com/#founder" } };
-        } else if (cleanUrlPath.includes('about') || cleanUrlPath.includes('contact') || cleanUrlPath.includes('profil')) {
-            schemaType = cleanUrlPath.includes('about') ? "AboutPage" : cleanUrlPath.includes('contact') ? "ContactPage" : "ProfilePage";
-        } else if (cleanUrlPath.includes('list') || cleanUrlPath.includes('discography')) {
+        } 
+        else if (lowerPath.includes('about')) {
+            schemaType = "AboutPage";
+        } 
+        else if (lowerPath.includes('contact')) {
+            schemaType = "ContactPage";
+        } 
+        else if (lowerPath.includes('profil')) {
+            schemaType = "ProfilePage";
+        } 
+        else if (lowerPath.includes('list') || lowerPath.includes('discography') || lowerPath.includes('coveran')) {
             schemaType = "CollectionPage";
         }
+
+        // =========================================================================
+        // PENGELOLAAN CLEAN URL & NAMA FOLDER PENYIMPANAN
+        // =========================================================================
+        let cleanUrlPath = lowerPath.replace(/\.html$/, '');
+        if (cleanUrlPath.endsWith('/index')) {
+            cleanUrlPath = cleanUrlPath.slice(0, -6); // hapus '/index'
+        }
+        
+        let slugForUrl = cleanUrlPath.replace(/^\/+/, ''); // Hapus slash di depan kalau ada
+        if (slugForUrl === 'index') slugForUrl = '';
+        
+        const fullCleanUrl = slugForUrl === '' ? 'https://sairootsmusic.com/' : `https://sairootsmusic.com/${slugForUrl}`;
+
+        // Bikin nama folder aman (hanya huruf, angka, dan strip)
+        let folderName = slugForUrl.replace(/[^a-zA-Z0-9-]/g, '-').replace(/^-+|-+$/g, '');
+        if (!folderName) folderName = 'beranda';
 
         return {
             path: path,
             type: schemaType,
             cleanUrl: fullCleanUrl,
-            slugFolder: cleanUrlPath.replace(/[^a-zA-Z0-9-]/g, '-').replace(/^-+|-+$/g, '') || 'beranda',
+            slugFolder: folderName,
             specific: specificData
         };
     }
@@ -215,7 +253,6 @@
     function utf8_to_b64(str) { return window.btoa(unescape(encodeURIComponent(str))); }
     function b64_to_utf8(str) { return decodeURIComponent(escape(window.atob(str))); }
 
-    // 3. PUSH SCHEMA MASAL
     async function pushSchemaMasal() {
         if (htmlFilesList.length === 0) return log("Lakukan scan terlebih dahulu!", "#f44336");
         log("Mulai melakukan Push Masal (Membuat Schema & Modifikasi HTML)...", "#ffcc00");
@@ -232,8 +269,6 @@
                 };
 
                 let universalGraph = getUniversalSchema();
-                
-                // SCHEMA SPESIFIK DI ATAS, UNIVERSAL DI BAWAH
                 let finalGraph = [specificGraph, ...universalGraph];
                 
                 let schemaJsonLd = {
@@ -291,7 +326,6 @@
         log("🎉 PUSH MASAL SELESAI!", "#4caf50");
     }
 
-    // 4. RESET SCHEMA (TARIK MUNDUR)
     async function resetSchema() {
         if (!confirm("Yakin ingin menghapus semua injeksi schema dari HTML?")) return;
         if (htmlFilesList.length === 0) return log("Lakukan scan terlebih dahulu agar sistem tahu file HTML mana yang harus dibersihkan!", "#f44336");
