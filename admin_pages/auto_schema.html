@@ -1,0 +1,348 @@
+<!DOCTYPE html>
+<html lang="id">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>SAI Roots - Smart Schema Injector</title>
+    <style>
+        :root {
+            --bg-color: #121212;
+            --container-bg: #1e1e1e;
+            --text-main: #e0e0e0;
+            --text-muted: #888;
+            --accent-red: #E32636;
+            --accent-yellow: #FFBF00;
+            --accent-green: #008000;
+            --border-color: #333;
+        }
+
+        body {
+            font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+            background-color: var(--bg-color);
+            color: var(--text-main);
+            margin: 0;
+            padding: 40px 20px;
+            display: flex;
+            justify-content: center;
+        }
+
+        .container {
+            background-color: var(--container-bg);
+            padding: 30px;
+            border-radius: 12px;
+            box-shadow: 0 8px 24px rgba(0,0,0,0.5);
+            max-width: 800px;
+            width: 100%;
+            border-top: 4px solid var(--accent-yellow);
+        }
+
+        h2 { margin-top: 0; display: flex; align-items: center; gap: 10px; }
+        h2 span { display: inline-block; width: 12px; height: 12px; border-radius: 50%; }
+        .dot-red { background-color: var(--accent-red); }
+        .dot-yellow { background-color: var(--accent-yellow); }
+        .dot-green { background-color: var(--accent-green); }
+
+        .form-group { margin-bottom: 20px; }
+        label { display: block; margin-bottom: 8px; font-weight: 600; color: var(--accent-yellow); }
+        input[type="password"] {
+            width: 100%; padding: 12px; background-color: #2a2a2a;
+            border: 1px solid var(--border-color); color: #fff;
+            border-radius: 6px; box-sizing: border-box; outline: none;
+        }
+        input:focus { border-color: var(--accent-green); }
+
+        button {
+            background-color: var(--accent-green); color: white; border: none;
+            padding: 12px 20px; border-radius: 6px; cursor: pointer;
+            font-weight: bold; font-size: 16px; width: 100%; transition: opacity 0.3s;
+        }
+        button:hover { opacity: 0.8; }
+        button:disabled { background-color: #555; cursor: not-allowed; }
+
+        .log-box {
+            background-color: #000; border: 1px solid var(--border-color); padding: 15px;
+            border-radius: 6px; height: 350px; overflow-y: auto; font-family: monospace;
+            font-size: 13px; margin-top: 20px; white-space: pre-wrap;
+        }
+        .log-info { color: #888; }
+        .log-success { color: var(--accent-green); }
+        .log-warning { color: var(--accent-yellow); }
+        .log-error { color: var(--accent-red); }
+    </style>
+</head>
+<body>
+
+<div class="container">
+    <h2>
+        <span class="dot-red"></span>
+        <span class="dot-yellow"></span>
+        <span class="dot-green"></span>
+        SAI Roots - Smart Schema Injector
+    </h2>
+    <p style="color: var(--text-muted); font-size: 14px;">Generate schema.js cerdas & otomatis suntik ke HTML (Kecuali folder /admin_pages).</p>
+    
+    <div class="form-group">
+        <label for="ghToken">GitHub Personal Access Token (PAT)</label>
+        <input type="password" id="ghToken" placeholder="ghp_xxxxxxxxxxxxxxxxx">
+    </div>
+
+    <button id="runBtn" onclick="startProcess()">GAS BUAT SCHEMA</button>
+
+    <div class="log-box" id="logBox">
+        <div class="log-info">Menunggu instruksi...</div>
+    </div>
+</div>
+
+<script>
+    const OWNER = "pembri";
+    const REPO = "sairootsmusic.com";
+    const BRANCH = "main";
+    
+    const logBox = document.getElementById('logBox');
+    const runBtn = document.getElementById('runBtn');
+
+    function log(message, type = 'info') {
+        const div = document.createElement('div');
+        div.className = `log-${type}`;
+        div.textContent = `> ${message}`;
+        logBox.appendChild(div);
+        logBox.scrollTop = logBox.scrollHeight;
+    }
+
+    function b64DecodeUnicode(str) {
+        return decodeURIComponent(atob(str).split('').map(function(c) {
+            return '%' + ('00' + c.charCodeAt(0).toString(16)).slice(-2);
+        }).join(''));
+    }
+
+    function b64EncodeUnicode(str) {
+        return btoa(encodeURIComponent(str).replace(/%([0-9A-F]{2})/g,
+            function toSolidBytes(match, p1) {
+                return String.fromCharCode('0x' + p1);
+        }));
+    }
+
+    async function apiRequest(endpoint, method = 'GET', body = null, token) {
+        const options = {
+            method,
+            headers: {
+                'Authorization': `token ${token}`,
+                'Accept': 'application/vnd.github.v3+json'
+            }
+        };
+        if (body) options.body = JSON.stringify(body);
+
+        const res = await fetch(`https://api.github.com${endpoint}`, options);
+        if (!res.ok && res.status !== 404) throw new Error(`API Error: ${res.status} ${res.statusText}`);
+        return res.ok ? res.json() : null; // Return null if 404 (for checking file existence)
+    }
+
+    // Fungsi Kecerdasan: Menentukan nama halaman dan schema khusus
+    function analyzePage(path) {
+        let pageName = "";
+        let schemaType = "WebPage";
+        let pageTitle = "SAI Roots Music";
+
+        // Hilangkan .html untuk analisa
+        let cleanPath = path.replace(/\.html$/, '');
+        
+        if (cleanPath === "index") {
+            pageName = "home";
+            schemaType = "WebSite"; // Sudah ada di base, tapi kita set type
+            pageTitle = "Beranda SAI Roots";
+        } else if (cleanPath.startsWith("lyric/")) {
+            // Contoh path: lyric/autopsi-mic/index atau lyric/autopsi-mic
+            let parts = cleanPath.split('/');
+            let songSlug = parts[parts.length - 1] === 'index' ? parts[parts.length - 2] : parts[parts.length - 1];
+            pageName = `lyric-${songSlug}`;
+            schemaType = "MusicRecording";
+            pageTitle = songSlug.replace(/-/g, ' ').toUpperCase();
+        } else if (cleanPath.includes("about")) {
+            pageName = "about";
+            schemaType = "AboutPage";
+            pageTitle = "Tentang SAI Roots";
+        } else if (cleanPath.includes("contact")) {
+            pageName = "contact";
+            schemaType = "ContactPage";
+            pageTitle = "Kontak SAI Roots";
+        } else {
+            // Format fallback
+            pageName = cleanPath.replace(/\//g, '-');
+            if(pageName.endsWith('-index')) pageName = pageName.replace('-index', '');
+            schemaType = "WebPage";
+            pageTitle = "Halaman SAI Roots";
+        }
+
+        return { pageName, schemaType, pageTitle };
+    }
+
+    // Generate konten file schema.js (Pondasi + Tambahan)
+    function generateSchemaJsContent(analysis) {
+        const { pageName, schemaType, pageTitle } = analysis;
+        const pageUrl = `https://sairootsmusic.com/${pageName === 'home' ? '' : pageName.replace(/-/g, '/')}`;
+
+        // Menggunakan literal string backtick biar format JSON-LD valid di dalam file JS
+        return `// Auto-Generated Schema for ${pageName}
+(function() {
+  const schemaData = {
+    "@context": "https://schema.org",
+    "@graph": [
+      // PONDASI UNIVERSAL
+      {
+        "@type": "WebSite",
+        "@id": "https://sairootsmusic.com/#website",
+        "url": "https://sairootsmusic.com/",
+        "name": "SAI Roots Music",
+        "alternateName": ["SAI Roots", "Sai Roots"],
+        "description": "Official website of SAI Roots - Indonesian independent Reggae, Rap & Ska music project.",
+        "publisher": { "@id": "https://sairootsmusic.com/#organization" }
+      },
+      {
+        "@type": "MusicGroup",
+        "@id": "https://sairootsmusic.com/#organization",
+        "name": "SAI Roots",
+        "alternateName": "SAI Roots Music",
+        "description": "SAI Roots adalah proyek musik independen beraliran Reggae, Rap, dan Ska asal Indonesia, diciptakan dan dikelola secara eksklusif oleh Ahmad Supembri.",
+        "url": "https://sairootsmusic.com/",
+        "image": ["https://upload.wikimedia.org/wikipedia/commons/0/03/SAI_Roots.jpg"],
+        "genre": ["Reggae", "Roots Reggae", "Rap", "Ska", "Hip Hop"],
+        "countryOfOrigin": { "@type": "Country", "name": "Indonesia" },
+        "founder": { "@id": "https://sairootsmusic.com/#founder" },
+        "member": { "@id": "https://sairootsmusic.com/#founder" },
+        "recordLabel": { "@id": "https://sairootsmusic.com/#recordLabel" },
+        "sameAs": [
+          "https://www.wikidata.org/wiki/Q139783618",
+          "https://musicbrainz.org/artist/acd09c55-df9b-4628-9605-446b3cf6554a",
+          "https://www.youtube.com/@sairoots",
+          "https://music.apple.com/id/artist/1892187423",
+          "https://m.soundcloud.com/sairoots",
+          "https://www.deezer.com/artist/384508281"
+        ]
+      },
+      {
+        "@type": "Person",
+        "@id": "https://sairootsmusic.com/#founder",
+        "name": "Ahmad Supembri",
+        "image": "https://upload.wikimedia.org/wikipedia/commons/2/23/Ahmad_Supembri.jpg",
+        "description": "Indonesian musician, composer, lyricist, and record producer.",
+        "url": "https://sairootsmusic.com/",
+        "nationality": { "@type": "Country", "name": "Indonesia" },
+        "occupation": ["Musician", "Composer", "Lyricist", "Record Producer"],
+        "sameAs": ["https://www.wikidata.org/wiki/Q139784101", "https://instagram.com/ahmadsupembri"]
+      },
+      {
+        "@type": "Organization",
+        "@id": "https://sairootsmusic.com/#recordLabel",
+        "name": "SAI Roots Music",
+        "description": "Indonesian independent record label owned by Ahmad Supembri.",
+        "url": "https://sairootsmusic.com/",
+        "founder": { "@id": "https://sairootsmusic.com/#founder" },
+        "sameAs": ["https://www.wikidata.org/wiki/Q139784313"]
+      }
+    ]
+  };
+
+  // TAMBAHAN CERDAS (Berdasarkan Halaman)
+  if ("${schemaType}" !== "WebSite") {
+      schemaData["@graph"].push({
+          "@type": "${schemaType}",
+          "@id": "${pageUrl}#${schemaType.toLowerCase()}",
+          "url": "${pageUrl}",
+          "name": "${pageTitle}",
+          "isPartOf": { "@id": "https://sairootsmusic.com/#website" }
+      });
+  }
+
+  // Suntik JSON-LD
+  const script = document.createElement('script');
+  script.type = 'application/ld+json';
+  script.textContent = JSON.stringify(schemaData, null, 2);
+  document.head.appendChild(script);
+})();`;
+    }
+
+    async function startProcess() {
+        const token = document.getElementById('ghToken').value.trim();
+        if (!token) return log("Token GitHub tidak boleh kosong!", "error");
+
+        runBtn.disabled = true;
+        logBox.innerHTML = '';
+        log("Mengambil peta struktur repository...", "info");
+
+        try {
+            // Ambil semua file di repository
+            const treeData = await apiRequest(`/repos/${OWNER}/${REPO}/git/trees/${BRANCH}?recursive=1`, 'GET', null, token);
+            const gitTree = treeData.tree;
+
+            // Filter: Hanya HTML dan KECUALI yang ada di folder admin_pages
+            const targetHtmlFiles = gitTree.filter(file => 
+                file.type === "blob" && 
+                file.path.endsWith(".html") && 
+                !file.path.includes("admin_pages/") // RULE MUTLAK PENGECUALIAN
+            );
+
+            log(`Ditemukan ${targetHtmlFiles.length} file HTML target (admin_pages diabaikan).`, "success");
+
+            for (let i = 0; i < targetHtmlFiles.length; i++) {
+                const htmlFile = targetHtmlFiles[i];
+                log(`\n[${i+1}/${targetHtmlFiles.length}] Memproses HTML: ${htmlFile.path}`, "info");
+
+                // 1. Analisa halaman
+                const analysis = analyzePage(htmlFile.path);
+                const schemaFilePath = `schema/${analysis.pageName}/schema.js`;
+                const schemaScriptTag = `<script src="/${schemaFilePath}"></script>`;
+
+                log(`--> Tipe halaman: ${analysis.schemaType} | Folder Schema: /${schemaFilePath}`, "warning");
+
+                // 2. Cek dan Buat/Update File schema.js di GitHub
+                const jsContent = generateSchemaJsContent(analysis);
+                const existingJs = await apiRequest(`/repos/${OWNER}/${REPO}/contents/${schemaFilePath}`, 'GET', null, token);
+                
+                await apiRequest(`/repos/${OWNER}/${REPO}/contents/${schemaFilePath}`, 'PUT', {
+                    message: `Auto-generate smart schema for ${analysis.pageName}`,
+                    content: b64EncodeUnicode(jsContent),
+                    sha: existingJs ? existingJs.sha : undefined // Jika ada, timpa (update), kalau gaada otomatis buat baru
+                }, token);
+                log(`--> File JS berhasil di-generate/di-update.`, "success");
+
+                // 3. Ambil dan Update file HTML-nya
+                const htmlData = await apiRequest(`/repos/${OWNER}/${REPO}/contents/${htmlFile.path}`, 'GET', null, token);
+                let htmlContent = b64DecodeUnicode(htmlData.content);
+
+                // Cek apakah script sudah disuntik
+                if (!htmlContent.includes(schemaScriptTag)) {
+                    // Suntik tepat di bawah <head>
+                    const headRegex = /<head>/i;
+                    if (headRegex.test(htmlContent)) {
+                        htmlContent = htmlContent.replace(headRegex, `<head>\n    \n    ${schemaScriptTag}`);
+                        
+                        // Push update HTML ke Github
+                        await apiRequest(`/repos/${OWNER}/${REPO}/contents/${htmlFile.path}`, 'PUT', {
+                            message: `Inject smart schema into ${htmlFile.path}`,
+                            content: b64EncodeUnicode(htmlContent),
+                            sha: htmlData.sha
+                        }, token);
+                        log(`--> HTML diperbarui: Tag <script> disuntikkan!`, "success");
+                    } else {
+                        log(`--> [ERROR] Tag <head> tidak ditemukan di ${htmlFile.path}`, "error");
+                    }
+                } else {
+                    log(`--> [SKIP HTML] Tag <script> sudah ada di HTML, tidak perlu disuntik ulang.`, "warning");
+                }
+
+                // Jeda biar API santai
+                await new Promise(r => setTimeout(r, 1500));
+            }
+
+            log("\n🔥 PROSES SELESAI! Semua file HTML berhasil diintegrasikan dengan Schema cerdas.", "success");
+
+        } catch (error) {
+            log(error.message, "error");
+        } finally {
+            runBtn.disabled = false;
+        }
+    }
+</script>
+
+</body>
+</html>
