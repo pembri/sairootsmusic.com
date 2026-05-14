@@ -1,0 +1,293 @@
+<!DOCTYPE html>
+<html lang="id">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>SAI Roots - Auto Canonical Injector</title>
+    <style>
+        :root {
+            --bg-color: #121212;
+            --container-bg: #1e1e1e;
+            --text-main: #e0e0e0;
+            --text-muted: #888;
+            --accent-red: #E32636;
+            --accent-yellow: #FFBF00;
+            --accent-green: #008000;
+            --border-color: #333;
+        }
+
+        body {
+            font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+            background-color: var(--bg-color);
+            color: var(--text-main);
+            margin: 0;
+            padding: 40px 20px;
+            display: flex;
+            justify-content: center;
+        }
+
+        .container {
+            background-color: var(--container-bg);
+            padding: 30px;
+            border-radius: 12px;
+            box-shadow: 0 8px 24px rgba(0,0,0,0.5);
+            max-width: 700px;
+            width: 100%;
+            border-top: 4px solid var(--accent-green);
+        }
+
+        h2 {
+            margin-top: 0;
+            display: flex;
+            align-items: center;
+            gap: 10px;
+        }
+
+        h2 span {
+            display: inline-block;
+            width: 12px;
+            height: 12px;
+            border-radius: 50%;
+        }
+
+        .dot-red { background-color: var(--accent-red); }
+        .dot-yellow { background-color: var(--accent-yellow); }
+        .dot-green { background-color: var(--accent-green); }
+
+        .form-group {
+            margin-bottom: 20px;
+        }
+
+        label {
+            display: block;
+            margin-bottom: 8px;
+            font-weight: 600;
+            color: var(--accent-yellow);
+        }
+
+        input[type="text"], input[type="password"] {
+            width: 100%;
+            padding: 12px;
+            background-color: #2a2a2a;
+            border: 1px solid var(--border-color);
+            color: #fff;
+            border-radius: 6px;
+            box-sizing: border-box;
+            outline: none;
+        }
+
+        input:focus {
+            border-color: var(--accent-green);
+        }
+
+        button {
+            background-color: var(--accent-green);
+            color: white;
+            border: none;
+            padding: 12px 20px;
+            border-radius: 6px;
+            cursor: pointer;
+            font-weight: bold;
+            font-size: 16px;
+            width: 100%;
+            transition: opacity 0.3s;
+        }
+
+        button:hover {
+            opacity: 0.8;
+        }
+
+        button:disabled {
+            background-color: #555;
+            cursor: not-allowed;
+        }
+
+        .log-box {
+            background-color: #000;
+            border: 1px solid var(--border-color);
+            padding: 15px;
+            border-radius: 6px;
+            height: 300px;
+            overflow-y: auto;
+            font-family: monospace;
+            font-size: 13px;
+            margin-top: 20px;
+        }
+
+        .log-info { color: #888; }
+        .log-success { color: var(--accent-green); }
+        .log-warning { color: var(--accent-yellow); }
+        .log-error { color: var(--accent-red); }
+    </style>
+</head>
+<body>
+
+<div class="container">
+    <h2>
+        <span class="dot-red"></span>
+        <span class="dot-yellow"></span>
+        <span class="dot-green"></span>
+        SAI Roots - Canonical Automator
+    </h2>
+    <p style="color: var(--text-muted); font-size: 14px;">Scan repository pembri/sairootsmusic.com, inject/update link canonical otomatis.</p>
+    
+    <div class="form-group">
+        <label for="ghToken">GitHub Personal Access Token (PAT)</label>
+        <input type="password" id="ghToken" placeholder="ghp_xxxxxxxxxxxxxxxxx">
+    </div>
+
+    <button id="runBtn" onclick="startProcess()">GAS BUAT CANONICAL</button>
+
+    <div class="log-box" id="logBox">
+        <div class="log-info">Menunggu instruksi...</div>
+    </div>
+</div>
+
+<script>
+    const OWNER = "pembri";
+    const REPO = "sairootsmusic.com";
+    const BRANCH = "main";
+    const BASE_URL = "https://sairootsmusic.com";
+
+    const logBox = document.getElementById('logBox');
+    const runBtn = document.getElementById('runBtn');
+
+    function log(message, type = 'info') {
+        const div = document.createElement('div');
+        div.className = `log-${type}`;
+        div.textContent = `> ${message}`;
+        logBox.appendChild(div);
+        logBox.scrollTop = logBox.scrollHeight;
+    }
+
+    // Fungsi handle UTF-8 Base64 (Wajib buat file yang ada karakter aneh/emoji)
+    function b64DecodeUnicode(str) {
+        return decodeURIComponent(atob(str).split('').map(function(c) {
+            return '%' + ('00' + c.charCodeAt(0).toString(16)).slice(-2);
+        }).join(''));
+    }
+
+    function b64EncodeUnicode(str) {
+        return btoa(encodeURIComponent(str).replace(/%([0-9A-F]{2})/g,
+            function toSolidBytes(match, p1) {
+                return String.fromCharCode('0x' + p1);
+        }));
+    }
+
+    // Format URL Sesuai Rules
+    function generateCanonicalUrl(path) {
+        let urlPath = path;
+        
+        // Hapus akhiran index.html
+        urlPath = urlPath.replace(/\/index\.html$/, '');
+        // Hapus kalau file cuma index.html di root
+        urlPath = urlPath.replace(/^index\.html$/, '');
+        // Hapus akhiran .html untuk file lain (misal about.html)
+        urlPath = urlPath.replace(/\.html$/, '');
+
+        // Gabungkan
+        if (urlPath === "") return BASE_URL;
+        return `${BASE_URL}/${urlPath}`;
+    }
+
+    async function apiRequest(endpoint, method = 'GET', body = null, token) {
+        const options = {
+            method,
+            headers: {
+                'Authorization': `token ${token}`,
+                'Accept': 'application/vnd.github.v3+json'
+            }
+        };
+        if (body) options.body = JSON.stringify(body);
+
+        const res = await fetch(`https://api.github.com${endpoint}`, options);
+        if (!res.ok) throw new Error(`API Error: ${res.status} ${res.statusText}`);
+        return res.json();
+    }
+
+    async function startProcess() {
+        const token = document.getElementById('ghToken').value.trim();
+        if (!token) {
+            log("Token GitHub tidak boleh kosong!", "error");
+            return;
+        }
+
+        runBtn.disabled = true;
+        logBox.innerHTML = '';
+        log("Memulai proses scan repository...", "info");
+
+        try {
+            // 1. Ambil Git Tree untuk dapet SEMUA file sekaligus
+            log(`Mengambil daftar file dari ${OWNER}/${REPO}...`, "info");
+            const treeRes = await apiRequest(`/repos/${OWNER}/${REPO}/git/trees/${BRANCH}?recursive=1`, 'GET', null, token);
+            
+            const htmlFiles = treeRes.tree.filter(file => file.type === "blob" && file.path.endsWith(".html"));
+            log(`Ditemukan ${htmlFiles.length} file HTML.`, "success");
+
+            // 2. Loop & Proses setiap file (dikasih jeda biar ngga kena limit rate API)
+            for (let i = 0; i < htmlFiles.length; i++) {
+                const file = htmlFiles[i];
+                log(`[${i+1}/${htmlFiles.length}] Mengecek: ${file.path}...`, "info");
+                
+                // Ambil konten file
+                const fileData = await apiRequest(`/repos/${OWNER}/${REPO}/contents/${file.path}`, 'GET', null, token);
+                let content = b64DecodeUnicode(fileData.content);
+                const fileSha = fileData.sha;
+
+                const targetCanonical = generateCanonicalUrl(file.path);
+                const newLinkTag = `<link rel="canonical" href="${targetCanonical}">`;
+                
+                // Regex untuk nyari tag canonical lama (kalau ada)
+                const canonicalRegex = /<link\s+rel=["']canonical["']\s+href=["']([^"']*)["'][^>]*>/i;
+                
+                let needsUpdate = false;
+                let finalContent = content;
+                const match = content.match(canonicalRegex);
+
+                if (match) {
+                    const existingUrl = match[1];
+                    if (existingUrl === targetCanonical) {
+                        log(`--> [SKIP] Canonical sudah ada dan benar.`, "warning");
+                    } else {
+                        log(`--> [UPDATE] Canonical salah (${existingUrl}). Diubah jadi ${targetCanonical}`, "success");
+                        finalContent = content.replace(canonicalRegex, newLinkTag);
+                        needsUpdate = true;
+                    }
+                } else {
+                    // Inject baru di bawah <head>
+                    const headRegex = /<head>/i;
+                    if (headRegex.test(content)) {
+                        log(`--> [ADD] Canonical tidak ditemukan. Menambahkan ${targetCanonical}`, "success");
+                        finalContent = content.replace(headRegex, `<head>\n    ${newLinkTag}`);
+                        needsUpdate = true;
+                    } else {
+                        log(`--> [ERROR] Tidak menemukan tag <head> di file ini. Dilewati.`, "error");
+                    }
+                }
+
+                // 3. Commit jika ada perubahan
+                if (needsUpdate) {
+                    await apiRequest(`/repos/${OWNER}/${REPO}/contents/${file.path}`, 'PUT', {
+                        message: `Auto-update canonical URL for ${file.path}`,
+                        content: b64EncodeUnicode(finalContent),
+                        sha: fileSha
+                    }, token);
+                    log(`--> Tersimpan di GitHub.`, "success");
+                }
+
+                // Jeda 1 detik biar API GitHub aman dan ga ngamuk
+                await new Promise(r => setTimeout(r, 1000));
+            }
+
+            log("SELESAI! Semua file HTML berhasil di-scan dan di-update.", "success");
+
+        } catch (error) {
+            log(error.message, "error");
+        } finally {
+            runBtn.disabled = false;
+        }
+    }
+</script>
+
+</body>
+</html>
