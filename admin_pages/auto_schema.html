@@ -1,348 +1,1003 @@
 <!DOCTYPE html>
 <html lang="id">
 <head>
-    <meta charset="UTF-8">
-    <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>SAI Roots - Smart Schema Injector</title>
-    <style>
-        :root {
-            --bg-color: #121212;
-            --container-bg: #1e1e1e;
-            --text-main: #e0e0e0;
-            --text-muted: #888;
-            --accent-red: #E32636;
-            --accent-yellow: #FFBF00;
-            --accent-green: #008000;
-            --border-color: #333;
-        }
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>Auto Schema Generator — SAI Roots</title>
+  <link rel="preconnect" href="https://fonts.googleapis.com" />
+  <link href="https://fonts.googleapis.com/css2?family=Space+Mono:wght@400;700&family=Syne:wght@400;700;800&display=swap" rel="stylesheet" />
+  <style>
+    :root {
+      --bg: #0a0a0a;
+      --surface: #111111;
+      --border: #222222;
+      --accent: #c8f03e;
+      --accent2: #ff6b35;
+      --text: #e8e8e8;
+      --muted: #555;
+      --success: #4ade80;
+      --warning: #facc15;
+      --error: #f87171;
+      --font-mono: 'Space Mono', monospace;
+      --font-sans: 'Syne', sans-serif;
+    }
+    *, *::before, *::after { box-sizing: border-box; margin: 0; padding: 0; }
+    html { scroll-behavior: smooth; }
+    body {
+      background: var(--bg);
+      color: var(--text);
+      font-family: var(--font-sans);
+      min-height: 100vh;
+      overflow-x: hidden;
+    }
 
-        body {
-            font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
-            background-color: var(--bg-color);
-            color: var(--text-main);
-            margin: 0;
-            padding: 40px 20px;
-            display: flex;
-            justify-content: center;
-        }
+    /* GRID BG */
+    body::before {
+      content: '';
+      position: fixed;
+      inset: 0;
+      background-image:
+        linear-gradient(rgba(200,240,62,0.03) 1px, transparent 1px),
+        linear-gradient(90deg, rgba(200,240,62,0.03) 1px, transparent 1px);
+      background-size: 40px 40px;
+      pointer-events: none;
+      z-index: 0;
+    }
 
-        .container {
-            background-color: var(--container-bg);
-            padding: 30px;
-            border-radius: 12px;
-            box-shadow: 0 8px 24px rgba(0,0,0,0.5);
-            max-width: 800px;
-            width: 100%;
-            border-top: 4px solid var(--accent-yellow);
-        }
+    .wrap { position: relative; z-index: 1; max-width: 860px; margin: 0 auto; padding: 48px 24px 80px; }
 
-        h2 { margin-top: 0; display: flex; align-items: center; gap: 10px; }
-        h2 span { display: inline-block; width: 12px; height: 12px; border-radius: 50%; }
-        .dot-red { background-color: var(--accent-red); }
-        .dot-yellow { background-color: var(--accent-yellow); }
-        .dot-green { background-color: var(--accent-green); }
+    /* HEADER */
+    header { margin-bottom: 48px; }
+    .badge {
+      display: inline-block;
+      font-family: var(--font-mono);
+      font-size: 10px;
+      letter-spacing: 0.15em;
+      text-transform: uppercase;
+      color: var(--accent);
+      border: 1px solid var(--accent);
+      padding: 4px 10px;
+      margin-bottom: 16px;
+    }
+    h1 {
+      font-size: clamp(28px, 5vw, 44px);
+      font-weight: 800;
+      line-height: 1.1;
+      letter-spacing: -0.02em;
+    }
+    h1 span { color: var(--accent); }
+    .subtitle {
+      margin-top: 10px;
+      font-family: var(--font-mono);
+      font-size: 12px;
+      color: var(--muted);
+      letter-spacing: 0.05em;
+    }
 
-        .form-group { margin-bottom: 20px; }
-        label { display: block; margin-bottom: 8px; font-weight: 600; color: var(--accent-yellow); }
-        input[type="password"] {
-            width: 100%; padding: 12px; background-color: #2a2a2a;
-            border: 1px solid var(--border-color); color: #fff;
-            border-radius: 6px; box-sizing: border-box; outline: none;
-        }
-        input:focus { border-color: var(--accent-green); }
+    /* CARD */
+    .card {
+      background: var(--surface);
+      border: 1px solid var(--border);
+      padding: 28px;
+      margin-bottom: 20px;
+    }
+    .card-title {
+      font-family: var(--font-mono);
+      font-size: 11px;
+      letter-spacing: 0.12em;
+      text-transform: uppercase;
+      color: var(--accent);
+      margin-bottom: 16px;
+    }
 
-        button {
-            background-color: var(--accent-green); color: white; border: none;
-            padding: 12px 20px; border-radius: 6px; cursor: pointer;
-            font-weight: bold; font-size: 16px; width: 100%; transition: opacity 0.3s;
-        }
-        button:hover { opacity: 0.8; }
-        button:disabled { background-color: #555; cursor: not-allowed; }
+    /* FORM */
+    label {
+      display: block;
+      font-family: var(--font-mono);
+      font-size: 11px;
+      letter-spacing: 0.08em;
+      color: var(--muted);
+      margin-bottom: 6px;
+      text-transform: uppercase;
+    }
+    input[type="text"], input[type="password"] {
+      width: 100%;
+      background: var(--bg);
+      border: 1px solid var(--border);
+      color: var(--text);
+      font-family: var(--font-mono);
+      font-size: 13px;
+      padding: 12px 14px;
+      outline: none;
+      transition: border-color 0.2s;
+    }
+    input:focus { border-color: var(--accent); }
+    .token-row { display: flex; gap: 10px; align-items: flex-end; }
+    .token-row input { flex: 1; }
 
-        .log-box {
-            background-color: #000; border: 1px solid var(--border-color); padding: 15px;
-            border-radius: 6px; height: 350px; overflow-y: auto; font-family: monospace;
-            font-size: 13px; margin-top: 20px; white-space: pre-wrap;
-        }
-        .log-info { color: #888; }
-        .log-success { color: var(--accent-green); }
-        .log-warning { color: var(--accent-yellow); }
-        .log-error { color: var(--accent-red); }
-    </style>
+    /* BUTTONS */
+    .btn {
+      font-family: var(--font-mono);
+      font-size: 12px;
+      letter-spacing: 0.1em;
+      text-transform: uppercase;
+      border: none;
+      cursor: pointer;
+      padding: 12px 22px;
+      transition: all 0.15s;
+      white-space: nowrap;
+    }
+    .btn-primary {
+      background: var(--accent);
+      color: #000;
+      font-weight: 700;
+    }
+    .btn-primary:hover { background: #d9ff4a; transform: translateY(-1px); }
+    .btn-primary:active { transform: translateY(0); }
+    .btn-primary:disabled { opacity: 0.4; cursor: not-allowed; transform: none; }
+    .btn-ghost {
+      background: transparent;
+      color: var(--muted);
+      border: 1px solid var(--border);
+    }
+    .btn-ghost:hover { border-color: var(--accent); color: var(--accent); }
+    .btn-danger {
+      background: transparent;
+      color: var(--error);
+      border: 1px solid var(--error);
+    }
+    .btn-danger:hover { background: var(--error); color: #000; }
+
+    /* INFO ROW */
+    .info-row {
+      display: flex;
+      gap: 16px;
+      flex-wrap: wrap;
+      margin-bottom: 20px;
+    }
+    .info-chip {
+      font-family: var(--font-mono);
+      font-size: 11px;
+      padding: 6px 12px;
+      border: 1px solid var(--border);
+      color: var(--muted);
+    }
+    .info-chip b { color: var(--text); }
+
+    /* PROGRESS */
+    #progressSection { display: none; }
+    .progress-bar-wrap {
+      background: var(--border);
+      height: 4px;
+      margin: 12px 0;
+      overflow: hidden;
+    }
+    .progress-bar-fill {
+      height: 100%;
+      background: var(--accent);
+      width: 0%;
+      transition: width 0.3s ease;
+    }
+    .progress-label {
+      font-family: var(--font-mono);
+      font-size: 11px;
+      color: var(--muted);
+    }
+
+    /* LOG */
+    #logBox {
+      background: var(--bg);
+      border: 1px solid var(--border);
+      font-family: var(--font-mono);
+      font-size: 11px;
+      line-height: 1.7;
+      padding: 16px;
+      max-height: 320px;
+      overflow-y: auto;
+      margin-top: 16px;
+      display: none;
+    }
+    .log-line { display: flex; gap: 10px; }
+    .log-time { color: var(--muted); flex-shrink: 0; }
+    .log-ok { color: var(--success); }
+    .log-skip { color: var(--warning); }
+    .log-err { color: var(--error); }
+    .log-info { color: var(--accent); }
+    .log-dim { color: var(--muted); }
+
+    /* FILE LIST */
+    #fileList { display: none; margin-top: 20px; }
+    .file-grid {
+      display: grid;
+      gap: 8px;
+    }
+    .file-item {
+      display: flex;
+      align-items: center;
+      justify-content: space-between;
+      padding: 10px 14px;
+      background: var(--bg);
+      border: 1px solid var(--border);
+      font-family: var(--font-mono);
+      font-size: 11px;
+      gap: 10px;
+    }
+    .file-item-path { color: var(--text); flex: 1; }
+    .file-item-type {
+      padding: 2px 8px;
+      font-size: 10px;
+      letter-spacing: 0.08em;
+      text-transform: uppercase;
+    }
+    .type-homepage { background: rgba(200,240,62,0.15); color: var(--accent); border: 1px solid var(--accent); }
+    .type-music { background: rgba(255,107,53,0.15); color: var(--accent2); border: 1px solid var(--accent2); }
+    .type-about { background: rgba(74,222,128,0.15); color: var(--success); border: 1px solid var(--success); }
+    .type-contact { background: rgba(250,204,21,0.15); color: var(--warning); border: 1px solid var(--warning); }
+    .type-generic { background: rgba(85,85,85,0.2); color: var(--muted); border: 1px solid var(--border); }
+    .file-item-status { font-size: 14px; }
+
+    /* SUMMARY */
+    #summarySection { display: none; }
+    .summary-grid {
+      display: grid;
+      grid-template-columns: repeat(auto-fit, minmax(140px, 1fr));
+      gap: 12px;
+      margin-top: 12px;
+    }
+    .summary-stat {
+      background: var(--bg);
+      border: 1px solid var(--border);
+      padding: 16px;
+      text-align: center;
+    }
+    .summary-stat .num {
+      font-size: 32px;
+      font-weight: 800;
+      color: var(--accent);
+      line-height: 1;
+    }
+    .summary-stat .lbl {
+      font-family: var(--font-mono);
+      font-size: 10px;
+      color: var(--muted);
+      margin-top: 4px;
+      text-transform: uppercase;
+      letter-spacing: 0.08em;
+    }
+
+    /* SCROLLBAR */
+    ::-webkit-scrollbar { width: 4px; }
+    ::-webkit-scrollbar-track { background: var(--bg); }
+    ::-webkit-scrollbar-thumb { background: var(--border); }
+    ::-webkit-scrollbar-thumb:hover { background: var(--accent); }
+
+    .sep { border: none; border-top: 1px solid var(--border); margin: 8px 0; }
+
+    .action-row { display: flex; gap: 10px; flex-wrap: wrap; margin-top: 16px; }
+  </style>
 </head>
 <body>
+<div class="wrap">
 
-<div class="container">
-    <h2>
-        <span class="dot-red"></span>
-        <span class="dot-yellow"></span>
-        <span class="dot-green"></span>
-        SAI Roots - Smart Schema Injector
-    </h2>
-    <p style="color: var(--text-muted); font-size: 14px;">Generate schema.js cerdas & otomatis suntik ke HTML (Kecuali folder /admin_pages).</p>
-    
-    <div class="form-group">
-        <label for="ghToken">GitHub Personal Access Token (PAT)</label>
-        <input type="password" id="ghToken" placeholder="ghp_xxxxxxxxxxxxxxxxx">
+  <header>
+    <div class="badge">SAI Roots Music // Admin Tool</div>
+    <h1>Auto <span>Schema</span><br>Generator</h1>
+    <p class="subtitle">// repo: pembri/sairootsmusic.com — github pages</p>
+  </header>
+
+  <!-- AUTH -->
+  <div class="card" id="authCard">
+    <div class="card-title">// 01 — GitHub Authentication</div>
+    <div class="token-row">
+      <div style="flex:1">
+        <label>GitHub Personal Access Token</label>
+        <input type="password" id="tokenInput" placeholder="ghp_xxxxxxxxxxxxxxxxxxxx" autocomplete="off" />
+      </div>
+      <button class="btn btn-primary" onclick="connectGitHub()">Connect</button>
     </div>
+    <p style="font-family:var(--font-mono);font-size:10px;color:var(--muted);margin-top:10px;">
+      Token perlu scope: <b style="color:var(--text)">repo</b> (read + write)
+    </p>
+  </div>
 
-    <button id="runBtn" onclick="startProcess()">GAS BUAT SCHEMA</button>
-
-    <div class="log-box" id="logBox">
-        <div class="log-info">Menunggu instruksi...</div>
+  <!-- REPO INFO -->
+  <div class="card" id="repoCard" style="display:none">
+    <div class="card-title">// 02 — Repository Info</div>
+    <div class="info-row" id="repoInfo"></div>
+    <div class="action-row">
+      <button class="btn btn-primary" id="scanBtn" onclick="scanFiles()">Scan HTML Files</button>
+      <button class="btn btn-ghost" onclick="resetAuth()">Disconnect</button>
     </div>
+  </div>
+
+  <!-- FILE LIST -->
+  <div id="fileList">
+    <div class="card">
+      <div class="card-title">// 03 — HTML Files Detected</div>
+      <p style="font-family:var(--font-mono);font-size:11px;color:var(--muted);margin-bottom:14px;" id="fileCount"></p>
+      <div class="file-grid" id="fileGrid"></div>
+      <div class="action-row">
+        <button class="btn btn-primary" id="generateBtn" onclick="startGenerate()">Generate & Push All Schema</button>
+        <button class="btn btn-ghost" onclick="reScan()">Re-scan</button>
+      </div>
+    </div>
+  </div>
+
+  <!-- PROGRESS -->
+  <div id="progressSection">
+    <div class="card">
+      <div class="card-title">// 04 — Processing</div>
+      <p class="progress-label" id="progressLabel">Memulai...</p>
+      <div class="progress-bar-wrap">
+        <div class="progress-bar-fill" id="progressFill"></div>
+      </div>
+      <div id="logBox"></div>
+    </div>
+  </div>
+
+  <!-- SUMMARY -->
+  <div id="summarySection">
+    <div class="card">
+      <div class="card-title">// 05 — Done</div>
+      <div class="summary-grid" id="summaryGrid"></div>
+      <div class="action-row" style="margin-top:20px;">
+        <button class="btn btn-primary" onclick="location.reload()">Run Again</button>
+      </div>
+    </div>
+  </div>
+
 </div>
 
 <script>
-    const OWNER = "pembri";
-    const REPO = "sairootsmusic.com";
-    const BRANCH = "main";
-    
-    const logBox = document.getElementById('logBox');
-    const runBtn = document.getElementById('runBtn');
+// =============================================
+// CONFIG
+// =============================================
+const REPO_OWNER = 'pembri';
+const REPO_NAME  = 'sairootsmusic.com';
+const BRANCH     = 'main'; // akan di-detect otomatis
+const BASE_URL   = 'https://sairootsmusic.com';
+const SKIP_DIRS  = ['/admin_pages', 'admin_pages/'];
 
-    function log(message, type = 'info') {
-        const div = document.createElement('div');
-        div.className = `log-${type}`;
-        div.textContent = `> ${message}`;
-        logBox.appendChild(div);
-        logBox.scrollTop = logBox.scrollHeight;
-    }
-
-    function b64DecodeUnicode(str) {
-        return decodeURIComponent(atob(str).split('').map(function(c) {
-            return '%' + ('00' + c.charCodeAt(0).toString(16)).slice(-2);
-        }).join(''));
-    }
-
-    function b64EncodeUnicode(str) {
-        return btoa(encodeURIComponent(str).replace(/%([0-9A-F]{2})/g,
-            function toSolidBytes(match, p1) {
-                return String.fromCharCode('0x' + p1);
-        }));
-    }
-
-    async function apiRequest(endpoint, method = 'GET', body = null, token) {
-        const options = {
-            method,
-            headers: {
-                'Authorization': `token ${token}`,
-                'Accept': 'application/vnd.github.v3+json'
-            }
-        };
-        if (body) options.body = JSON.stringify(body);
-
-        const res = await fetch(`https://api.github.com${endpoint}`, options);
-        if (!res.ok && res.status !== 404) throw new Error(`API Error: ${res.status} ${res.statusText}`);
-        return res.ok ? res.json() : null; // Return null if 404 (for checking file existence)
-    }
-
-    // Fungsi Kecerdasan: Menentukan nama halaman dan schema khusus
-    function analyzePage(path) {
-        let pageName = "";
-        let schemaType = "WebPage";
-        let pageTitle = "SAI Roots Music";
-
-        // Hilangkan .html untuk analisa
-        let cleanPath = path.replace(/\.html$/, '');
-        
-        if (cleanPath === "index") {
-            pageName = "home";
-            schemaType = "WebSite"; // Sudah ada di base, tapi kita set type
-            pageTitle = "Beranda SAI Roots";
-        } else if (cleanPath.startsWith("lyric/")) {
-            // Contoh path: lyric/autopsi-mic/index atau lyric/autopsi-mic
-            let parts = cleanPath.split('/');
-            let songSlug = parts[parts.length - 1] === 'index' ? parts[parts.length - 2] : parts[parts.length - 1];
-            pageName = `lyric-${songSlug}`;
-            schemaType = "MusicRecording";
-            pageTitle = songSlug.replace(/-/g, ' ').toUpperCase();
-        } else if (cleanPath.includes("about")) {
-            pageName = "about";
-            schemaType = "AboutPage";
-            pageTitle = "Tentang SAI Roots";
-        } else if (cleanPath.includes("contact")) {
-            pageName = "contact";
-            schemaType = "ContactPage";
-            pageTitle = "Kontak SAI Roots";
-        } else {
-            // Format fallback
-            pageName = cleanPath.replace(/\//g, '-');
-            if(pageName.endsWith('-index')) pageName = pageName.replace('-index', '');
-            schemaType = "WebPage";
-            pageTitle = "Halaman SAI Roots";
-        }
-
-        return { pageName, schemaType, pageTitle };
-    }
-
-    // Generate konten file schema.js (Pondasi + Tambahan)
-    function generateSchemaJsContent(analysis) {
-        const { pageName, schemaType, pageTitle } = analysis;
-        const pageUrl = `https://sairootsmusic.com/${pageName === 'home' ? '' : pageName.replace(/-/g, '/')}`;
-
-        // Menggunakan literal string backtick biar format JSON-LD valid di dalam file JS
-        return `// Auto-Generated Schema for ${pageName}
-(function() {
-  const schemaData = {
-    "@context": "https://schema.org",
-    "@graph": [
-      // PONDASI UNIVERSAL
-      {
-        "@type": "WebSite",
-        "@id": "https://sairootsmusic.com/#website",
-        "url": "https://sairootsmusic.com/",
-        "name": "SAI Roots Music",
-        "alternateName": ["SAI Roots", "Sai Roots"],
-        "description": "Official website of SAI Roots - Indonesian independent Reggae, Rap & Ska music project.",
-        "publisher": { "@id": "https://sairootsmusic.com/#organization" }
-      },
-      {
-        "@type": "MusicGroup",
-        "@id": "https://sairootsmusic.com/#organization",
-        "name": "SAI Roots",
-        "alternateName": "SAI Roots Music",
-        "description": "SAI Roots adalah proyek musik independen beraliran Reggae, Rap, dan Ska asal Indonesia, diciptakan dan dikelola secara eksklusif oleh Ahmad Supembri.",
-        "url": "https://sairootsmusic.com/",
-        "image": ["https://upload.wikimedia.org/wikipedia/commons/0/03/SAI_Roots.jpg"],
-        "genre": ["Reggae", "Roots Reggae", "Rap", "Ska", "Hip Hop"],
-        "countryOfOrigin": { "@type": "Country", "name": "Indonesia" },
-        "founder": { "@id": "https://sairootsmusic.com/#founder" },
-        "member": { "@id": "https://sairootsmusic.com/#founder" },
-        "recordLabel": { "@id": "https://sairootsmusic.com/#recordLabel" },
-        "sameAs": [
-          "https://www.wikidata.org/wiki/Q139783618",
-          "https://musicbrainz.org/artist/acd09c55-df9b-4628-9605-446b3cf6554a",
-          "https://www.youtube.com/@sairoots",
-          "https://music.apple.com/id/artist/1892187423",
-          "https://m.soundcloud.com/sairoots",
-          "https://www.deezer.com/artist/384508281"
-        ]
-      },
-      {
-        "@type": "Person",
-        "@id": "https://sairootsmusic.com/#founder",
-        "name": "Ahmad Supembri",
-        "image": "https://upload.wikimedia.org/wikipedia/commons/2/23/Ahmad_Supembri.jpg",
-        "description": "Indonesian musician, composer, lyricist, and record producer.",
-        "url": "https://sairootsmusic.com/",
-        "nationality": { "@type": "Country", "name": "Indonesia" },
-        "occupation": ["Musician", "Composer", "Lyricist", "Record Producer"],
-        "sameAs": ["https://www.wikidata.org/wiki/Q139784101", "https://instagram.com/ahmadsupembri"]
-      },
-      {
-        "@type": "Organization",
-        "@id": "https://sairootsmusic.com/#recordLabel",
-        "name": "SAI Roots Music",
-        "description": "Indonesian independent record label owned by Ahmad Supembri.",
-        "url": "https://sairootsmusic.com/",
-        "founder": { "@id": "https://sairootsmusic.com/#founder" },
-        "sameAs": ["https://www.wikidata.org/wiki/Q139784313"]
-      }
+// Base schema data yang WAJIB dipertahankan di semua halaman
+const BASE_SCHEMA_NODES = [
+  {
+    "@type": "WebSite",
+    "@id": `${BASE_URL}/#website`,
+    "url": `${BASE_URL}/`,
+    "name": "SAI Roots Music",
+    "alternateName": ["SAI Roots", "Sai Roots"],
+    "description": "Official website of SAI Roots - Indonesian independent Reggae, Rap & Ska music project.",
+    "publisher": { "@id": `${BASE_URL}/#organization` }
+  },
+  {
+    "@type": "MusicGroup",
+    "@id": `${BASE_URL}/#organization`,
+    "name": "SAI Roots",
+    "alternateName": "SAI Roots Music",
+    "description": "SAI Roots adalah proyek musik independen beraliran Reggae, Rap, dan Ska asal Indonesia, diciptakan dan dikelola secara eksklusif oleh Ahmad Supembri.",
+    "url": `${BASE_URL}/`,
+    "image": ["https://upload.wikimedia.org/wikipedia/commons/0/03/SAI_Roots.jpg"],
+    "genre": ["Reggae", "Roots Reggae", "Rap", "Ska", "Hip Hop"],
+    "countryOfOrigin": { "@type": "Country", "name": "Indonesia" },
+    "founder": { "@id": `${BASE_URL}/#founder` },
+    "member": { "@id": `${BASE_URL}/#founder` },
+    "recordLabel": { "@id": `${BASE_URL}/#recordLabel` },
+    "sameAs": [
+      "https://www.wikidata.org/wiki/Q139783618",
+      "https://musicbrainz.org/artist/acd09c55-df9b-4628-9605-446b3cf6554a",
+      "https://www.youtube.com/@sairoots",
+      "https://open.spotify.com/artist/0xOPCtZvhXVd9RTbU1aYTr",
+      "https://music.apple.com/id/artist/1892187423",
+      "https://m.soundcloud.com/sairoots",
+      "https://www.deezer.com/artist/384508281",
+      "https://music.amazon.com/artists/B0GTFWNC32/sai-roots",
+      "https://youtube.com/channel/UCnjRvftn7QD2kDqLHszImsA"
     ]
-  };
+  },
+  {
+    "@type": "Person",
+    "@id": `${BASE_URL}/#founder`,
+    "name": "Ahmad Supembri",
+    "image": "https://upload.wikimedia.org/wikipedia/commons/2/23/Ahmad_Supembri.jpg",
+    "description": "Indonesian musician, composer, lyricist, and record producer.",
+    "url": `${BASE_URL}/`,
+    "nationality": { "@type": "Country", "name": "Indonesia" },
+    "occupation": ["Musician", "Composer", "Lyricist", "Record Producer"],
+    "sameAs": [
+      "https://www.wikidata.org/wiki/Q139784101",
+      "https://instagram.com/ahmadsupembri",
+      "https://facebook.com/ahmadsupembri",
+      "https://tiktok.com/@ahmadsupembri"
+    ]
+  },
+  {
+    "@type": "Organization",
+    "@id": `${BASE_URL}/#recordLabel`,
+    "name": "SAI Roots Music",
+    "description": "Indonesian independent record label owned by Ahmad Supembri.",
+    "url": `${BASE_URL}/`,
+    "founder": { "@id": `${BASE_URL}/#founder` },
+    "sameAs": ["https://www.wikidata.org/wiki/Q139784313"]
+  }
+];
 
-  // TAMBAHAN CERDAS (Berdasarkan Halaman)
-  if ("${schemaType}" !== "WebSite") {
-      schemaData["@graph"].push({
-          "@type": "${schemaType}",
-          "@id": "${pageUrl}#${schemaType.toLowerCase()}",
-          "url": "${pageUrl}",
-          "name": "${pageTitle}",
-          "isPartOf": { "@id": "https://sairootsmusic.com/#website" }
-      });
+// =============================================
+// STATE
+// =============================================
+let TOKEN = '';
+let defaultBranch = 'main';
+let htmlFiles = [];
+let stats = { processed: 0, schemaCreated: 0, htmlUpdated: 0, skipped: 0, errors: 0 };
+
+// =============================================
+// GITHUB API HELPERS
+// =============================================
+async function ghFetch(path, options = {}) {
+  const res = await fetch(`https://api.github.com${path}`, {
+    ...options,
+    headers: {
+      'Authorization': `Bearer ${TOKEN}`,
+      'Accept': 'application/vnd.github+json',
+      'X-GitHub-Api-Version': '2022-11-28',
+      ...(options.headers || {})
+    }
+  });
+  if (!res.ok) {
+    const err = await res.json().catch(() => ({}));
+    throw new Error(err.message || `GitHub API error ${res.status}`);
+  }
+  return res.json();
+}
+
+async function getFileSHA(path) {
+  try {
+    const data = await ghFetch(`/repos/${REPO_OWNER}/${REPO_NAME}/contents/${path}?ref=${defaultBranch}`);
+    return data.sha || null;
+  } catch { return null; }
+}
+
+async function pushFile(path, content, commitMsg, sha = null) {
+  const body = {
+    message: commitMsg,
+    content: btoa(unescape(encodeURIComponent(content))),
+    branch: defaultBranch
+  };
+  if (sha) body.sha = sha;
+  return ghFetch(`/repos/${REPO_OWNER}/${REPO_NAME}/contents/${path}`, {
+    method: 'PUT',
+    headers: { 'Content-Type': 'application/json' },
+    body: JSON.stringify(body)
+  });
+}
+
+async function getFileContent(path) {
+  const data = await ghFetch(`/repos/${REPO_OWNER}/${REPO_NAME}/contents/${path}?ref=${defaultBranch}`);
+  return {
+    content: decodeURIComponent(escape(atob(data.content.replace(/\n/g,'')))),
+    sha: data.sha
+  };
+}
+
+async function getAllHTMLFiles(treeSHA) {
+  const data = await ghFetch(`/repos/${REPO_OWNER}/${REPO_NAME}/git/trees/${treeSHA}?recursive=1`);
+  return data.tree
+    .filter(f => f.type === 'blob' && f.path.endsWith('.html'))
+    .filter(f => !isAdminPage(f.path));
+}
+
+function isAdminPage(path) {
+  return path.startsWith('admin_pages/') || path.includes('/admin_pages/');
+}
+
+// =============================================
+// AUTH
+// =============================================
+async function connectGitHub() {
+  TOKEN = document.getElementById('tokenInput').value.trim();
+  if (!TOKEN) return alert('Masukkan GitHub Token dulu!');
+  try {
+    const repo = await ghFetch(`/repos/${REPO_OWNER}/${REPO_NAME}`);
+    defaultBranch = repo.default_branch || 'main';
+    document.getElementById('authCard').style.opacity = '0.5';
+    document.getElementById('authCard').style.pointerEvents = 'none';
+    document.getElementById('repoCard').style.display = 'block';
+    document.getElementById('repoInfo').innerHTML = `
+      <div class="info-chip">Repo: <b>${repo.full_name}</b></div>
+      <div class="info-chip">Branch: <b>${defaultBranch}</b></div>
+      <div class="info-chip">Stars: <b>${repo.stargazers_count}</b></div>
+      <div class="info-chip">Status: <b style="color:var(--success)">✓ Connected</b></div>
+    `;
+    log('info', `Connected to ${repo.full_name} @ ${defaultBranch}`);
+  } catch (e) {
+    alert('Gagal connect: ' + e.message);
+  }
+}
+
+function resetAuth() {
+  TOKEN = ''; location.reload();
+}
+
+// =============================================
+// SCAN FILES
+// =============================================
+async function scanFiles() {
+  document.getElementById('scanBtn').disabled = true;
+  document.getElementById('scanBtn').textContent = 'Scanning...';
+  try {
+    const repoData = await ghFetch(`/repos/${REPO_OWNER}/${REPO_NAME}/branches/${defaultBranch}`);
+    const treeSHA = repoData.commit.commit.tree.sha;
+    htmlFiles = await getAllHTMLFiles(treeSHA);
+
+    document.getElementById('fileList').style.display = 'block';
+    const grid = document.getElementById('fileGrid');
+    grid.innerHTML = '';
+    document.getElementById('fileCount').textContent =
+      `${htmlFiles.length} file ditemukan — /admin_pages dilewati otomatis`;
+
+    htmlFiles.forEach(f => {
+      const type = detectPageType(f.path, '');
+      grid.innerHTML += `
+        <div class="file-item" id="fi-${f.path.replace(/\//g,'-')}">
+          <span class="file-item-path">${f.path}</span>
+          <span class="file-item-type type-${type.cssClass}">${type.label}</span>
+          <span class="file-item-status">○</span>
+        </div>`;
+    });
+  } catch(e) {
+    alert('Gagal scan: ' + e.message);
+  }
+  document.getElementById('scanBtn').disabled = false;
+  document.getElementById('scanBtn').textContent = 'Scan HTML Files';
+}
+
+function reScan() {
+  document.getElementById('fileList').style.display = 'none';
+  scanFiles();
+}
+
+// =============================================
+// PAGE TYPE DETECTION (Cerdas)
+// =============================================
+function detectPageType(filePath, htmlContent) {
+  const p = filePath.toLowerCase();
+  const h = htmlContent.toLowerCase();
+  const fname = p.split('/').pop().replace('.html','');
+
+  // Cek title/meta dari content
+  const titleMatch = htmlContent.match(/<title[^>]*>([^<]+)<\/title>/i);
+  const title = titleMatch ? titleMatch[1].toLowerCase() : '';
+  const metaDesc = (htmlContent.match(/<meta[^>]*name=["']description["'][^>]*content=["']([^"']+)["']/i) || [])[1] || '';
+
+  const combined = `${fname} ${title} ${metaDesc} ${h.slice(0,3000)}`;
+
+  if (/^index$/.test(fname) || /home/.test(title)) {
+    return { type: 'WebPage', subtype: 'homepage', label: 'Homepage', cssClass: 'homepage',
+      schemaType: 'WebPage', breadcrumb: false };
+  }
+  if (/discograph|album|release|musik|music|songs?|lagu/.test(combined)) {
+    return { type: 'CollectionPage', subtype: 'music', label: 'Music', cssClass: 'music',
+      schemaType: 'CollectionPage', topic: 'music' };
+  }
+  if (/single|track|recording/.test(combined) && /music|audio|song|lagu/.test(combined)) {
+    return { type: 'MusicRecording', subtype: 'track', label: 'Track', cssClass: 'music',
+      schemaType: 'MusicRecording', topic: 'music' };
+  }
+  if (/about|tentang|profil|profile|bio/.test(combined)) {
+    return { type: 'AboutPage', subtype: 'about', label: 'About', cssClass: 'about',
+      schemaType: 'AboutPage' };
+  }
+  if (/contact|kontak|hubungi/.test(combined)) {
+    return { type: 'ContactPage', subtype: 'contact', label: 'Contact', cssClass: 'contact',
+      schemaType: 'ContactPage' };
+  }
+  if (/tour|gig|event|concert|show|jadwal|ticket/.test(combined)) {
+    return { type: 'EventPage', subtype: 'events', label: 'Events', cssClass: 'music',
+      schemaType: 'EventPage', topic: 'events' };
+  }
+  if (/shop|store|merch|toko|produk|product/.test(combined)) {
+    return { type: 'ItemListPage', subtype: 'shop', label: 'Shop', cssClass: 'contact',
+      schemaType: 'ItemListPage', topic: 'shop' };
+  }
+  if (/blog|news|artikel|press|berita/.test(combined)) {
+    return { type: 'Blog', subtype: 'blog', label: 'Blog', cssClass: 'about',
+      schemaType: 'Blog', topic: 'blog' };
+  }
+  if (/video|youtube|clip|mv/.test(combined)) {
+    return { type: 'VideoGallery', subtype: 'video', label: 'Video', cssClass: 'music',
+      schemaType: 'CollectionPage', topic: 'video' };
+  }
+  if (/gallery|galeri|photo|foto/.test(combined)) {
+    return { type: 'ImageGallery', subtype: 'gallery', label: 'Gallery', cssClass: 'about',
+      schemaType: 'ImageGallery', topic: 'gallery' };
+  }
+  if (/lyric|lirik/.test(combined)) {
+    return { type: 'LyricsPage', subtype: 'lyrics', label: 'Lyrics', cssClass: 'music',
+      schemaType: 'WebPage', topic: 'lyrics' };
+  }
+  if (/link|bio\.link|fanlink|smartlink/.test(combined) || fname === 'links') {
+    return { type: 'ProfilePage', subtype: 'links', label: 'Links', cssClass: 'homepage',
+      schemaType: 'ProfilePage' };
+  }
+  if (/privacy|kebijakan/.test(combined)) {
+    return { type: 'WebPage', subtype: 'policy', label: 'Policy', cssClass: 'generic',
+      schemaType: 'WebPage' };
+  }
+  if (/404|not.?found/.test(combined)) {
+    return { type: 'WebPage', subtype: '404', label: '404', cssClass: 'generic',
+      schemaType: 'WebPage' };
   }
 
-  // Suntik JSON-LD
+  return { type: 'WebPage', subtype: 'generic', label: 'WebPage', cssClass: 'generic',
+    schemaType: 'WebPage' };
+}
+
+// =============================================
+// SCHEMA BUILDER (per halaman)
+// =============================================
+function buildSchemaJS(filePath, pageType, htmlContent) {
+  const slug = filePath.replace(/\.html$/, '').replace(/^index$/, '');
+  const pageUrl = slug
+    ? `${BASE_URL}/${slug}/`
+    : `${BASE_URL}/`;
+
+  // Extract page title from HTML
+  const titleMatch = htmlContent.match(/<title[^>]*>([^<]+)<\/title>/i);
+  const rawTitle = titleMatch ? titleMatch[1].trim() : 'SAI Roots Music';
+  const metaDescMatch = htmlContent.match(/<meta[^>]*name=["']description["'][^>]*content=["']([^"']+)["']/i);
+  const pageDesc = metaDescMatch ? metaDescMatch[1].trim() : BASE_SCHEMA_NODES[1].description;
+
+  // Build page-specific node
+  let pageNode = null;
+
+  switch(pageType.subtype) {
+    case 'homepage':
+      pageNode = {
+        "@type": "WebPage",
+        "@id": `${BASE_URL}/#webpage`,
+        "url": pageUrl,
+        "name": rawTitle,
+        "description": pageDesc,
+        "isPartOf": { "@id": `${BASE_URL}/#website` },
+        "about": { "@id": `${BASE_URL}/#organization` },
+        "breadcrumb": {
+          "@type": "BreadcrumbList",
+          "itemListElement": [{
+            "@type": "ListItem", "position": 1,
+            "name": "Home", "item": `${BASE_URL}/`
+          }]
+        }
+      };
+      break;
+
+    case 'music':
+      pageNode = {
+        "@type": "CollectionPage",
+        "@id": `${pageUrl}#webpage`,
+        "url": pageUrl,
+        "name": rawTitle,
+        "description": pageDesc,
+        "isPartOf": { "@id": `${BASE_URL}/#website` },
+        "about": { "@id": `${BASE_URL}/#organization` },
+        "breadcrumb": {
+          "@type": "BreadcrumbList",
+          "itemListElement": [
+            { "@type": "ListItem", "position": 1, "name": "Home", "item": `${BASE_URL}/` },
+            { "@type": "ListItem", "position": 2, "name": rawTitle, "item": pageUrl }
+          ]
+        }
+      };
+      break;
+
+    case 'track':
+      pageNode = {
+        "@type": "MusicRecording",
+        "@id": `${pageUrl}#recording`,
+        "url": pageUrl,
+        "name": rawTitle,
+        "description": pageDesc,
+        "byArtist": { "@id": `${BASE_URL}/#organization` },
+        "inLanguage": "id",
+        "breadcrumb": {
+          "@type": "BreadcrumbList",
+          "itemListElement": [
+            { "@type": "ListItem", "position": 1, "name": "Home", "item": `${BASE_URL}/` },
+            { "@type": "ListItem", "position": 2, "name": rawTitle, "item": pageUrl }
+          ]
+        }
+      };
+      break;
+
+    case 'about':
+      pageNode = {
+        "@type": "AboutPage",
+        "@id": `${pageUrl}#webpage`,
+        "url": pageUrl,
+        "name": rawTitle,
+        "description": pageDesc,
+        "isPartOf": { "@id": `${BASE_URL}/#website` },
+        "about": { "@id": `${BASE_URL}/#organization` },
+        "breadcrumb": {
+          "@type": "BreadcrumbList",
+          "itemListElement": [
+            { "@type": "ListItem", "position": 1, "name": "Home", "item": `${BASE_URL}/` },
+            { "@type": "ListItem", "position": 2, "name": rawTitle, "item": pageUrl }
+          ]
+        }
+      };
+      break;
+
+    case 'contact':
+      pageNode = {
+        "@type": "ContactPage",
+        "@id": `${pageUrl}#webpage`,
+        "url": pageUrl,
+        "name": rawTitle,
+        "description": pageDesc,
+        "isPartOf": { "@id": `${BASE_URL}/#website` },
+        "breadcrumb": {
+          "@type": "BreadcrumbList",
+          "itemListElement": [
+            { "@type": "ListItem", "position": 1, "name": "Home", "item": `${BASE_URL}/` },
+            { "@type": "ListItem", "position": 2, "name": rawTitle, "item": pageUrl }
+          ]
+        }
+      };
+      break;
+
+    case 'events':
+      pageNode = {
+        "@type": "EventPage",
+        "@id": `${pageUrl}#webpage`,
+        "url": pageUrl,
+        "name": rawTitle,
+        "description": pageDesc,
+        "isPartOf": { "@id": `${BASE_URL}/#website` },
+        "about": { "@id": `${BASE_URL}/#organization` },
+        "breadcrumb": {
+          "@type": "BreadcrumbList",
+          "itemListElement": [
+            { "@type": "ListItem", "position": 1, "name": "Home", "item": `${BASE_URL}/` },
+            { "@type": "ListItem", "position": 2, "name": rawTitle, "item": pageUrl }
+          ]
+        }
+      };
+      break;
+
+    case 'blog':
+      pageNode = {
+        "@type": "Blog",
+        "@id": `${pageUrl}#webpage`,
+        "url": pageUrl,
+        "name": rawTitle,
+        "description": pageDesc,
+        "isPartOf": { "@id": `${BASE_URL}/#website` },
+        "author": { "@id": `${BASE_URL}/#founder` },
+        "breadcrumb": {
+          "@type": "BreadcrumbList",
+          "itemListElement": [
+            { "@type": "ListItem", "position": 1, "name": "Home", "item": `${BASE_URL}/` },
+            { "@type": "ListItem", "position": 2, "name": rawTitle, "item": pageUrl }
+          ]
+        }
+      };
+      break;
+
+    case 'links':
+      pageNode = {
+        "@type": "ProfilePage",
+        "@id": `${pageUrl}#webpage`,
+        "url": pageUrl,
+        "name": rawTitle,
+        "description": pageDesc,
+        "isPartOf": { "@id": `${BASE_URL}/#website` },
+        "about": { "@id": `${BASE_URL}/#organization` }
+      };
+      break;
+
+    case 'shop':
+      pageNode = {
+        "@type": "ItemListPage",
+        "@id": `${pageUrl}#webpage`,
+        "url": pageUrl,
+        "name": rawTitle,
+        "description": pageDesc,
+        "isPartOf": { "@id": `${BASE_URL}/#website` },
+        "breadcrumb": {
+          "@type": "BreadcrumbList",
+          "itemListElement": [
+            { "@type": "ListItem", "position": 1, "name": "Home", "item": `${BASE_URL}/` },
+            { "@type": "ListItem", "position": 2, "name": rawTitle, "item": pageUrl }
+          ]
+        }
+      };
+      break;
+
+    default:
+      pageNode = {
+        "@type": "WebPage",
+        "@id": `${pageUrl}#webpage`,
+        "url": pageUrl,
+        "name": rawTitle,
+        "description": pageDesc,
+        "isPartOf": { "@id": `${BASE_URL}/#website` },
+        "breadcrumb": {
+          "@type": "BreadcrumbList",
+          "itemListElement": [
+            { "@type": "ListItem", "position": 1, "name": "Home", "item": `${BASE_URL}/` },
+            { "@type": "ListItem", "position": 2, "name": rawTitle, "item": pageUrl }
+          ]
+        }
+      };
+  }
+
+  const graph = [...BASE_SCHEMA_NODES, pageNode];
+
+  const schemaData = {
+    "@context": "https://schema.org",
+    "@graph": graph
+  };
+
+  return `// Schema.js — ${filePath} — SAI Roots Music
+// Auto-generated by Auto Schema Generator
+// Page Type: ${pageType.type} (${pageType.subtype})
+// URL: ${pageUrl}
+(function() {
+  const schemaData = ${JSON.stringify(schemaData, null, 2)};
+
   const script = document.createElement('script');
   script.type = 'application/ld+json';
   script.textContent = JSON.stringify(schemaData, null, 2);
-  document.head.appendChild(script);
-})();`;
+  document.head.insertBefore(script, document.head.firstChild);
+})();
+`;
+}
+
+// =============================================
+// INJECT SCRIPT TAG KE HTML
+// =============================================
+function injectSchemaTag(htmlContent, schemaPath) {
+  const scriptTag = `<script src="/${schemaPath}"><\/script>`;
+
+  // Cek apakah sudah ada schema tag dari folder /schema/
+  const existingPattern = /<script\s+src=["']\/schema\/[^"']+["'][^>]*><\/script>/gi;
+  if (existingPattern.test(htmlContent)) {
+    // Update yang sudah ada
+    return htmlContent.replace(existingPattern, scriptTag);
+  }
+
+  // Inject sebelum </head> jika ada, atau setelah <head>
+  if (/<\/head>/i.test(htmlContent)) {
+    return htmlContent.replace(/<\/head>/i, `  ${scriptTag}\n</head>`);
+  }
+  if (/<head[^>]*>/i.test(htmlContent)) {
+    return htmlContent.replace(/(<head[^>]*>)/i, `$1\n  ${scriptTag}`);
+  }
+  // Fallback: taruh di awal file
+  return scriptTag + '\n' + htmlContent;
+}
+
+// =============================================
+// LOGGING
+// =============================================
+function log(type, msg) {
+  const box = document.getElementById('logBox');
+  box.style.display = 'block';
+  const now = new Date().toTimeString().slice(0,8);
+  const cls = { ok:'log-ok', skip:'log-skip', err:'log-err', info:'log-info', dim:'log-dim' }[type] || 'log-dim';
+  const icon = { ok:'✓', skip:'⟳', err:'✗', info:'→', dim:'·' }[type] || '·';
+  box.innerHTML += `<div class="log-line"><span class="log-time">${now}</span><span class="${cls}">${icon} ${msg}</span></div>`;
+  box.scrollTop = box.scrollHeight;
+}
+
+function setProgress(val, label) {
+  document.getElementById('progressFill').style.width = val + '%';
+  document.getElementById('progressLabel').textContent = label;
+}
+
+function markFileStatus(path, icon) {
+  const id = 'fi-' + path.replace(/\//g,'-');
+  const el = document.getElementById(id);
+  if (el) el.querySelector('.file-item-status').textContent = icon;
+}
+
+// =============================================
+// MAIN: GENERATE & PUSH
+// =============================================
+async function startGenerate() {
+  if (!htmlFiles.length) return alert('Scan dulu!');
+  document.getElementById('generateBtn').disabled = true;
+  document.getElementById('progressSection').style.display = 'block';
+  stats = { processed: 0, schemaCreated: 0, htmlUpdated: 0, skipped: 0, errors: 0 };
+
+  const total = htmlFiles.length;
+  log('info', `Mulai proses ${total} file HTML...`);
+
+  for (let i = 0; i < htmlFiles.length; i++) {
+    const file = htmlFiles[i];
+    setProgress(Math.round((i / total) * 100), `[${i+1}/${total}] ${file.path}`);
+
+    try {
+      // 1. Ambil konten HTML
+      log('dim', `Fetching: ${file.path}`);
+      const { content: htmlContent, sha: htmlSHA } = await getFileContent(file.path);
+
+      // 2. Deteksi tipe halaman
+      const pageType = detectPageType(file.path, htmlContent);
+      log('info', `${file.path} → detected as: ${pageType.type} (${pageType.subtype})`);
+
+      // Update badge di file list
+      const id = 'fi-' + file.path.replace(/\//g,'-');
+      const el = document.getElementById(id);
+      if (el) {
+        const badge = el.querySelector('.file-item-type');
+        badge.className = `file-item-type type-${pageType.cssClass}`;
+        badge.textContent = pageType.label;
+      }
+
+      // 3. Build schema path
+      const baseName = file.path.replace(/\.html$/, '').replace(/\//g, '_');
+      const schemaPath = `schema/${baseName}/schema.js`;
+
+      // 4. Generate schema.js content
+      const schemaJSContent = buildSchemaJS(file.path, pageType, htmlContent);
+
+      // 5. Push schema.js ke repo
+      const existingSchemaSHA = await getFileSHA(schemaPath);
+      await pushFile(
+        schemaPath,
+        schemaJSContent,
+        `schema: auto-generate ${schemaPath} for ${file.path} [${pageType.type}]`,
+        existingSchemaSHA
+      );
+      log('ok', `Schema pushed: /${schemaPath}`);
+      stats.schemaCreated++;
+
+      // 6. Inject script tag ke HTML
+      const updatedHTML = injectSchemaTag(htmlContent, schemaPath);
+
+      // Push HTML yang sudah diupdate (hanya jika berubah)
+      if (updatedHTML !== htmlContent) {
+        await pushFile(
+          file.path,
+          updatedHTML,
+          `schema: inject schema tag into ${file.path}`,
+          htmlSHA
+        );
+        log('ok', `HTML updated: ${file.path}`);
+        stats.htmlUpdated++;
+      } else {
+        log('skip', `HTML unchanged (tag already present): ${file.path}`);
+        stats.skipped++;
+      }
+
+      markFileStatus(file.path, '✓');
+      stats.processed++;
+
+    } catch(e) {
+      log('err', `Error on ${file.path}: ${e.message}`);
+      markFileStatus(file.path, '✗');
+      stats.errors++;
     }
 
-    async function startProcess() {
-        const token = document.getElementById('ghToken').value.trim();
-        if (!token) return log("Token GitHub tidak boleh kosong!", "error");
+    // Rate limiting buffer
+    await new Promise(r => setTimeout(r, 400));
+  }
 
-        runBtn.disabled = true;
-        logBox.innerHTML = '';
-        log("Mengambil peta struktur repository...", "info");
+  setProgress(100, 'Selesai!');
+  log('ok', `Done. Schema: ${stats.schemaCreated} | HTML: ${stats.htmlUpdated} | Skip: ${stats.skipped} | Error: ${stats.errors}`);
+  showSummary();
+}
 
-        try {
-            // Ambil semua file di repository
-            const treeData = await apiRequest(`/repos/${OWNER}/${REPO}/git/trees/${BRANCH}?recursive=1`, 'GET', null, token);
-            const gitTree = treeData.tree;
-
-            // Filter: Hanya HTML dan KECUALI yang ada di folder admin_pages
-            const targetHtmlFiles = gitTree.filter(file => 
-                file.type === "blob" && 
-                file.path.endsWith(".html") && 
-                !file.path.includes("admin_pages/") // RULE MUTLAK PENGECUALIAN
-            );
-
-            log(`Ditemukan ${targetHtmlFiles.length} file HTML target (admin_pages diabaikan).`, "success");
-
-            for (let i = 0; i < targetHtmlFiles.length; i++) {
-                const htmlFile = targetHtmlFiles[i];
-                log(`\n[${i+1}/${targetHtmlFiles.length}] Memproses HTML: ${htmlFile.path}`, "info");
-
-                // 1. Analisa halaman
-                const analysis = analyzePage(htmlFile.path);
-                const schemaFilePath = `schema/${analysis.pageName}/schema.js`;
-                const schemaScriptTag = `<script src="/${schemaFilePath}"></script>`;
-
-                log(`--> Tipe halaman: ${analysis.schemaType} | Folder Schema: /${schemaFilePath}`, "warning");
-
-                // 2. Cek dan Buat/Update File schema.js di GitHub
-                const jsContent = generateSchemaJsContent(analysis);
-                const existingJs = await apiRequest(`/repos/${OWNER}/${REPO}/contents/${schemaFilePath}`, 'GET', null, token);
-                
-                await apiRequest(`/repos/${OWNER}/${REPO}/contents/${schemaFilePath}`, 'PUT', {
-                    message: `Auto-generate smart schema for ${analysis.pageName}`,
-                    content: b64EncodeUnicode(jsContent),
-                    sha: existingJs ? existingJs.sha : undefined // Jika ada, timpa (update), kalau gaada otomatis buat baru
-                }, token);
-                log(`--> File JS berhasil di-generate/di-update.`, "success");
-
-                // 3. Ambil dan Update file HTML-nya
-                const htmlData = await apiRequest(`/repos/${OWNER}/${REPO}/contents/${htmlFile.path}`, 'GET', null, token);
-                let htmlContent = b64DecodeUnicode(htmlData.content);
-
-                // Cek apakah script sudah disuntik
-                if (!htmlContent.includes(schemaScriptTag)) {
-                    // Suntik tepat di bawah <head>
-                    const headRegex = /<head>/i;
-                    if (headRegex.test(htmlContent)) {
-                        htmlContent = htmlContent.replace(headRegex, `<head>\n    \n    ${schemaScriptTag}`);
-                        
-                        // Push update HTML ke Github
-                        await apiRequest(`/repos/${OWNER}/${REPO}/contents/${htmlFile.path}`, 'PUT', {
-                            message: `Inject smart schema into ${htmlFile.path}`,
-                            content: b64EncodeUnicode(htmlContent),
-                            sha: htmlData.sha
-                        }, token);
-                        log(`--> HTML diperbarui: Tag <script> disuntikkan!`, "success");
-                    } else {
-                        log(`--> [ERROR] Tag <head> tidak ditemukan di ${htmlFile.path}`, "error");
-                    }
-                } else {
-                    log(`--> [SKIP HTML] Tag <script> sudah ada di HTML, tidak perlu disuntik ulang.`, "warning");
-                }
-
-                // Jeda biar API santai
-                await new Promise(r => setTimeout(r, 1500));
-            }
-
-            log("\n🔥 PROSES SELESAI! Semua file HTML berhasil diintegrasikan dengan Schema cerdas.", "success");
-
-        } catch (error) {
-            log(error.message, "error");
-        } finally {
-            runBtn.disabled = false;
-        }
-    }
+function showSummary() {
+  document.getElementById('summarySection').style.display = 'block';
+  document.getElementById('summaryGrid').innerHTML = `
+    <div class="summary-stat"><div class="num">${stats.schemaCreated}</div><div class="lbl">Schema Created</div></div>
+    <div class="summary-stat"><div class="num">${stats.htmlUpdated}</div><div class="lbl">HTML Updated</div></div>
+    <div class="summary-stat"><div class="num">${stats.skipped}</div><div class="lbl">Skipped</div></div>
+    <div class="summary-stat"><div class="num" style="color:${stats.errors?'var(--error)':'var(--success)'}">${stats.errors}</div><div class="lbl">Errors</div></div>
+  `;
+  document.getElementById('summarySection').scrollIntoView({ behavior: 'smooth' });
+}
 </script>
-
 </body>
 </html>
