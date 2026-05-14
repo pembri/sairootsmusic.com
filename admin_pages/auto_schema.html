@@ -3,44 +3,64 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Auto Schema - SAI Roots</title>
-    
-    <script>
-    document.addEventListener("DOMContentLoaded", function() {
-        
-        // 1. FITUR TARIK / RESET SCHEMA (KILL SWITCH)
-        window.hapusSchema = function() {
-            localStorage.setItem('sairoots_schema_mati', 'true');
-            document.querySelectorAll('script[id="sairoots-smart-schema"]').forEach(el => el.remove());
-            console.error("🚨 [KILL SWITCH] Schema DIMATIKAN permanen di browser ini.");
-            document.getElementById('status-teks').innerHTML = "❌ SCHEMA DIMATIKAN!";
-            document.getElementById('status-teks').style.color = "red";
-        };
+    <title>SAI Roots - Schema Dashboard</title>
+    <style>
+        body { background-color: #121212; color: #e0e0e0; font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif; margin: 0; padding: 20px; }
+        .container { max-width: 900px; margin: 0 auto; }
+        .header { border-bottom: 3px solid #ffcc00; padding-bottom: 10px; margin-bottom: 20px; display: flex; justify-content: space-between; align-items: center; }
+        .header h1 { margin: 0; color: #4caf50; }
+        .header h1 span { color: #f44336; }
+        .panel { background: #1e1e1e; padding: 20px; border-radius: 8px; margin-bottom: 20px; border: 1px solid #333; }
+        input[type="password"] { width: 100%; padding: 10px; margin-top: 10px; background: #2c2c2c; border: 1px solid #555; color: #fff; border-radius: 4px; box-sizing: border-box; }
+        button { padding: 10px 20px; border: none; border-radius: 4px; font-weight: bold; cursor: pointer; margin-right: 10px; margin-top: 10px; transition: opacity 0.2s; }
+        button:hover { opacity: 0.8; }
+        .btn-scan { background-color: #ffcc00; color: #000; }
+        .btn-push { background-color: #4caf50; color: #fff; display: none; }
+        .btn-reset { background-color: #f44336; color: #fff; }
+        #console { background: #000; color: #0f0; padding: 15px; border-radius: 5px; height: 300px; overflow-y: auto; font-family: monospace; font-size: 13px; white-space: pre-wrap; }
+        .info { font-size: 12px; color: #aaa; margin-top: 5px; }
+    </style>
+</head>
+<body>
 
-        window.aktifkanSchema = function() {
-            localStorage.removeItem('sairoots_schema_mati');
-            console.log("✅ [SCHEMA HIDUP] Schema diaktifkan kembali. Mereload...");
-            location.reload();
-        };
+<div class="container">
+    <div class="header">
+        <h1>SAI <span>Roots</span> Schema Manger</h1>
+        <small>v2.1 - API GitHub Mode (FULL URL DATA)</small>
+    </div>
 
-        if (localStorage.getItem('sairoots_schema_mati') === 'true') {
-            console.warn("⚠️ Schema sedang diblokir oleh Kill Switch.");
-            return; // Berhenti mengeksekusi
-        }
+    <div class="panel" id="login-panel">
+        <label><b>GitHub Personal Access Token (PAT)</b></label>
+        <input type="password" id="gh-token" placeholder="ghp_xxxxxxxxxxxxxxxxxxxx">
+        <div class="info">Dibutuhkan akses 'repo' untuk membaca dan memodifikasi pembri/sairootsmusic.com</div>
+    </div>
 
-        // 2. DETEKSI URL AKURAT (Membaca spasi %20 dengan decodeURIComponent)
-        const rawPath = window.location.pathname.toLowerCase();
-        const currentPath = decodeURIComponent(rawPath); 
-        const pageUrl = window.location.href;
+    <div class="panel">
+        <button class="btn-scan" onclick="scanRepo()">🔍 SCAN SEMUA HTML</button>
+        <button class="btn-push" id="btn-push" onclick="pushSchemaMasal()">🚀 PUSH SCHEMA MASAL</button>
+        <button class="btn-reset" onclick="resetSchema()">🗑️ RESET / TARIK SCHEMA</button>
+    </div>
 
-        // 3. PENGECUALIAN MUTLAK: FOLDER ADMIN
-        if (currentPath.includes('/admin_pages/')) {
-            console.log("🛡️ URL mengandung /admin_pages/. Proses Injeksi Schema Dibatalkan.");
-            return;
-        }
+    <div class="panel">
+        <h3>Terminal Log:</h3>
+        <div id="console">Menunggu instruksi...</div>
+    </div>
+</div>
 
-        // 4. DATA UNIVERSAL (Membawa struktur utuh tanpa mengurangi link)
-        const baseGraph = [
+<script>
+    const REPO = 'pembri/sairootsmusic.com';
+    const BRANCH = 'main'; 
+    let htmlFilesList = [];
+
+    function log(msg, color = "#0f0") {
+        const c = document.getElementById('console');
+        c.innerHTML += `<span style="color:${color}">[${new Date().toLocaleTimeString()}] ${msg}</span>\n`;
+        c.scrollTop = c.scrollHeight;
+    }
+
+    // BASE SCHEMA LAMA LU (100% UTUH, NGGAK ADA YANG DIPOTONG SAMA SEKALI)
+    function getUniversalSchema() {
+        return [
             {
                 "@type": "WebSite",
                 "@id": "https://sairootsmusic.com/#website",
@@ -54,11 +74,15 @@
                 "@type": "MusicGroup",
                 "@id": "https://sairootsmusic.com/#organization",
                 "name": "SAI Roots",
+                "alternateName": "SAI Roots Music",
                 "description": "SAI Roots adalah proyek musik independen beraliran Reggae, Rap, dan Ska asal Indonesia, diciptakan dan dikelola secara eksklusif oleh Ahmad Supembri.",
                 "url": "https://sairootsmusic.com/",
                 "image": ["https://upload.wikimedia.org/wikipedia/commons/0/03/SAI_Roots.jpg"],
-                "genre": ["Reggae", "Roots Reggae", "Rap", "Ska"],
+                "genre": ["Reggae", "Roots Reggae", "Rap", "Ska", "Hip Hop"],
+                "countryOfOrigin": { "@type": "Country", "name": "Indonesia" },
                 "founder": { "@id": "https://sairootsmusic.com/#founder" },
+                "member": { "@id": "https://sairootsmusic.com/#founder" },
+                "recordLabel": { "@id": "https://sairootsmusic.com/#recordLabel" },
                 "sameAs": [
                     "https://www.wikidata.org/wiki/Q139783618",
                     "https://musicbrainz.org/artist/acd09c55-df9b-4628-9605-446b3cf6554a",
@@ -76,7 +100,9 @@
                 "@id": "https://sairootsmusic.com/#founder",
                 "name": "Ahmad Supembri",
                 "image": "https://upload.wikimedia.org/wikipedia/commons/2/23/Ahmad_Supembri.jpg",
+                "description": "Indonesian musician, composer, lyricist, and record producer.",
                 "url": "https://sairootsmusic.com/",
+                "nationality": { "@type": "Country", "name": "Indonesia" },
                 "occupation": ["Musician", "Composer", "Lyricist", "Record Producer"],
                 "sameAs": [
                     "https://www.wikidata.org/wiki/Q139784101",
@@ -84,174 +110,229 @@
                     "https://facebook.com/ahmadsupembri",
                     "https://tiktok.com/@ahmadsupembri"
                 ]
+            },
+            {
+                "@type": "Organization",
+                "@id": "https://sairootsmusic.com/#recordLabel",
+                "name": "SAI Roots Music",
+                "description": "Indonesian independent record label owned by Ahmad Supembri.",
+                "url": "https://sairootsmusic.com/",
+                "founder": { "@id": "https://sairootsmusic.com/#founder" },
+                "sameAs": ["https://www.wikidata.org/wiki/Q139784313"]
             }
         ];
+    }
 
-        // 5. IDENTIFIKASI HALAMAN (Sangat Spesifik Berdasarkan Request)
-        let pageSpecificSchema = null;
-        let identifiedAs = "Tidak Diketahui";
-
-        if (currentPath === '/' || (currentPath.endsWith('index.html') && !currentPath.includes('/lyric/'))) {
-            identifiedAs = "Beranda (index.html)";
-            pageSpecificSchema = {
-                "@type": "WebPage",
-                "@id": pageUrl + "#webpage",
-                "url": pageUrl,
-                "isPartOf": { "@id": "https://sairootsmusic.com/#website" }
-            };
-        } 
-        else if (currentPath.includes('about.html')) {
-            identifiedAs = "Halaman About (about.html)";
-            pageSpecificSchema = {
-                "@type": "AboutPage",
-                "@id": pageUrl + "#webpage",
-                "url": pageUrl
-            };
-        } 
-        else if (currentPath.includes('contact.html')) {
-            identifiedAs = "Halaman Kontak (contact.html)";
-            pageSpecificSchema = {
-                "@type": "ContactPage",
-                "@id": pageUrl + "#webpage",
-                "url": pageUrl
-            };
-        } 
-        else if (currentPath.includes('credits.html')) {
-            identifiedAs = "Halaman Credits (credits.html)";
-            pageSpecificSchema = {
-                "@type": "WebPage",
-                "@id": pageUrl + "#webpage",
-                "url": pageUrl
-            };
-        }
-        else if (currentPath.includes('privacy.html')) {
-            identifiedAs = "Halaman Privacy (privacy.html)";
-            pageSpecificSchema = {
-                "@type": "WebPage",
-                "@id": pageUrl + "#webpage",
-                "url": pageUrl
-            };
-        }
-        else if (currentPath.includes('profil_ahmad_supembri.html')) {
-            identifiedAs = "Halaman Profil Supembri (profil_ahmad_supembri.html)";
-            pageSpecificSchema = {
-                "@type": "ProfilePage",
-                "@id": pageUrl + "#webpage",
-                "mainEntity": { "@id": "https://sairootsmusic.com/#founder" },
-                "url": pageUrl
-            };
-        } 
-        else if (currentPath.includes('list lagu discography.html')) {
-            identifiedAs = "Direktori Diskografi (list lagu discography.html)";
-            pageSpecificSchema = {
-                "@type": "CollectionPage",
-                "@id": pageUrl + "#webpage",
-                "url": pageUrl
-            };
-        }
-        else if (currentPath.includes('list lirik lyric.html')) {
-            identifiedAs = "Direktori Daftar Lirik (list lirik lyric.html)";
-            pageSpecificSchema = {
-                "@type": "CollectionPage",
-                "@id": pageUrl + "#webpage",
-                "url": pageUrl
-            };
-        }
-        else if (currentPath.includes('list coveran') || currentPath.includes('video_cover.html')) {
-            identifiedAs = "Direktori Daftar Video Cover (video_cover.html)";
-            pageSpecificSchema = {
-                "@type": "CollectionPage",
-                "@id": pageUrl + "#webpage",
-                "url": pageUrl
-            };
-        }
-        else if (currentPath.includes('/lyric/') && currentPath.endsWith('index.html')) {
-            identifiedAs = "Halaman Detail Lirik (/lyric/.../index.html)";
-            pageSpecificSchema = {
-                "@type": "MusicComposition",
-                "@id": pageUrl + "#composition",
-                "url": pageUrl,
-                "composer": { "@id": "https://sairootsmusic.com/#founder" },
-                "lyricist": { "@id": "https://sairootsmusic.com/#founder" }
-            };
-        } 
-        else if (currentPath.includes('/track/')) {
-            identifiedAs = "Halaman Detail Lagu (/track/...html)";
-            pageSpecificSchema = {
-                "@type": "MusicRecording",
-                "@id": pageUrl + "#recording",
-                "url": pageUrl,
-                "byArtist": { "@id": "https://sairootsmusic.com/#organization" }
-            };
-        } 
-        else if (currentPath.includes('/cover/')) {
-            identifiedAs = "Halaman Detail Video Cover (/cover/...html)";
-            pageSpecificSchema = {
-                "@type": "VideoObject",
-                "@id": pageUrl + "#video",
-                "url": pageUrl,
-                "creator": { "@id": "https://sairootsmusic.com/#founder" }
-            };
-        } 
-        else if (currentPath.includes('/article/')) {
-            identifiedAs = "Halaman Detail Artikel (/article/...html)";
-            pageSpecificSchema = {
-                "@type": "Article",
-                "@id": pageUrl + "#article",
-                "url": pageUrl,
-                "author": { "@id": "https://sairootsmusic.com/#founder" },
-                "publisher": { "@id": "https://sairootsmusic.com/#organization" }
-            };
-        }
-        else {
-            identifiedAs = "Halaman Lainnya (Fallback)";
-            pageSpecificSchema = {
-                "@type": "WebPage",
-                "@id": pageUrl + "#webpage",
-                "url": pageUrl
-            };
-        }
-
-        if (pageSpecificSchema) {
-            baseGraph.push(pageSpecificSchema);
-        }
-
-        // 6. INJEKSI KE DOM
-        const finalSchema = { "@context": "https://schema.org", "@graph": baseGraph };
-        const scriptLd = document.createElement('script');
-        scriptLd.type = 'application/ld+json';
-        scriptLd.id = 'sairoots-smart-schema';
-        scriptLd.textContent = JSON.stringify(finalSchema, null, 2);
+    async function apiRequest(endpoint, method = 'GET', body = null) {
+        const token = document.getElementById('gh-token').value.trim();
+        if (!token) throw new Error("Token GitHub belum diisi!");
         
-        document.head.insertBefore(scriptLd, document.head.firstChild);
-        
-        // Output visual untuk halaman testing ini
-        const stTeks = document.getElementById('status-teks');
-        if(stTeks) {
-            stTeks.innerHTML = `✅ BERHASIL MENGIDENTIFIKASI:<br><span style="color:#00ff00; font-size:20px;">${identifiedAs}</span>`;
-            document.getElementById('code-output').textContent = JSON.stringify(finalSchema, null, 2);
+        const options = {
+            method: method,
+            headers: {
+                'Authorization': `token ${token}`,
+                'Accept': 'application/vnd.github.v3+json'
+            }
+        };
+        if (body) options.body = JSON.stringify(body);
+
+        const res = await fetch(`https://api.github.com/repos/${REPO}/${endpoint}`, options);
+        if (!res.ok) throw new Error(`API Error: ${res.status} ${res.statusText}`);
+        return await res.json();
+    }
+
+    // 1. SCAN REPOSITORY
+    async function scanRepo() {
+        try {
+            log("Memulai scan repository...", "#ffcc00");
+            htmlFilesList = [];
+            const tree = await apiRequest(`git/trees/${BRANCH}?recursive=1`);
+            
+            tree.tree.forEach(item => {
+                if (item.type === 'blob' && item.path.endsWith('.html')) {
+                    if (!item.path.includes('admin_pages/')) {
+                        htmlFilesList.push(item);
+                    }
+                }
+            });
+
+            log(`Ditemukan ${htmlFilesList.length} file HTML yang valid (di luar admin).`, "#ffcc00");
+            
+            htmlFilesList.forEach(file => {
+                const info = identifyPage(file.path);
+                log(`- /${file.path} => ${info.type}`);
+            });
+
+            document.getElementById('btn-push').style.display = 'inline-block';
+            log("Scan selesai. Siap Push Schema Masal.", "#4caf50");
+
+        } catch (error) {
+            log(error.message, "#f44336");
         }
+    }
+
+    // 2. KECERDASAN DETEKSI (Clean URL & Smart Type)
+    function identifyPage(path) {
+        const decodedPath = decodeURIComponent(path.toLowerCase());
         
-    });
-    </script>
-</head>
+        let cleanUrlPath = decodedPath.replace('.html', '');
+        if (cleanUrlPath.endsWith('/index')) cleanUrlPath = cleanUrlPath.replace('/index', '');
+        const fullCleanUrl = `https://sairootsmusic.com/${cleanUrlPath === 'index' ? '' : cleanUrlPath}`;
 
-<body style="background-color: #111; color: #eee; font-family: sans-serif; padding: 20px;">
+        let schemaType = "WebPage";
+        let specificData = {};
 
-    <div style="max-width: 800px; margin: 0 auto; background: #222; padding: 30px; border-radius: 8px; border: 1px solid #444;">
-        <h2 style="color: #4CAF50;">Tester Identifikasi HTML</h2>
-        
-        <h3 id="status-teks" style="color: #ffeb3b; border-bottom: 1px solid #444; padding-bottom: 15px;">⏳ Menganalisa halaman ini...</h3>
+        if (cleanUrlPath === 'index' || cleanUrlPath === '') {
+            schemaType = "WebPage";
+            specificData = { "name": "Beranda - SAI Roots Music" };
+        } else if (cleanUrlPath.includes('/lyric/')) {
+            schemaType = "MusicComposition";
+            specificData = { "composer": { "@id": "https://sairootsmusic.com/#founder" } };
+        } else if (cleanUrlPath.includes('/track/')) {
+            schemaType = "MusicRecording";
+            specificData = { "byArtist": { "@id": "https://sairootsmusic.com/#organization" } };
+        } else if (cleanUrlPath.includes('/cover/')) {
+            schemaType = "VideoObject";
+            specificData = { "creator": { "@id": "https://sairootsmusic.com/#founder" } };
+        } else if (cleanUrlPath.includes('/article/')) {
+            schemaType = "Article";
+            specificData = { "author": { "@id": "https://sairootsmusic.com/#founder" } };
+        } else if (cleanUrlPath.includes('about') || cleanUrlPath.includes('contact') || cleanUrlPath.includes('profil')) {
+            schemaType = cleanUrlPath.includes('about') ? "AboutPage" : cleanUrlPath.includes('contact') ? "ContactPage" : "ProfilePage";
+        } else if (cleanUrlPath.includes('list') || cleanUrlPath.includes('discography')) {
+            schemaType = "CollectionPage";
+        }
 
-        <div style="background: #333; padding: 15px; border-radius: 5px; margin: 20px 0;">
-            <h4 style="margin: 0 0 10px 0; color: #ff9800;">Panel Reset Darurat</h4>
-            <button onclick="hapusSchema()" style="background: #d32f2f; color: white; border: none; padding: 8px 15px; cursor: pointer; font-weight: bold; border-radius: 4px;">Tarik Schema</button>
-            <button onclick="aktifkanSchema()" style="background: #388e3c; color: white; border: none; padding: 8px 15px; cursor: pointer; font-weight: bold; border-radius: 4px; margin-left: 10px;">Kembalikan Schema</button>
-        </div>
+        return {
+            path: path,
+            type: schemaType,
+            cleanUrl: fullCleanUrl,
+            slugFolder: cleanUrlPath.replace(/[^a-zA-Z0-9-]/g, '-').replace(/^-+|-+$/g, '') || 'beranda',
+            specific: specificData
+        };
+    }
 
-        <h4>Schema Output di Head Anda:</h4>
-        <pre id="code-output" style="background: #000; padding: 15px; border-radius: 5px; overflow-x: auto; color: #0f0; font-size: 13px;"></pre>
-    </div>
+    function utf8_to_b64(str) { return window.btoa(unescape(encodeURIComponent(str))); }
+    function b64_to_utf8(str) { return decodeURIComponent(escape(window.atob(str))); }
+
+    // 3. PUSH SCHEMA MASAL
+    async function pushSchemaMasal() {
+        if (htmlFilesList.length === 0) return log("Lakukan scan terlebih dahulu!", "#f44336");
+        log("Mulai melakukan Push Masal (Membuat Schema & Modifikasi HTML)...", "#ffcc00");
+
+        for (const file of htmlFilesList) {
+            try {
+                const info = identifyPage(file.path);
+                
+                let specificGraph = {
+                    "@type": info.type,
+                    "@id": info.cleanUrl + "#" + info.type.toLowerCase(),
+                    "url": info.cleanUrl,
+                    ...info.specific
+                };
+
+                let universalGraph = getUniversalSchema();
+                
+                // SCHEMA SPESIFIK DI ATAS, UNIVERSAL DI BAWAH
+                let finalGraph = [specificGraph, ...universalGraph];
+                
+                let schemaJsonLd = {
+                    "@context": "https://schema.org",
+                    "@graph": finalGraph
+                };
+
+                let schemaJsContent = `// Auto-Generated Schema by SAI Roots Schema Manager\n`;
+                schemaJsContent += `(function() {\n`;
+                schemaJsContent += `  const schema = ${JSON.stringify(schemaJsonLd, null, 2)};\n`;
+                schemaJsContent += `  const script = document.createElement('script');\n`;
+                schemaJsContent += `  script.type = 'application/ld+json';\n`;
+                schemaJsContent += `  script.id = 'sairoots-auto-schema';\n`;
+                schemaJsContent += `  script.textContent = JSON.stringify(schema);\n`;
+                schemaJsContent += `  document.head.appendChild(script);\n`;
+                schemaJsContent += `})();`;
+
+                const schemaFilePath = `schema/${info.slugFolder}/schema.js`;
+
+                let fileSha = null;
+                try {
+                    const checkFile = await apiRequest(`contents/${schemaFilePath}`);
+                    fileSha = checkFile.sha;
+                } catch(e) {} 
+
+                await apiRequest(`contents/${schemaFilePath}`, 'PUT', {
+                    message: `Generate schema for ${info.cleanUrl}`,
+                    content: utf8_to_b64(schemaJsContent),
+                    sha: fileSha
+                });
+                log(`✔️ Created schema: /${schemaFilePath}`);
+
+                const htmlFileObj = await apiRequest(`contents/${file.path}`);
+                let htmlContent = b64_to_utf8(htmlFileObj.content);
+
+                const scriptTag = `\n<script id="sairoots-schema-loader" src="/${schemaFilePath}"><\/script>\n`;
+                
+                if (!htmlContent.includes(scriptTag.trim())) {
+                    htmlContent = htmlContent.replace('</head>', `${scriptTag}</head>`);
+                    
+                    await apiRequest(`contents/${file.path}`, 'PUT', {
+                        message: `Inject schema script to ${file.path}`,
+                        content: utf8_to_b64(htmlContent),
+                        sha: htmlFileObj.sha
+                    });
+                    log(`✔️ Injected HTML: /${file.path}`);
+                } else {
+                    log(`➖ HTML sudah tersuntik sebelumnya: /${file.path}`, "#aaa");
+                }
+
+            } catch (err) {
+                log(`Gagal memproses ${file.path}: ${err.message}`, "#f44336");
+            }
+        }
+        log("🎉 PUSH MASAL SELESAI!", "#4caf50");
+    }
+
+    // 4. RESET SCHEMA (TARIK MUNDUR)
+    async function resetSchema() {
+        if (!confirm("Yakin ingin menghapus semua injeksi schema dari HTML?")) return;
+        if (htmlFilesList.length === 0) return log("Lakukan scan terlebih dahulu agar sistem tahu file HTML mana yang harus dibersihkan!", "#f44336");
+
+        log("Memulai proses RESET Schema...", "#f44336");
+
+        for (const file of htmlFilesList) {
+            try {
+                const info = identifyPage(file.path);
+                const schemaFilePath = `schema/${info.slugFolder}/schema.js`;
+
+                try {
+                    const checkFile = await apiRequest(`contents/${schemaFilePath}`);
+                    await apiRequest(`contents/${schemaFilePath}`, 'DELETE', {
+                        message: `Reset/Delete schema for ${info.cleanUrl}`,
+                        sha: checkFile.sha
+                    });
+                    log(`🗑️ Deleted: /${schemaFilePath}`);
+                } catch(e) {} 
+
+                const htmlFileObj = await apiRequest(`contents/${file.path}`);
+                let htmlContent = b64_to_utf8(htmlFileObj.content);
+                const scriptRegex = /<script id="sairoots-schema-loader"[^>]*><\/script>\n?/g;
+
+                if (scriptRegex.test(htmlContent)) {
+                    htmlContent = htmlContent.replace(scriptRegex, '');
+                    await apiRequest(`contents/${file.path}`, 'PUT', {
+                        message: `Remove schema injection from ${file.path}`,
+                        content: utf8_to_b64(htmlContent),
+                        sha: htmlFileObj.sha
+                    });
+                    log(`🧹 Cleaned HTML: /${file.path}`);
+                }
+
+            } catch(err) {
+                log(`Gagal mereset ${file.path}: ${err.message}`, "#f44336");
+            }
+        }
+        log("✅ RESET SELESAI. Repository telah bersih.", "#4caf50");
+    }
+</script>
 
 </body>
 </html>
