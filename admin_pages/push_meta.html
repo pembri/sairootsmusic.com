@@ -1,0 +1,406 @@
+<!DOCTYPE html>
+<html lang="id">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>SAI Roots | Meta Pusher Tool</title>
+    <style>
+        :root {
+            --bg-color: #0d0d0d;
+            --card-bg: #1a1a1a;
+            --text-color: #e0e0e0;
+            --accent-red: #ff4d4d;
+            --accent-yellow: #ffcc00;
+            --accent-green: #2ecc71;
+            --border-color: #333;
+        }
+
+        body {
+            font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+            background-color: var(--bg-color);
+            color: var(--text-color);
+            margin: 0;
+            padding: 20px;
+            line-height: 1.6;
+        }
+
+        .container {
+            max-width: 900px;
+            margin: 0 auto;
+        }
+
+        header {
+            text-align: center;
+            padding: 40px 0;
+            border-bottom: 2px solid var(--border-color);
+            margin-bottom: 30px;
+        }
+
+        header h1 {
+            margin: 0;
+            font-size: 2.5rem;
+            letter-spacing: 2px;
+            text-transform: uppercase;
+        }
+
+        .accent-bar {
+            height: 4px;
+            width: 150px;
+            margin: 10px auto;
+            background: linear-gradient(to right, var(--accent-red), var(--accent-yellow), var(--accent-green));
+            border-radius: 2px;
+        }
+
+        .setup-box {
+            background: var(--card-bg);
+            padding: 25px;
+            border-radius: 12px;
+            border-left: 5px solid var(--accent-yellow);
+            margin-bottom: 30px;
+            box-shadow: 0 10px 30px rgba(0,0,0,0.5);
+        }
+
+        label {
+            display: block;
+            margin-bottom: 8px;
+            font-weight: bold;
+            color: var(--accent-yellow);
+        }
+
+        input[type="text"], input[type="password"], textarea {
+            width: 100%;
+            padding: 12px;
+            margin-bottom: 20px;
+            background: #252525;
+            border: 1px solid var(--border-color);
+            border-radius: 6px;
+            color: #fff;
+            box-sizing: border-box;
+        }
+
+        input:focus {
+            outline: none;
+            border-color: var(--accent-green);
+        }
+
+        .btn {
+            background: var(--accent-green);
+            color: #000;
+            padding: 12px 25px;
+            border: none;
+            border-radius: 6px;
+            cursor: pointer;
+            font-weight: bold;
+            font-size: 1rem;
+            transition: transform 0.2s, opacity 0.2s;
+        }
+
+        .btn:hover {
+            opacity: 0.9;
+            transform: translateY(-2px);
+        }
+
+        .btn-scan {
+            background: var(--accent-yellow);
+        }
+
+        .btn-push {
+            background: var(--accent-red);
+            color: #fff;
+            width: 100%;
+            margin-top: 20px;
+            display: none;
+        }
+
+        #file-list {
+            margin-top: 30px;
+        }
+
+        .file-item {
+            background: #222;
+            padding: 15px;
+            margin-bottom: 10px;
+            border-radius: 8px;
+            display: flex;
+            align-items: center;
+            justify-content: space-between;
+            border-bottom: 1px solid #333;
+        }
+
+        .file-info {
+            flex-grow: 1;
+            margin-right: 15px;
+        }
+
+        .file-path {
+            font-family: monospace;
+            color: var(--accent-green);
+        }
+
+        .status-badge {
+            font-size: 0.75rem;
+            padding: 2px 8px;
+            border-radius: 10px;
+            background: #444;
+        }
+
+        .log-container {
+            background: #000;
+            color: #0f0;
+            padding: 15px;
+            border-radius: 8px;
+            font-family: 'Courier New', Courier, monospace;
+            font-size: 0.85rem;
+            height: 200px;
+            overflow-y: auto;
+            margin-top: 30px;
+            border: 1px solid #333;
+        }
+
+        footer {
+            text-align: center;
+            margin-top: 50px;
+            font-size: 0.8rem;
+            color: #666;
+        }
+    </style>
+</head>
+<body>
+
+<div class="container">
+    <header>
+        <h1>SAI ROOTS <span style="color: var(--accent-yellow)">PUSH_META</span></h1>
+        <div class="accent-bar"></div>
+        <p>SEO Automation Tool for sairootsmusic.com</p>
+    </header>
+
+    <div class="setup-box">
+        <label>GitHub Personal Access Token (PAT)</label>
+        <input type="password" id="token" placeholder="ghp_xxxxxxxxxxxx">
+        
+        <label>Repository Path</label>
+        <input type="text" id="repo" value="pembri/sairootsmusic.com">
+        
+        <button class="btn btn-scan" onclick="scanFiles()">1. Scan & Analyze Repository</button>
+    </div>
+
+    <div id="file-list">
+        <!-- Files will appear here -->
+    </div>
+
+    <button id="push-btn" class="btn btn-push" onclick="pushUpdates()">2. Gas Push Meta Updates!</button>
+
+    <div class="log-container" id="logs">
+        > Tool initialized. Waiting for Scan...
+    </div>
+
+    <footer>
+        &copy; 2026 SAI Roots | Ahmad Supembri | Independent Music Movement
+    </footer>
+</div>
+
+<script>
+    const logs = document.getElementById('logs');
+    const fileListDiv = document.getElementById('file-list');
+    const pushBtn = document.getElementById('push-btn');
+    let filesToProcess = [];
+
+    function addLog(msg, color = '#0f0') {
+        const span = document.createElement('div');
+        span.style.color = color;
+        span.textContent = `> ${msg}`;
+        logs.appendChild(span);
+        logs.scrollTop = logs.scrollHeight;
+    }
+
+    async function scanFiles() {
+        const token = document.getElementById('token').value;
+        const repo = document.getElementById('repo').value;
+
+        if(!token) {
+            alert("Input Token dulu, Bre!");
+            return;
+        }
+
+        addLog("Memulai scanning repository...", '#ffcc00');
+        fileListDiv.innerHTML = "<p>Sedang mencari file .html...</p>";
+
+        try {
+            // Fetch recursive tree
+            const res = await fetch(`https://api.github.com/repos/${repo}/git/trees/main?recursive=1`, {
+                headers: { 'Authorization': `token ${token}` }
+            });
+            const data = await res.json();
+
+            if(!data.tree) throw new Error("Gagal akses repo. Cek Token/Repo Name.");
+
+            // Filter specific files and folders
+            const targetPaths = [
+                'index.html', 'about.html', 'contact.html', 'credits.html', 
+                'discography.html', 'lyric.html', 'privacy.html', 
+                'profil_ahmad_supembri.html', 'video_cover.html'
+            ];
+
+            filesToProcess = data.tree.filter(item => {
+                if (item.type !== 'blob') return false;
+                const path = item.path;
+                
+                // Root files
+                if (targetPaths.includes(path)) return true;
+                
+                // Folder logic
+                if (path.startsWith('lyric/') && path.endsWith('.html')) return true;
+                if (path.startsWith('track/') && path.endsWith('.html')) return true;
+                if (path.startsWith('article/') && path.endsWith('.html')) return true;
+
+                return false;
+            });
+
+            addLog(`Ditemukan ${filesToProcess.length} file HTML target.`);
+            renderFileList();
+            pushBtn.style.display = 'block';
+
+        } catch (err) {
+            addLog("Error: " + err.message, '#ff4d4d');
+            fileListDiv.innerHTML = "";
+        }
+    }
+
+    function renderFileList() {
+        fileListDiv.innerHTML = "<h3>File yang akan diperkaya:</h3>";
+        filesToProcess.forEach(file => {
+            const div = document.createElement('div');
+            div.className = 'file-item';
+            div.innerHTML = `
+                <div class="file-info">
+                    <span class="file-path">${file.path}</span>
+                </div>
+                <span class="status-badge">Ready</span>
+            `;
+            fileListDiv.appendChild(div);
+        });
+    }
+
+    async function pushUpdates() {
+        const token = document.getElementById('token').value;
+        const repo = document.getElementById('repo').value;
+
+        if(!confirm("Yakin mau Gas Push Meta ke semua file?")) return;
+
+        addLog("Proses injeksi Meta dimulai...", '#ffcc00');
+
+        for (const file of filesToProcess) {
+            try {
+                addLog(`Memproses: ${file.path}`);
+                
+                // 1. Get content
+                const contentRes = await fetch(file.url, {
+                    headers: { 'Authorization': `token ${token}` }
+                });
+                const contentData = await contentRes.json();
+                let originalHTML = atob(contentData.content);
+
+                // 2. Generate New Meta Tags
+                const metaTags = generateMetaTags(file.path, originalHTML);
+                
+                // 3. Inject into HTML
+                let updatedHTML = injectMeta(originalHTML, metaTags);
+
+                // 4. Push back to GitHub
+                const pushRes = await fetch(`https://api.github.com/repos/${repo}/contents/${file.path}`, {
+                    method: 'PUT',
+                    headers: {
+                        'Authorization': `token ${token}`,
+                        'Content-Type': 'application/json'
+                    },
+                    body: JSON.stringify({
+                        message: `SEO: Enrich meta tags for ${file.path}`,
+                        content: btoa(unescape(encodeURIComponent(updatedHTML))),
+                        sha: file.sha
+                    })
+                });
+
+                if(pushRes.ok) {
+                    addLog(`Sukses Push: ${file.path}`, '#2ecc71');
+                } else {
+                    addLog(`Gagal Push: ${file.path}`, '#ff4d4d');
+                }
+
+            } catch (err) {
+                addLog(`Error di ${file.path}: ${err.message}`, '#ff4d4d');
+            }
+        }
+        addLog("SELESAI! Semua meta telah diperbarui.", '#2ecc71');
+    }
+
+    function generateMetaTags(path, html) {
+        // Extract Title from HTML
+        const titleMatch = html.match(/<title>(.*?)<\/title>/);
+        let pageTitle = titleMatch ? titleMatch[1] : "SAI Roots Music";
+        pageTitle = pageTitle.replace("SAI Roots | ", "").replace(" - SAI Roots", "");
+
+        let description = "";
+        let tags = [];
+
+        // Context Logic
+        if (path.startsWith('lyric/')) {
+            description = `Lirik lagu ${pageTitle} oleh SAI Roots. Temukan lirik lengkap, makna lagu, dan pesan mendalam dalam balutan irama Roots Reggae dan Reggae Rap asli Jombang, Indonesia.`;
+            tags = ["Lirik", "Lyrics", "Roots Reggae", "Reggae Rap", "Jombang", "SAI Roots", pageTitle];
+        } else if (path.startsWith('track/')) {
+            description = `Dengarkan track resmi ${pageTitle} dari SAI Roots. Nikmati kualitas audio streaming musik reggae independen terbaik. Dukung musisi lokal dari Jawa Timur.`;
+            tags = ["Music", "Audio", "Reggae", "Streaming", "Independent Music", pageTitle];
+        } else if (path.startsWith('article/')) {
+            description = `Baca artikel: ${pageTitle}. Update terbaru mengenai proyek musik SAI Roots, Ahmad Supembri, dan perkembangan skena musik di Jombang.`;
+            tags = ["Article", "News", "Blog", "Update", "Ahmad Supembri", pageTitle];
+        } else if (path === 'index.html') {
+            description = "Selamat datang di website resmi SAI Roots. Proyek musik independen Roots Reggae dan Reggae Rap oleh Ahmad Supembri asal Jombang. Eksplorasi karya, visi, dan pergerakan kami.";
+            tags = ["SAI Roots", "Official Website", "Roots Reggae", "Reggae Rap", "Ahmad Supembri", "Jombang"];
+        } else {
+            description = `${pageTitle} - Halaman resmi SAI Roots (Ahmad Supembri). Platform musik Roots Reggae & Reggae Rap independen dari Jombang, Jawa Timur.`;
+            tags = ["SAI Roots", "Musician", "Indonesia", pageTitle];
+        }
+
+        // Return Object of Tags
+        return {
+            'description': description,
+            'keywords': tags.join(", "),
+            'author': 'Ahmad Supembri',
+            'og:title': pageTitle + " | SAI Roots",
+            'og:description': description,
+            'og:url': `https://sairootsmusic.com/${path}`,
+            'og:site_name': 'SAI Roots Official',
+            'og:type': path.includes('article') ? 'article' : 'website',
+            'twitter:card': 'summary_large_image',
+            'theme-color': '#0d0d0d'
+        };
+    }
+
+    function injectMeta(html, tags) {
+        let headContent = html.match(/<head>([\s\S]*?)<\/head>/i)[1];
+        
+        for (const [name, value] of Object.entries(tags)) {
+            const isProperty = name.startsWith('og:');
+            const attr = isProperty ? 'property' : 'name';
+            
+            // Regex to check if tag exists
+            const regex = new RegExp(`<meta\s+${attr}=["']${name}["'][^>]*>`, 'i');
+            
+            if (name === 'description' || !regex.test(headContent)) {
+                // If description (always update) or if tag doesn't exist
+                if (regex.test(headContent)) {
+                    // Update existing
+                    headContent = headContent.replace(regex, `<meta ${attr}="${name}" content="${value}">`);
+                } else {
+                    // Append new
+                    headContent += `
+    <meta ${attr}="${name}" content="${value}">`;
+                }
+            }
+        }
+
+        return html.replace(/<head>([\s\S]*?)<\/head>/i, `<head>${headContent}</head>`);
+    }
+</script>
+
+</body>
+</html>
