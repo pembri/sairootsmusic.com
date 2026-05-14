@@ -1,1003 +1,1064 @@
 <!DOCTYPE html>
 <html lang="id">
 <head>
-  <meta charset="UTF-8" />
-  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
-  <title>Auto Schema Generator — SAI Roots</title>
-  <link rel="preconnect" href="https://fonts.googleapis.com" />
-  <link href="https://fonts.googleapis.com/css2?family=Space+Mono:wght@400;700&family=Syne:wght@400;700;800&display=swap" rel="stylesheet" />
-  <style>
-    :root {
-      --bg: #0a0a0a;
-      --surface: #111111;
-      --border: #222222;
-      --accent: #c8f03e;
-      --accent2: #ff6b35;
-      --text: #e8e8e8;
-      --muted: #555;
-      --success: #4ade80;
-      --warning: #facc15;
-      --error: #f87171;
-      --font-mono: 'Space Mono', monospace;
-      --font-sans: 'Syne', sans-serif;
-    }
-    *, *::before, *::after { box-sizing: border-box; margin: 0; padding: 0; }
-    html { scroll-behavior: smooth; }
-    body {
-      background: var(--bg);
-      color: var(--text);
-      font-family: var(--font-sans);
-      min-height: 100vh;
-      overflow-x: hidden;
-    }
-
-    /* GRID BG */
-    body::before {
-      content: '';
-      position: fixed;
-      inset: 0;
-      background-image:
-        linear-gradient(rgba(200,240,62,0.03) 1px, transparent 1px),
-        linear-gradient(90deg, rgba(200,240,62,0.03) 1px, transparent 1px);
-      background-size: 40px 40px;
-      pointer-events: none;
-      z-index: 0;
-    }
-
-    .wrap { position: relative; z-index: 1; max-width: 860px; margin: 0 auto; padding: 48px 24px 80px; }
-
-    /* HEADER */
-    header { margin-bottom: 48px; }
-    .badge {
-      display: inline-block;
-      font-family: var(--font-mono);
-      font-size: 10px;
-      letter-spacing: 0.15em;
-      text-transform: uppercase;
-      color: var(--accent);
-      border: 1px solid var(--accent);
-      padding: 4px 10px;
-      margin-bottom: 16px;
-    }
-    h1 {
-      font-size: clamp(28px, 5vw, 44px);
-      font-weight: 800;
-      line-height: 1.1;
-      letter-spacing: -0.02em;
-    }
-    h1 span { color: var(--accent); }
-    .subtitle {
-      margin-top: 10px;
-      font-family: var(--font-mono);
-      font-size: 12px;
-      color: var(--muted);
-      letter-spacing: 0.05em;
-    }
-
-    /* CARD */
-    .card {
-      background: var(--surface);
-      border: 1px solid var(--border);
-      padding: 28px;
-      margin-bottom: 20px;
-    }
-    .card-title {
-      font-family: var(--font-mono);
-      font-size: 11px;
-      letter-spacing: 0.12em;
-      text-transform: uppercase;
-      color: var(--accent);
-      margin-bottom: 16px;
-    }
-
-    /* FORM */
-    label {
-      display: block;
-      font-family: var(--font-mono);
-      font-size: 11px;
-      letter-spacing: 0.08em;
-      color: var(--muted);
-      margin-bottom: 6px;
-      text-transform: uppercase;
-    }
-    input[type="text"], input[type="password"] {
-      width: 100%;
-      background: var(--bg);
-      border: 1px solid var(--border);
-      color: var(--text);
-      font-family: var(--font-mono);
-      font-size: 13px;
-      padding: 12px 14px;
-      outline: none;
-      transition: border-color 0.2s;
-    }
-    input:focus { border-color: var(--accent); }
-    .token-row { display: flex; gap: 10px; align-items: flex-end; }
-    .token-row input { flex: 1; }
-
-    /* BUTTONS */
-    .btn {
-      font-family: var(--font-mono);
-      font-size: 12px;
-      letter-spacing: 0.1em;
-      text-transform: uppercase;
-      border: none;
-      cursor: pointer;
-      padding: 12px 22px;
-      transition: all 0.15s;
-      white-space: nowrap;
-    }
-    .btn-primary {
-      background: var(--accent);
-      color: #000;
-      font-weight: 700;
-    }
-    .btn-primary:hover { background: #d9ff4a; transform: translateY(-1px); }
-    .btn-primary:active { transform: translateY(0); }
-    .btn-primary:disabled { opacity: 0.4; cursor: not-allowed; transform: none; }
-    .btn-ghost {
-      background: transparent;
-      color: var(--muted);
-      border: 1px solid var(--border);
-    }
-    .btn-ghost:hover { border-color: var(--accent); color: var(--accent); }
-    .btn-danger {
-      background: transparent;
-      color: var(--error);
-      border: 1px solid var(--error);
-    }
-    .btn-danger:hover { background: var(--error); color: #000; }
-
-    /* INFO ROW */
-    .info-row {
-      display: flex;
-      gap: 16px;
-      flex-wrap: wrap;
-      margin-bottom: 20px;
-    }
-    .info-chip {
-      font-family: var(--font-mono);
-      font-size: 11px;
-      padding: 6px 12px;
-      border: 1px solid var(--border);
-      color: var(--muted);
-    }
-    .info-chip b { color: var(--text); }
-
-    /* PROGRESS */
-    #progressSection { display: none; }
-    .progress-bar-wrap {
-      background: var(--border);
-      height: 4px;
-      margin: 12px 0;
-      overflow: hidden;
-    }
-    .progress-bar-fill {
-      height: 100%;
-      background: var(--accent);
-      width: 0%;
-      transition: width 0.3s ease;
-    }
-    .progress-label {
-      font-family: var(--font-mono);
-      font-size: 11px;
-      color: var(--muted);
-    }
-
-    /* LOG */
-    #logBox {
-      background: var(--bg);
-      border: 1px solid var(--border);
-      font-family: var(--font-mono);
-      font-size: 11px;
-      line-height: 1.7;
-      padding: 16px;
-      max-height: 320px;
-      overflow-y: auto;
-      margin-top: 16px;
-      display: none;
-    }
-    .log-line { display: flex; gap: 10px; }
-    .log-time { color: var(--muted); flex-shrink: 0; }
-    .log-ok { color: var(--success); }
-    .log-skip { color: var(--warning); }
-    .log-err { color: var(--error); }
-    .log-info { color: var(--accent); }
-    .log-dim { color: var(--muted); }
-
-    /* FILE LIST */
-    #fileList { display: none; margin-top: 20px; }
-    .file-grid {
-      display: grid;
-      gap: 8px;
-    }
-    .file-item {
-      display: flex;
-      align-items: center;
-      justify-content: space-between;
-      padding: 10px 14px;
-      background: var(--bg);
-      border: 1px solid var(--border);
-      font-family: var(--font-mono);
-      font-size: 11px;
-      gap: 10px;
-    }
-    .file-item-path { color: var(--text); flex: 1; }
-    .file-item-type {
-      padding: 2px 8px;
-      font-size: 10px;
-      letter-spacing: 0.08em;
-      text-transform: uppercase;
-    }
-    .type-homepage { background: rgba(200,240,62,0.15); color: var(--accent); border: 1px solid var(--accent); }
-    .type-music { background: rgba(255,107,53,0.15); color: var(--accent2); border: 1px solid var(--accent2); }
-    .type-about { background: rgba(74,222,128,0.15); color: var(--success); border: 1px solid var(--success); }
-    .type-contact { background: rgba(250,204,21,0.15); color: var(--warning); border: 1px solid var(--warning); }
-    .type-generic { background: rgba(85,85,85,0.2); color: var(--muted); border: 1px solid var(--border); }
-    .file-item-status { font-size: 14px; }
-
-    /* SUMMARY */
-    #summarySection { display: none; }
-    .summary-grid {
-      display: grid;
-      grid-template-columns: repeat(auto-fit, minmax(140px, 1fr));
-      gap: 12px;
-      margin-top: 12px;
-    }
-    .summary-stat {
-      background: var(--bg);
-      border: 1px solid var(--border);
-      padding: 16px;
-      text-align: center;
-    }
-    .summary-stat .num {
-      font-size: 32px;
-      font-weight: 800;
-      color: var(--accent);
-      line-height: 1;
-    }
-    .summary-stat .lbl {
-      font-family: var(--font-mono);
-      font-size: 10px;
-      color: var(--muted);
-      margin-top: 4px;
-      text-transform: uppercase;
-      letter-spacing: 0.08em;
-    }
-
-    /* SCROLLBAR */
-    ::-webkit-scrollbar { width: 4px; }
-    ::-webkit-scrollbar-track { background: var(--bg); }
-    ::-webkit-scrollbar-thumb { background: var(--border); }
-    ::-webkit-scrollbar-thumb:hover { background: var(--accent); }
-
-    .sep { border: none; border-top: 1px solid var(--border); margin: 8px 0; }
-
-    .action-row { display: flex; gap: 10px; flex-wrap: wrap; margin-top: 16px; }
-  </style>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Auto Schema Generator | Admin SAI Roots</title>
+    <script src="https://cdn.tailwindcss.com"></script>
+    <style>
+        body { background: #050505; color: #f0f0f0; font-family: 'monospace'; }
+        .log-box { background: #0a0a0a; border: 1px solid #1a1a1a; height: 200px; overflow-y: auto; }
+        .log-info  { color: #6ee7b7; }
+        .log-warn  { color: #fbbf24; }
+        .log-error { color: #f87171; }
+        .log-skip  { color: #6b7280; }
+        .log-ok    { color: #34d399; }
+        pre { white-space: pre-wrap; word-break: break-all; }
+    </style>
 </head>
-<body>
-<div class="wrap">
+<body class="p-6 min-h-screen">
 
-  <header>
-    <div class="badge">SAI Roots Music // Admin Tool</div>
-    <h1>Auto <span>Schema</span><br>Generator</h1>
-    <p class="subtitle">// repo: pembri/sairootsmusic.com — github pages</p>
-  </header>
+<div class="max-w-5xl mx-auto">
 
-  <!-- AUTH -->
-  <div class="card" id="authCard">
-    <div class="card-title">// 01 — GitHub Authentication</div>
-    <div class="token-row">
-      <div style="flex:1">
-        <label>GitHub Personal Access Token</label>
-        <input type="password" id="tokenInput" placeholder="ghp_xxxxxxxxxxxxxxxxxxxx" autocomplete="off" />
-      </div>
-      <button class="btn btn-primary" onclick="connectGitHub()">Connect</button>
+    <!-- HEADER -->
+    <div class="mb-8">
+        <h1 class="text-3xl font-bold text-yellow-400 mb-1">⚡ Auto Schema Generator</h1>
+        <p class="text-gray-500 text-sm">SAI Roots Music — Scan, Identifikasi, Generate & Inject schema per halaman</p>
+        <div class="mt-2 h-px bg-gradient-to-r from-green-700 via-yellow-500 to-red-600"></div>
     </div>
-    <p style="font-family:var(--font-mono);font-size:10px;color:var(--muted);margin-top:10px;">
-      Token perlu scope: <b style="color:var(--text)">repo</b> (read + write)
-    </p>
-  </div>
 
-  <!-- REPO INFO -->
-  <div class="card" id="repoCard" style="display:none">
-    <div class="card-title">// 02 — Repository Info</div>
-    <div class="info-row" id="repoInfo"></div>
-    <div class="action-row">
-      <button class="btn btn-primary" id="scanBtn" onclick="scanFiles()">Scan HTML Files</button>
-      <button class="btn btn-ghost" onclick="resetAuth()">Disconnect</button>
+    <!-- CONFIG -->
+    <div class="grid grid-cols-1 md:grid-cols-2 gap-4 mb-6">
+        <div>
+            <label class="text-xs text-gray-500 uppercase tracking-widest block mb-1">GitHub Username</label>
+            <input id="gh-user" value="pembri" class="w-full bg-white/5 border border-white/10 px-4 py-2 text-white focus:outline-none focus:border-yellow-400 text-sm">
+        </div>
+        <div>
+            <label class="text-xs text-gray-500 uppercase tracking-widest block mb-1">Repository Name</label>
+            <input id="gh-repo" value="sairootsmusic.com" class="w-full bg-white/5 border border-white/10 px-4 py-2 text-white focus:outline-none focus:border-yellow-400 text-sm">
+        </div>
+        <div>
+            <label class="text-xs text-gray-500 uppercase tracking-widest block mb-1">Branch</label>
+            <input id="gh-branch" value="main" class="w-full bg-white/5 border border-white/10 px-4 py-2 text-white focus:outline-none focus:border-yellow-400 text-sm">
+        </div>
+        <div>
+            <label class="text-xs text-gray-500 uppercase tracking-widest block mb-1">GitHub Token (untuk write)</label>
+            <input id="gh-token" type="password" placeholder="ghp_xxxxxxxxxxxx" class="w-full bg-white/5 border border-white/10 px-4 py-2 text-white focus:outline-none focus:border-yellow-400 text-sm">
+        </div>
     </div>
-  </div>
 
-  <!-- FILE LIST -->
-  <div id="fileList">
-    <div class="card">
-      <div class="card-title">// 03 — HTML Files Detected</div>
-      <p style="font-family:var(--font-mono);font-size:11px;color:var(--muted);margin-bottom:14px;" id="fileCount"></p>
-      <div class="file-grid" id="fileGrid"></div>
-      <div class="action-row">
-        <button class="btn btn-primary" id="generateBtn" onclick="startGenerate()">Generate & Push All Schema</button>
-        <button class="btn btn-ghost" onclick="reScan()">Re-scan</button>
-      </div>
+    <!-- TOMBOL AKSI -->
+    <div class="flex flex-wrap gap-3 mb-6">
+        <button onclick="startScan()" class="px-6 py-2 bg-green-700 hover:bg-green-600 text-white text-sm uppercase tracking-widest font-bold transition">
+            🔍 Scan & Identifikasi
+        </button>
+        <button onclick="startGenerate()" id="btn-generate" disabled class="px-6 py-2 bg-yellow-600 hover:bg-yellow-500 disabled:opacity-30 disabled:cursor-not-allowed text-black text-sm uppercase tracking-widest font-bold transition">
+            ⚡ Generate Schema.js
+        </button>
+        <button onclick="startInject()" id="btn-inject" disabled class="px-6 py-2 bg-red-700 hover:bg-red-600 disabled:opacity-30 disabled:cursor-not-allowed text-white text-sm uppercase tracking-widest font-bold transition">
+            💉 Inject ke HTML
+        </button>
+        <button onclick="clearLog()" class="px-6 py-2 bg-white/5 hover:bg-white/10 text-gray-400 text-sm uppercase tracking-widest transition">
+            🗑 Clear Log
+        </button>
     </div>
-  </div>
 
-  <!-- PROGRESS -->
-  <div id="progressSection">
-    <div class="card">
-      <div class="card-title">// 04 — Processing</div>
-      <p class="progress-label" id="progressLabel">Memulai...</p>
-      <div class="progress-bar-wrap">
-        <div class="progress-bar-fill" id="progressFill"></div>
-      </div>
-      <div id="logBox"></div>
+    <!-- PROGRESS -->
+    <div class="mb-4 hidden" id="progress-wrap">
+        <div class="flex justify-between text-xs text-gray-500 mb-1">
+            <span id="progress-label">Processing...</span>
+            <span id="progress-pct">0%</span>
+        </div>
+        <div class="w-full bg-white/5 h-1">
+            <div id="progress-bar" class="h-1 bg-gradient-to-r from-green-500 via-yellow-400 to-red-500 transition-all duration-300" style="width:0%"></div>
+        </div>
     </div>
-  </div>
 
-  <!-- SUMMARY -->
-  <div id="summarySection">
-    <div class="card">
-      <div class="card-title">// 05 — Done</div>
-      <div class="summary-grid" id="summaryGrid"></div>
-      <div class="action-row" style="margin-top:20px;">
-        <button class="btn btn-primary" onclick="location.reload()">Run Again</button>
-      </div>
+    <!-- LOG -->
+    <div class="log-box rounded p-4 mb-6 text-xs" id="log-output">
+        <div class="log-info">[READY] Auto Schema Generator siap. Masukkan config lalu klik Scan.</div>
     </div>
-  </div>
+
+    <!-- HASIL SCAN TABLE -->
+    <div id="scan-results" class="hidden mb-8">
+        <h2 class="text-lg font-bold text-white mb-3 uppercase tracking-widest">📋 Hasil Identifikasi</h2>
+        <div class="overflow-x-auto">
+            <table class="w-full text-xs border-collapse">
+                <thead>
+                    <tr class="border-b border-white/10">
+                        <th class="text-left py-2 px-3 text-gray-500 uppercase tracking-widest">File</th>
+                        <th class="text-left py-2 px-3 text-gray-500 uppercase tracking-widest">Tipe Halaman</th>
+                        <th class="text-left py-2 px-3 text-gray-500 uppercase tracking-widest">Schema Type</th>
+                        <th class="text-left py-2 px-3 text-gray-500 uppercase tracking-widest">Schema Path</th>
+                        <th class="text-left py-2 px-3 text-gray-500 uppercase tracking-widest">Status</th>
+                    </tr>
+                </thead>
+                <tbody id="scan-table-body"></tbody>
+            </table>
+        </div>
+    </div>
+
+    <!-- PREVIEW SCHEMA -->
+    <div id="schema-preview" class="hidden mb-8">
+        <h2 class="text-lg font-bold text-white mb-3 uppercase tracking-widest">👁 Preview Schema yang Akan Digenerate</h2>
+        <div id="schema-preview-list" class="space-y-3"></div>
+    </div>
 
 </div>
 
 <script>
-// =============================================
-// CONFIG
-// =============================================
-const REPO_OWNER = 'pembri';
-const REPO_NAME  = 'sairootsmusic.com';
-const BRANCH     = 'main'; // akan di-detect otomatis
-const BASE_URL   = 'https://sairootsmusic.com';
-const SKIP_DIRS  = ['/admin_pages', 'admin_pages/'];
+// ============================================================
+//  CORE ENGINE - AUTO SCHEMA GENERATOR
+//  SAI Roots Music
+// ============================================================
 
-// Base schema data yang WAJIB dipertahankan di semua halaman
-const BASE_SCHEMA_NODES = [
-  {
-    "@type": "WebSite",
-    "@id": `${BASE_URL}/#website`,
-    "url": `${BASE_URL}/`,
-    "name": "SAI Roots Music",
-    "alternateName": ["SAI Roots", "Sai Roots"],
-    "description": "Official website of SAI Roots - Indonesian independent Reggae, Rap & Ska music project.",
-    "publisher": { "@id": `${BASE_URL}/#organization` }
-  },
-  {
-    "@type": "MusicGroup",
-    "@id": `${BASE_URL}/#organization`,
-    "name": "SAI Roots",
-    "alternateName": "SAI Roots Music",
-    "description": "SAI Roots adalah proyek musik independen beraliran Reggae, Rap, dan Ska asal Indonesia, diciptakan dan dikelola secara eksklusif oleh Ahmad Supembri.",
-    "url": `${BASE_URL}/`,
-    "image": ["https://upload.wikimedia.org/wikipedia/commons/0/03/SAI_Roots.jpg"],
-    "genre": ["Reggae", "Roots Reggae", "Rap", "Ska", "Hip Hop"],
-    "countryOfOrigin": { "@type": "Country", "name": "Indonesia" },
-    "founder": { "@id": `${BASE_URL}/#founder` },
-    "member": { "@id": `${BASE_URL}/#founder` },
-    "recordLabel": { "@id": `${BASE_URL}/#recordLabel` },
-    "sameAs": [
-      "https://www.wikidata.org/wiki/Q139783618",
-      "https://musicbrainz.org/artist/acd09c55-df9b-4628-9605-446b3cf6554a",
-      "https://www.youtube.com/@sairoots",
-      "https://open.spotify.com/artist/0xOPCtZvhXVd9RTbU1aYTr",
-      "https://music.apple.com/id/artist/1892187423",
-      "https://m.soundcloud.com/sairoots",
-      "https://www.deezer.com/artist/384508281",
-      "https://music.amazon.com/artists/B0GTFWNC32/sai-roots",
-      "https://youtube.com/channel/UCnjRvftn7QD2kDqLHszImsA"
+// DATA MASTER dari schema.js lama — semua URL & ID tetap utuh
+const MASTER_DATA = {
+    siteUrl:      "https://sairootsmusic.com",
+    siteName:     "SAI Roots Music",
+    orgId:        "https://sairootsmusic.com/#organization",
+    websiteId:    "https://sairootsmusic.com/#website",
+    founderId:    "https://sairootsmusic.com/#founder",
+    recordLabelId:"https://sairootsmusic.com/#recordLabel",
+    artistName:   "SAI Roots",
+    founderName:  "Ahmad Supembri",
+    genre:        ["Reggae", "Roots Reggae", "Rap", "Ska", "Hip Hop"],
+    logo:         "https://upload.wikimedia.org/wikipedia/commons/0/03/SAI_Roots.jpg",
+    founderImg:   "https://upload.wikimedia.org/wikipedia/commons/2/23/Ahmad_Supembri.jpg",
+    sameAs: [
+        "https://www.wikidata.org/wiki/Q139783618",
+        "https://musicbrainz.org/artist/acd09c55-df9b-4628-9605-446b3cf6554a",
+        "https://www.youtube.com/@sairoots",
+        "https://open.spotify.com/artist/0xOPCtZvhXVd9RTbU1aYTr",
+        "https://music.apple.com/id/artist/1892187423",
+        "https://m.soundcloud.com/sairoots",
+        "https://www.deezer.com/artist/384508281",
+        "https://music.amazon.com/artists/B0GTFWNC32/sai-roots",
+        "https://youtube.com/channel/UCnjRvftn7QD2kDqLHszImsA"
     ]
-  },
-  {
-    "@type": "Person",
-    "@id": `${BASE_URL}/#founder`,
-    "name": "Ahmad Supembri",
-    "image": "https://upload.wikimedia.org/wikipedia/commons/2/23/Ahmad_Supembri.jpg",
-    "description": "Indonesian musician, composer, lyricist, and record producer.",
-    "url": `${BASE_URL}/`,
-    "nationality": { "@type": "Country", "name": "Indonesia" },
-    "occupation": ["Musician", "Composer", "Lyricist", "Record Producer"],
-    "sameAs": [
-      "https://www.wikidata.org/wiki/Q139784101",
-      "https://instagram.com/ahmadsupembri",
-      "https://facebook.com/ahmadsupembri",
-      "https://tiktok.com/@ahmadsupembri"
-    ]
-  },
-  {
-    "@type": "Organization",
-    "@id": `${BASE_URL}/#recordLabel`,
-    "name": "SAI Roots Music",
-    "description": "Indonesian independent record label owned by Ahmad Supembri.",
-    "url": `${BASE_URL}/`,
-    "founder": { "@id": `${BASE_URL}/#founder` },
-    "sameAs": ["https://www.wikidata.org/wiki/Q139784313"]
-  }
-];
+};
 
-// =============================================
-// STATE
-// =============================================
-let TOKEN = '';
-let defaultBranch = 'main';
-let htmlFiles = [];
-let stats = { processed: 0, schemaCreated: 0, htmlUpdated: 0, skipped: 0, errors: 0 };
+// SKIP FOLDER INI — WAJIB
+const SKIP_FOLDERS = ['/admin_pages/'];
 
-// =============================================
-// GITHUB API HELPERS
-// =============================================
-async function ghFetch(path, options = {}) {
-  const res = await fetch(`https://api.github.com${path}`, {
-    ...options,
-    headers: {
-      'Authorization': `Bearer ${TOKEN}`,
-      'Accept': 'application/vnd.github+json',
-      'X-GitHub-Api-Version': '2022-11-28',
-      ...(options.headers || {})
+// Hasil scan global
+let scannedPages = [];
+let generatedSchemas = {};
+
+// ============================================================
+//  LOGGING
+// ============================================================
+function log(msg, type = 'info') {
+    const box = document.getElementById('log-output');
+    const line = document.createElement('div');
+    line.className = `log-${type}`;
+    line.textContent = `[${new Date().toLocaleTimeString()}] ${msg}`;
+    box.appendChild(line);
+    box.scrollTop = box.scrollHeight;
+}
+function clearLog() {
+    document.getElementById('log-output').innerHTML = '<div class="log-info">[CLEAR] Log dibersihkan.</div>';
+}
+function setProgress(pct, label) {
+    document.getElementById('progress-wrap').classList.remove('hidden');
+    document.getElementById('progress-bar').style.width = pct + '%';
+    document.getElementById('progress-pct').textContent = pct + '%';
+    document.getElementById('progress-label').textContent = label;
+}
+
+// ============================================================
+//  GITHUB API HELPERS
+// ============================================================
+function getConfig() {
+    return {
+        user:   document.getElementById('gh-user').value.trim(),
+        repo:   document.getElementById('gh-repo').value.trim(),
+        branch: document.getElementById('gh-branch').value.trim(),
+        token:  document.getElementById('gh-token').value.trim()
+    };
+}
+
+function apiHeaders() {
+    const { token } = getConfig();
+    const h = { 'Accept': 'application/vnd.github.v3+json' };
+    if (token) h['Authorization'] = `token ${token}`;
+    return h;
+}
+
+// Rekursif ambil semua file HTML dari repo
+async function getAllHtmlFiles(path = '') {
+    const { user, repo, branch } = getConfig();
+    const url = `https://api.github.com/repos/${user}/${repo}/contents/${path}?ref=${branch}`;
+    
+    const res = await fetch(url, { headers: apiHeaders() });
+    if (!res.ok) throw new Error(`GitHub API error ${res.status}: ${await res.text()}`);
+    
+    const items = await res.json();
+    let files = [];
+
+    for (const item of items) {
+        // SKIP /admin_pages/ — KERAS
+        const isSkipped = SKIP_FOLDERS.some(skip => ('/' + item.path).startsWith(skip) || item.path.startsWith('admin_pages'));
+        if (isSkipped) {
+            log(`SKIP (admin_pages): ${item.path}`, 'skip');
+            continue;
+        }
+
+        if (item.type === 'dir') {
+            const sub = await getAllHtmlFiles(item.path);
+            files = files.concat(sub);
+        } else if (item.type === 'file' && item.name.endsWith('.html')) {
+            files.push(item);
+        }
     }
-  });
-  if (!res.ok) {
-    const err = await res.json().catch(() => ({}));
-    throw new Error(err.message || `GitHub API error ${res.status}`);
-  }
-  return res.json();
+    return files;
 }
 
-async function getFileSHA(path) {
-  try {
-    const data = await ghFetch(`/repos/${REPO_OWNER}/${REPO_NAME}/contents/${path}?ref=${defaultBranch}`);
-    return data.sha || null;
-  } catch { return null; }
+// Ambil isi raw file
+async function fetchRaw(downloadUrl) {
+    const res = await fetch(downloadUrl);
+    if (!res.ok) throw new Error(`Fetch error: ${res.status}`);
+    return await res.text();
 }
 
-async function pushFile(path, content, commitMsg, sha = null) {
-  const body = {
-    message: commitMsg,
-    content: btoa(unescape(encodeURIComponent(content))),
-    branch: defaultBranch
-  };
-  if (sha) body.sha = sha;
-  return ghFetch(`/repos/${REPO_OWNER}/${REPO_NAME}/contents/${path}`, {
-    method: 'PUT',
-    headers: { 'Content-Type': 'application/json' },
-    body: JSON.stringify(body)
-  });
+// ============================================================
+//  PARSER — EKSTRAK INFO DARI HTML
+// ============================================================
+function parseHtmlInfo(htmlContent, filePath) {
+    const parser = new DOMParser();
+    const doc = parser.parseFromString(htmlContent, 'text/html');
+
+    // Ekstrak semua sinyal
+    const title        = doc.querySelector('title')?.textContent?.trim() || '';
+    const description  = doc.querySelector('meta[name="description"]')?.getAttribute('content') || '';
+    const canonical    = doc.querySelector('link[rel="canonical"]')?.getAttribute('href') || '';
+    const ogTitle      = doc.querySelector('meta[property="og:title"]')?.getAttribute('content') || '';
+    const ogImage      = doc.querySelector('meta[property="og:image"]')?.getAttribute('content') || '';
+    const ogType       = doc.querySelector('meta[property="og:type"]')?.getAttribute('content') || '';
+    const h1           = doc.querySelector('h1')?.textContent?.trim() || '';
+    const hasAudio     = !!doc.querySelector('audio');
+    const hasYtIframe  = !!(doc.querySelector('iframe[src*="youtube"]') || doc.querySelector('iframe[src*="youtu.be"]'));
+    const hasQlEditor  = !!doc.querySelector('.ql-editor');
+    const hasRedirect  = htmlContent.includes('window.location.href');
+    const hasDbJs      = htmlContent.includes('database.js');
+    const hasArticleGrid = !!doc.querySelector('#articles-grid');
+    const bodyText     = doc.body?.textContent || '';
+
+    // Path normalisasi
+    const normPath = '/' + filePath.replace(/\\/g, '/');
+
+    return {
+        filePath, normPath, title, description, canonical,
+        ogTitle, ogImage, ogType, h1, hasAudio, hasYtIframe,
+        hasQlEditor, hasRedirect, hasDbJs, hasArticleGrid, bodyText
+    };
 }
 
-async function getFileContent(path) {
-  const data = await ghFetch(`/repos/${REPO_OWNER}/${REPO_NAME}/contents/${path}?ref=${defaultBranch}`);
-  return {
-    content: decodeURIComponent(escape(atob(data.content.replace(/\n/g,'')))),
-    sha: data.sha
-  };
+// ============================================================
+//  IDENTIFIER — KECERDASAN MENENTUKAN TIPE HALAMAN
+//  Multi-signal, tidak hanya nama file
+// ============================================================
+function identifyPageType(info) {
+    const { normPath, title, h1, canonical, hasAudio, hasYtIframe,
+            hasQlEditor, hasRedirect, hasDbJs, hasArticleGrid,
+            description, bodyText, ogImage } = info;
+
+    const titleLow = title.toLowerCase();
+    const h1Low    = h1.toLowerCase();
+    const pathLow  = normPath.toLowerCase();
+    const canonLow = canonical.toLowerCase();
+    const descLow  = description.toLowerCase();
+
+    // ── LYRIC PAGE ──────────────────────────────────────────
+    // Signal: path /lyric/*/index.html + .ql-editor + title prefix "Lirik"
+    if (
+        (pathLow.includes('/lyric/') && pathLow.endsWith('/index.html')) ||
+        (hasQlEditor && (titleLow.startsWith('lirik') || h1Low.includes('lirik'))) ||
+        canonLow.includes('/lyric/')
+    ) {
+        return {
+            type: 'LyricPage',
+            label: '🎵 Lyric Page',
+            schemaTypes: ['MusicRecording', 'CreativeWork'],
+            confidence: 'HIGH'
+        };
+    }
+
+    // ── TRACK PAGE (REDIRECT) ────────────────────────────────
+    // Signal: path /track/ + window.location.href redirect + h1 prefix "Lagu SAI Roots"
+    if (
+        pathLow.includes('/track/') ||
+        (hasRedirect && canonLow.includes('/track/')) ||
+        (h1Low.includes('lagu sai roots') && hasRedirect)
+    ) {
+        return {
+            type: 'TrackPage',
+            label: '🎧 Track Page (Redirect)',
+            schemaTypes: ['MusicRecording', 'AudioObject'],
+            confidence: 'HIGH'
+        };
+    }
+
+    // ── COVER PAGE (REDIRECT) ────────────────────────────────
+    // Signal: path /cover/ + redirect + og:image ytimg
+    if (
+        pathLow.includes('/cover/') ||
+        (hasRedirect && canonLow.includes('/cover/')) ||
+        (ogImage.includes('ytimg.com') && hasRedirect && pathLow.includes('/cover/'))
+    ) {
+        return {
+            type: 'CoverPage',
+            label: '📹 Cover Video Page (Redirect)',
+            schemaTypes: ['VideoObject', 'MusicRecording'],
+            confidence: 'HIGH'
+        };
+    }
+
+    // ── ARTICLE PAGE ─────────────────────────────────────────
+    // Signal: path /article/ + <article> tag atau title kata artikel/story
+    if (
+        pathLow.includes('/article/') ||
+        canonLow.includes('/article/') ||
+        (!!doc?.querySelector?.('article') && pathLow.includes('/article/'))
+    ) {
+        return {
+            type: 'ArticlePage',
+            label: '📰 Article Page',
+            schemaTypes: ['Article', 'BlogPosting'],
+            confidence: 'HIGH'
+        };
+    }
+
+    // ── HOMEPAGE ─────────────────────────────────────────────
+    // Signal: normPath = /index.html atau /, ada articles-grid + database.js
+    if (
+        normPath === '/index.html' ||
+        normPath === '/' ||
+        (hasArticleGrid && hasDbJs && (titleLow.includes('official website') || titleLow.includes('sai roots')))
+    ) {
+        return {
+            type: 'HomePage',
+            label: '🏠 Homepage',
+            schemaTypes: ['WebSite', 'MusicGroup', 'WebPage'],
+            confidence: 'HIGH'
+        };
+    }
+
+    // ── DISCOGRAPHY LIST ─────────────────────────────────────
+    if (
+        pathLow.includes('discography') ||
+        titleLow.includes('discography') ||
+        h1Low.includes('discography') ||
+        titleLow.includes('diskografi')
+    ) {
+        return {
+            type: 'DiscographyPage',
+            label: '💿 Discography List',
+            schemaTypes: ['MusicPlaylist', 'ItemList', 'CollectionPage'],
+            confidence: 'HIGH'
+        };
+    }
+
+    // ── LYRIC LIST ───────────────────────────────────────────
+    if (
+        (pathLow.includes('lyric') && !pathLow.includes('/lyric/')) ||
+        titleLow.includes('daftar lirik') ||
+        h1Low.includes('daftar lirik') ||
+        titleLow.includes('all lyric')
+    ) {
+        return {
+            type: 'LyricListPage',
+            label: '📜 Lyric List Page',
+            schemaTypes: ['CollectionPage', 'ItemList'],
+            confidence: 'HIGH'
+        };
+    }
+
+    // ── VIDEO COVER LIST ─────────────────────────────────────
+    if (
+        pathLow.includes('video_cover') ||
+        pathLow.includes('video-cover') ||
+        titleLow.includes('cover') ||
+        h1Low.includes('cover video') ||
+        h1Low.includes('video cover')
+    ) {
+        return {
+            type: 'VideoCoverListPage',
+            label: '🎬 Video Cover List',
+            schemaTypes: ['CollectionPage', 'ItemList', 'VideoObject'],
+            confidence: 'HIGH'
+        };
+    }
+
+    // ── ABOUT PAGE ───────────────────────────────────────────
+    if (
+        pathLow.includes('/about') ||
+        titleLow.includes('about') ||
+        titleLow.includes('tentang') ||
+        h1Low.includes('about')
+    ) {
+        return {
+            type: 'AboutPage',
+            label: 'ℹ️ About Page',
+            schemaTypes: ['AboutPage', 'MusicGroup'],
+            confidence: 'HIGH'
+        };
+    }
+
+    // ── CONTACT PAGE ─────────────────────────────────────────
+    if (
+        pathLow.includes('/contact') ||
+        titleLow.includes('contact') ||
+        titleLow.includes('kontak') ||
+        h1Low.includes('contact')
+    ) {
+        return {
+            type: 'ContactPage',
+            label: '📬 Contact Page',
+            schemaTypes: ['ContactPage'],
+            confidence: 'HIGH'
+        };
+    }
+
+    // ── PRIVACY PAGE ─────────────────────────────────────────
+    if (
+        pathLow.includes('/privacy') ||
+        titleLow.includes('privacy') ||
+        titleLow.includes('kebijakan') ||
+        h1Low.includes('privacy')
+    ) {
+        return {
+            type: 'PrivacyPage',
+            label: '🔒 Privacy Policy',
+            schemaTypes: ['WebPage'],
+            confidence: 'HIGH'
+        };
+    }
+
+    // ── CREDITS PAGE ─────────────────────────────────────────
+    if (
+        pathLow.includes('/credits') ||
+        titleLow.includes('credits') ||
+        titleLow.includes('kredit') ||
+        h1Low.includes('credits')
+    ) {
+        return {
+            type: 'CreditsPage',
+            label: '🙏 Credits Page',
+            schemaTypes: ['WebPage'],
+            confidence: 'MEDIUM'
+        };
+    }
+
+    // ── PROFIL AHMAD SUPEMBRI ────────────────────────────────
+    if (
+        pathLow.includes('profil_ahmad') ||
+        pathLow.includes('profil-ahmad') ||
+        titleLow.includes('ahmad supembri') ||
+        h1Low.includes('ahmad supembri')
+    ) {
+        return {
+            type: 'ProfilePage',
+            label: '👤 Profile Page (Ahmad Supembri)',
+            schemaTypes: ['ProfilePage', 'Person'],
+            confidence: 'HIGH'
+        };
+    }
+
+    // ── FALLBACK ─────────────────────────────────────────────
+    return {
+        type: 'GenericWebPage',
+        label: '📄 Generic Web Page',
+        schemaTypes: ['WebPage'],
+        confidence: 'LOW'
+    };
 }
 
-async function getAllHTMLFiles(treeSHA) {
-  const data = await ghFetch(`/repos/${REPO_OWNER}/${REPO_NAME}/git/trees/${treeSHA}?recursive=1`);
-  return data.tree
-    .filter(f => f.type === 'blob' && f.path.endsWith('.html'))
-    .filter(f => !isAdminPage(f.path));
-}
+// ============================================================
+//  SCHEMA GENERATOR — BUAT JSON-LD PER TIPE
+// ============================================================
+function generateSchemaContent(pageInfo, pageType) {
+    const { title, description, canonical, ogImage, h1, normPath } = pageInfo;
+    const pageUrl = canonical || (MASTER_DATA.siteUrl + normPath.replace('/index.html', '').replace('.html', ''));
+    
+    // Judul bersih (strip " | SAI Roots" dll)
+    const cleanTitle = title.replace(/\s*[\|–-]\s*(SAI Roots.*)?$/i, '').trim() || h1;
 
-function isAdminPage(path) {
-  return path.startsWith('admin_pages/') || path.includes('/admin_pages/');
-}
+    // Base graph yang SELALU ada (referensi ke entity lama — TIDAK DUPLIKAT)
+    const baseGraph = [
+        { "@id": MASTER_DATA.websiteId },
+        { "@id": MASTER_DATA.orgId }
+    ];
 
-// =============================================
-// AUTH
-// =============================================
-async function connectGitHub() {
-  TOKEN = document.getElementById('tokenInput').value.trim();
-  if (!TOKEN) return alert('Masukkan GitHub Token dulu!');
-  try {
-    const repo = await ghFetch(`/repos/${REPO_OWNER}/${REPO_NAME}`);
-    defaultBranch = repo.default_branch || 'main';
-    document.getElementById('authCard').style.opacity = '0.5';
-    document.getElementById('authCard').style.pointerEvents = 'none';
-    document.getElementById('repoCard').style.display = 'block';
-    document.getElementById('repoInfo').innerHTML = `
-      <div class="info-chip">Repo: <b>${repo.full_name}</b></div>
-      <div class="info-chip">Branch: <b>${defaultBranch}</b></div>
-      <div class="info-chip">Stars: <b>${repo.stargazers_count}</b></div>
-      <div class="info-chip">Status: <b style="color:var(--success)">✓ Connected</b></div>
-    `;
-    log('info', `Connected to ${repo.full_name} @ ${defaultBranch}`);
-  } catch (e) {
-    alert('Gagal connect: ' + e.message);
-  }
-}
+    let specificSchema = [];
 
-function resetAuth() {
-  TOKEN = ''; location.reload();
-}
+    switch (pageType.type) {
 
-// =============================================
-// SCAN FILES
-// =============================================
-async function scanFiles() {
-  document.getElementById('scanBtn').disabled = true;
-  document.getElementById('scanBtn').textContent = 'Scanning...';
-  try {
-    const repoData = await ghFetch(`/repos/${REPO_OWNER}/${REPO_NAME}/branches/${defaultBranch}`);
-    const treeSHA = repoData.commit.commit.tree.sha;
-    htmlFiles = await getAllHTMLFiles(treeSHA);
+        case 'HomePage':
+            specificSchema = [{
+                "@type": "WebPage",
+                "@id": `${pageUrl}#webpage`,
+                "url": pageUrl,
+                "name": cleanTitle || MASTER_DATA.siteName,
+                "description": description,
+                "isPartOf": { "@id": MASTER_DATA.websiteId },
+                "about": { "@id": MASTER_DATA.orgId },
+                "breadcrumb": {
+                    "@type": "BreadcrumbList",
+                    "itemListElement": [{
+                        "@type": "ListItem",
+                        "position": 1,
+                        "name": "Home",
+                        "item": MASTER_DATA.siteUrl
+                    }]
+                }
+            }];
+            break;
 
-    document.getElementById('fileList').style.display = 'block';
-    const grid = document.getElementById('fileGrid');
-    grid.innerHTML = '';
-    document.getElementById('fileCount').textContent =
-      `${htmlFiles.length} file ditemukan — /admin_pages dilewati otomatis`;
-
-    htmlFiles.forEach(f => {
-      const type = detectPageType(f.path, '');
-      grid.innerHTML += `
-        <div class="file-item" id="fi-${f.path.replace(/\//g,'-')}">
-          <span class="file-item-path">${f.path}</span>
-          <span class="file-item-type type-${type.cssClass}">${type.label}</span>
-          <span class="file-item-status">○</span>
-        </div>`;
-    });
-  } catch(e) {
-    alert('Gagal scan: ' + e.message);
-  }
-  document.getElementById('scanBtn').disabled = false;
-  document.getElementById('scanBtn').textContent = 'Scan HTML Files';
-}
-
-function reScan() {
-  document.getElementById('fileList').style.display = 'none';
-  scanFiles();
-}
-
-// =============================================
-// PAGE TYPE DETECTION (Cerdas)
-// =============================================
-function detectPageType(filePath, htmlContent) {
-  const p = filePath.toLowerCase();
-  const h = htmlContent.toLowerCase();
-  const fname = p.split('/').pop().replace('.html','');
-
-  // Cek title/meta dari content
-  const titleMatch = htmlContent.match(/<title[^>]*>([^<]+)<\/title>/i);
-  const title = titleMatch ? titleMatch[1].toLowerCase() : '';
-  const metaDesc = (htmlContent.match(/<meta[^>]*name=["']description["'][^>]*content=["']([^"']+)["']/i) || [])[1] || '';
-
-  const combined = `${fname} ${title} ${metaDesc} ${h.slice(0,3000)}`;
-
-  if (/^index$/.test(fname) || /home/.test(title)) {
-    return { type: 'WebPage', subtype: 'homepage', label: 'Homepage', cssClass: 'homepage',
-      schemaType: 'WebPage', breadcrumb: false };
-  }
-  if (/discograph|album|release|musik|music|songs?|lagu/.test(combined)) {
-    return { type: 'CollectionPage', subtype: 'music', label: 'Music', cssClass: 'music',
-      schemaType: 'CollectionPage', topic: 'music' };
-  }
-  if (/single|track|recording/.test(combined) && /music|audio|song|lagu/.test(combined)) {
-    return { type: 'MusicRecording', subtype: 'track', label: 'Track', cssClass: 'music',
-      schemaType: 'MusicRecording', topic: 'music' };
-  }
-  if (/about|tentang|profil|profile|bio/.test(combined)) {
-    return { type: 'AboutPage', subtype: 'about', label: 'About', cssClass: 'about',
-      schemaType: 'AboutPage' };
-  }
-  if (/contact|kontak|hubungi/.test(combined)) {
-    return { type: 'ContactPage', subtype: 'contact', label: 'Contact', cssClass: 'contact',
-      schemaType: 'ContactPage' };
-  }
-  if (/tour|gig|event|concert|show|jadwal|ticket/.test(combined)) {
-    return { type: 'EventPage', subtype: 'events', label: 'Events', cssClass: 'music',
-      schemaType: 'EventPage', topic: 'events' };
-  }
-  if (/shop|store|merch|toko|produk|product/.test(combined)) {
-    return { type: 'ItemListPage', subtype: 'shop', label: 'Shop', cssClass: 'contact',
-      schemaType: 'ItemListPage', topic: 'shop' };
-  }
-  if (/blog|news|artikel|press|berita/.test(combined)) {
-    return { type: 'Blog', subtype: 'blog', label: 'Blog', cssClass: 'about',
-      schemaType: 'Blog', topic: 'blog' };
-  }
-  if (/video|youtube|clip|mv/.test(combined)) {
-    return { type: 'VideoGallery', subtype: 'video', label: 'Video', cssClass: 'music',
-      schemaType: 'CollectionPage', topic: 'video' };
-  }
-  if (/gallery|galeri|photo|foto/.test(combined)) {
-    return { type: 'ImageGallery', subtype: 'gallery', label: 'Gallery', cssClass: 'about',
-      schemaType: 'ImageGallery', topic: 'gallery' };
-  }
-  if (/lyric|lirik/.test(combined)) {
-    return { type: 'LyricsPage', subtype: 'lyrics', label: 'Lyrics', cssClass: 'music',
-      schemaType: 'WebPage', topic: 'lyrics' };
-  }
-  if (/link|bio\.link|fanlink|smartlink/.test(combined) || fname === 'links') {
-    return { type: 'ProfilePage', subtype: 'links', label: 'Links', cssClass: 'homepage',
-      schemaType: 'ProfilePage' };
-  }
-  if (/privacy|kebijakan/.test(combined)) {
-    return { type: 'WebPage', subtype: 'policy', label: 'Policy', cssClass: 'generic',
-      schemaType: 'WebPage' };
-  }
-  if (/404|not.?found/.test(combined)) {
-    return { type: 'WebPage', subtype: '404', label: '404', cssClass: 'generic',
-      schemaType: 'WebPage' };
-  }
-
-  return { type: 'WebPage', subtype: 'generic', label: 'WebPage', cssClass: 'generic',
-    schemaType: 'WebPage' };
-}
-
-// =============================================
-// SCHEMA BUILDER (per halaman)
-// =============================================
-function buildSchemaJS(filePath, pageType, htmlContent) {
-  const slug = filePath.replace(/\.html$/, '').replace(/^index$/, '');
-  const pageUrl = slug
-    ? `${BASE_URL}/${slug}/`
-    : `${BASE_URL}/`;
-
-  // Extract page title from HTML
-  const titleMatch = htmlContent.match(/<title[^>]*>([^<]+)<\/title>/i);
-  const rawTitle = titleMatch ? titleMatch[1].trim() : 'SAI Roots Music';
-  const metaDescMatch = htmlContent.match(/<meta[^>]*name=["']description["'][^>]*content=["']([^"']+)["']/i);
-  const pageDesc = metaDescMatch ? metaDescMatch[1].trim() : BASE_SCHEMA_NODES[1].description;
-
-  // Build page-specific node
-  let pageNode = null;
-
-  switch(pageType.subtype) {
-    case 'homepage':
-      pageNode = {
-        "@type": "WebPage",
-        "@id": `${BASE_URL}/#webpage`,
-        "url": pageUrl,
-        "name": rawTitle,
-        "description": pageDesc,
-        "isPartOf": { "@id": `${BASE_URL}/#website` },
-        "about": { "@id": `${BASE_URL}/#organization` },
-        "breadcrumb": {
-          "@type": "BreadcrumbList",
-          "itemListElement": [{
-            "@type": "ListItem", "position": 1,
-            "name": "Home", "item": `${BASE_URL}/`
-          }]
+        case 'LyricPage': {
+            // Ekstrak slug dari path: /lyric/slug/index.html → slug
+            const lyricSlug = normPath.split('/').filter(Boolean)[1] || '';
+            const songTitle = cleanTitle.replace(/^lirik\s+/i, '').trim();
+            specificSchema = [{
+                "@type": "MusicRecording",
+                "@id": `${pageUrl}#recording`,
+                "name": songTitle,
+                "url": pageUrl,
+                "description": description,
+                "byArtist": { "@id": MASTER_DATA.orgId },
+                "inAlbum": {
+                    "@type": "MusicAlbum",
+                    "byArtist": { "@id": MASTER_DATA.orgId }
+                }
+            }, {
+                "@type": "CreativeWork",
+                "@id": `${pageUrl}#lyrics`,
+                "name": `Lirik ${songTitle}`,
+                "url": pageUrl,
+                "about": { "@id": `${pageUrl}#recording` },
+                "author": { "@id": MASTER_DATA.founderId },
+                "inLanguage": "id",
+                "breadcrumb": {
+                    "@type": "BreadcrumbList",
+                    "itemListElement": [
+                        { "@type": "ListItem", "position": 1, "name": "Home", "item": MASTER_DATA.siteUrl },
+                        { "@type": "ListItem", "position": 2, "name": "Lyric", "item": `${MASTER_DATA.siteUrl}/lyric` },
+                        { "@type": "ListItem", "position": 3, "name": `Lirik ${songTitle}`, "item": pageUrl }
+                    ]
+                }
+            }];
+            break;
         }
-      };
-      break;
 
-    case 'music':
-      pageNode = {
-        "@type": "CollectionPage",
-        "@id": `${pageUrl}#webpage`,
-        "url": pageUrl,
-        "name": rawTitle,
-        "description": pageDesc,
-        "isPartOf": { "@id": `${BASE_URL}/#website` },
-        "about": { "@id": `${BASE_URL}/#organization` },
-        "breadcrumb": {
-          "@type": "BreadcrumbList",
-          "itemListElement": [
-            { "@type": "ListItem", "position": 1, "name": "Home", "item": `${BASE_URL}/` },
-            { "@type": "ListItem", "position": 2, "name": rawTitle, "item": pageUrl }
-          ]
+        case 'TrackPage': {
+            const trackSlug = normPath.split('/').filter(Boolean)[1]?.replace('.html','') || '';
+            const trackTitle = cleanTitle.replace(/\s*-\s*SAI Roots.*/i,'').replace(/\s*\|.*$/,'').trim();
+            specificSchema = [{
+                "@type": "MusicRecording",
+                "@id": `${pageUrl}#recording`,
+                "name": trackTitle,
+                "url": pageUrl,
+                "description": description,
+                "image": ogImage || MASTER_DATA.logo,
+                "byArtist": { "@id": MASTER_DATA.orgId },
+                "recordingOf": {
+                    "@type": "MusicComposition",
+                    "name": trackTitle,
+                    "composer": { "@id": MASTER_DATA.founderId }
+                },
+                "breadcrumb": {
+                    "@type": "BreadcrumbList",
+                    "itemListElement": [
+                        { "@type": "ListItem", "position": 1, "name": "Home", "item": MASTER_DATA.siteUrl },
+                        { "@type": "ListItem", "position": 2, "name": "Discography", "item": `${MASTER_DATA.siteUrl}/discography` },
+                        { "@type": "ListItem", "position": 3, "name": trackTitle, "item": pageUrl }
+                    ]
+                }
+            }];
+            break;
         }
-      };
-      break;
 
-    case 'track':
-      pageNode = {
-        "@type": "MusicRecording",
-        "@id": `${pageUrl}#recording`,
-        "url": pageUrl,
-        "name": rawTitle,
-        "description": pageDesc,
-        "byArtist": { "@id": `${BASE_URL}/#organization` },
-        "inLanguage": "id",
-        "breadcrumb": {
-          "@type": "BreadcrumbList",
-          "itemListElement": [
-            { "@type": "ListItem", "position": 1, "name": "Home", "item": `${BASE_URL}/` },
-            { "@type": "ListItem", "position": 2, "name": rawTitle, "item": pageUrl }
-          ]
+        case 'CoverPage': {
+            const coverTitle = cleanTitle.replace(/\s*\|\s*SAI Roots.*/i,'').trim();
+            // Cek apakah ada YouTube video ID dari ogImage
+            const ytMatch = ogImage.match(/\/vi\/([^\/]+)\//);
+            const ytVideoId = ytMatch ? ytMatch[1] : null;
+            specificSchema = [{
+                "@type": "VideoObject",
+                "@id": `${pageUrl}#video`,
+                "name": coverTitle,
+                "url": pageUrl,
+                "description": description,
+                "thumbnailUrl": ogImage || '',
+                "embedUrl": ytVideoId ? `https://www.youtube.com/embed/${ytVideoId}` : '',
+                "uploadDate": new Date().toISOString().split('T')[0],
+                "author": { "@id": MASTER_DATA.orgId },
+                "about": {
+                    "@type": "MusicRecording",
+                    "name": coverTitle,
+                    "byArtist": { "@id": MASTER_DATA.orgId }
+                },
+                "breadcrumb": {
+                    "@type": "BreadcrumbList",
+                    "itemListElement": [
+                        { "@type": "ListItem", "position": 1, "name": "Home", "item": MASTER_DATA.siteUrl },
+                        { "@type": "ListItem", "position": 2, "name": "Video Cover", "item": `${MASTER_DATA.siteUrl}/video_cover` },
+                        { "@type": "ListItem", "position": 3, "name": coverTitle, "item": pageUrl }
+                    ]
+                }
+            }];
+            break;
         }
-      };
-      break;
 
-    case 'about':
-      pageNode = {
-        "@type": "AboutPage",
-        "@id": `${pageUrl}#webpage`,
-        "url": pageUrl,
-        "name": rawTitle,
-        "description": pageDesc,
-        "isPartOf": { "@id": `${BASE_URL}/#website` },
-        "about": { "@id": `${BASE_URL}/#organization` },
-        "breadcrumb": {
-          "@type": "BreadcrumbList",
-          "itemListElement": [
-            { "@type": "ListItem", "position": 1, "name": "Home", "item": `${BASE_URL}/` },
-            { "@type": "ListItem", "position": 2, "name": rawTitle, "item": pageUrl }
-          ]
+        case 'ArticlePage': {
+            const articleSlug = normPath.split('/').filter(Boolean)[1]?.replace('.html','') || '';
+            specificSchema = [{
+                "@type": ["Article", "BlogPosting"],
+                "@id": `${pageUrl}#article`,
+                "headline": cleanTitle,
+                "url": pageUrl,
+                "description": description,
+                "image": ogImage || MASTER_DATA.logo,
+                "author": { "@id": MASTER_DATA.founderId },
+                "publisher": { "@id": MASTER_DATA.orgId },
+                "inLanguage": "id",
+                "breadcrumb": {
+                    "@type": "BreadcrumbList",
+                    "itemListElement": [
+                        { "@type": "ListItem", "position": 1, "name": "Home", "item": MASTER_DATA.siteUrl },
+                        { "@type": "ListItem", "position": 2, "name": "Article", "item": `${MASTER_DATA.siteUrl}/article` },
+                        { "@type": "ListItem", "position": 3, "name": cleanTitle, "item": pageUrl }
+                    ]
+                }
+            }];
+            break;
         }
-      };
-      break;
 
-    case 'contact':
-      pageNode = {
-        "@type": "ContactPage",
-        "@id": `${pageUrl}#webpage`,
-        "url": pageUrl,
-        "name": rawTitle,
-        "description": pageDesc,
-        "isPartOf": { "@id": `${BASE_URL}/#website` },
-        "breadcrumb": {
-          "@type": "BreadcrumbList",
-          "itemListElement": [
-            { "@type": "ListItem", "position": 1, "name": "Home", "item": `${BASE_URL}/` },
-            { "@type": "ListItem", "position": 2, "name": rawTitle, "item": pageUrl }
-          ]
-        }
-      };
-      break;
+        case 'DiscographyPage':
+            specificSchema = [{
+                "@type": ["CollectionPage", "MusicPlaylist"],
+                "@id": `${pageUrl}#discography`,
+                "name": cleanTitle || "SAI Roots Discography",
+                "url": pageUrl,
+                "description": description || "Daftar lengkap diskografi SAI Roots.",
+                "about": { "@id": MASTER_DATA.orgId },
+                "breadcrumb": {
+                    "@type": "BreadcrumbList",
+                    "itemListElement": [
+                        { "@type": "ListItem", "position": 1, "name": "Home", "item": MASTER_DATA.siteUrl },
+                        { "@type": "ListItem", "position": 2, "name": "Discography", "item": pageUrl }
+                    ]
+                }
+            }];
+            break;
 
-    case 'events':
-      pageNode = {
-        "@type": "EventPage",
-        "@id": `${pageUrl}#webpage`,
-        "url": pageUrl,
-        "name": rawTitle,
-        "description": pageDesc,
-        "isPartOf": { "@id": `${BASE_URL}/#website` },
-        "about": { "@id": `${BASE_URL}/#organization` },
-        "breadcrumb": {
-          "@type": "BreadcrumbList",
-          "itemListElement": [
-            { "@type": "ListItem", "position": 1, "name": "Home", "item": `${BASE_URL}/` },
-            { "@type": "ListItem", "position": 2, "name": rawTitle, "item": pageUrl }
-          ]
-        }
-      };
-      break;
+        case 'LyricListPage':
+            specificSchema = [{
+                "@type": "CollectionPage",
+                "@id": `${pageUrl}#lyriclist`,
+                "name": cleanTitle || "SAI Roots Lyrics",
+                "url": pageUrl,
+                "description": description || "Daftar lengkap lirik lagu SAI Roots.",
+                "about": { "@id": MASTER_DATA.orgId },
+                "breadcrumb": {
+                    "@type": "BreadcrumbList",
+                    "itemListElement": [
+                        { "@type": "ListItem", "position": 1, "name": "Home", "item": MASTER_DATA.siteUrl },
+                        { "@type": "ListItem", "position": 2, "name": "Lyric", "item": pageUrl }
+                    ]
+                }
+            }];
+            break;
 
-    case 'blog':
-      pageNode = {
-        "@type": "Blog",
-        "@id": `${pageUrl}#webpage`,
-        "url": pageUrl,
-        "name": rawTitle,
-        "description": pageDesc,
-        "isPartOf": { "@id": `${BASE_URL}/#website` },
-        "author": { "@id": `${BASE_URL}/#founder` },
-        "breadcrumb": {
-          "@type": "BreadcrumbList",
-          "itemListElement": [
-            { "@type": "ListItem", "position": 1, "name": "Home", "item": `${BASE_URL}/` },
-            { "@type": "ListItem", "position": 2, "name": rawTitle, "item": pageUrl }
-          ]
-        }
-      };
-      break;
+        case 'VideoCoverListPage':
+            specificSchema = [{
+                "@type": "CollectionPage",
+                "@id": `${pageUrl}#coverlist`,
+                "name": cleanTitle || "SAI Roots Video Covers",
+                "url": pageUrl,
+                "description": description || "Koleksi video cover dari SAI Roots.",
+                "about": { "@id": MASTER_DATA.orgId },
+                "breadcrumb": {
+                    "@type": "BreadcrumbList",
+                    "itemListElement": [
+                        { "@type": "ListItem", "position": 1, "name": "Home", "item": MASTER_DATA.siteUrl },
+                        { "@type": "ListItem", "position": 2, "name": "Video Cover", "item": pageUrl }
+                    ]
+                }
+            }];
+            break;
 
-    case 'links':
-      pageNode = {
-        "@type": "ProfilePage",
-        "@id": `${pageUrl}#webpage`,
-        "url": pageUrl,
-        "name": rawTitle,
-        "description": pageDesc,
-        "isPartOf": { "@id": `${BASE_URL}/#website` },
-        "about": { "@id": `${BASE_URL}/#organization` }
-      };
-      break;
+        case 'AboutPage':
+            specificSchema = [{
+                "@type": "AboutPage",
+                "@id": `${pageUrl}#aboutpage`,
+                "name": cleanTitle || "About SAI Roots",
+                "url": pageUrl,
+                "description": description,
+                "about": { "@id": MASTER_DATA.orgId },
+                "breadcrumb": {
+                    "@type": "BreadcrumbList",
+                    "itemListElement": [
+                        { "@type": "ListItem", "position": 1, "name": "Home", "item": MASTER_DATA.siteUrl },
+                        { "@type": "ListItem", "position": 2, "name": "About", "item": pageUrl }
+                    ]
+                }
+            }];
+            break;
 
-    case 'shop':
-      pageNode = {
-        "@type": "ItemListPage",
-        "@id": `${pageUrl}#webpage`,
-        "url": pageUrl,
-        "name": rawTitle,
-        "description": pageDesc,
-        "isPartOf": { "@id": `${BASE_URL}/#website` },
-        "breadcrumb": {
-          "@type": "BreadcrumbList",
-          "itemListElement": [
-            { "@type": "ListItem", "position": 1, "name": "Home", "item": `${BASE_URL}/` },
-            { "@type": "ListItem", "position": 2, "name": rawTitle, "item": pageUrl }
-          ]
-        }
-      };
-      break;
+        case 'ContactPage':
+            specificSchema = [{
+                "@type": "ContactPage",
+                "@id": `${pageUrl}#contactpage`,
+                "name": cleanTitle || "Contact SAI Roots",
+                "url": pageUrl,
+                "description": description,
+                "breadcrumb": {
+                    "@type": "BreadcrumbList",
+                    "itemListElement": [
+                        { "@type": "ListItem", "position": 1, "name": "Home", "item": MASTER_DATA.siteUrl },
+                        { "@type": "ListItem", "position": 2, "name": "Contact", "item": pageUrl }
+                    ]
+                }
+            }];
+            break;
 
-    default:
-      pageNode = {
-        "@type": "WebPage",
-        "@id": `${pageUrl}#webpage`,
-        "url": pageUrl,
-        "name": rawTitle,
-        "description": pageDesc,
-        "isPartOf": { "@id": `${BASE_URL}/#website` },
-        "breadcrumb": {
-          "@type": "BreadcrumbList",
-          "itemListElement": [
-            { "@type": "ListItem", "position": 1, "name": "Home", "item": `${BASE_URL}/` },
-            { "@type": "ListItem", "position": 2, "name": rawTitle, "item": pageUrl }
-          ]
-        }
-      };
-  }
+        case 'PrivacyPage':
+            specificSchema = [{
+                "@type": "WebPage",
+                "@id": `${pageUrl}#privacypage`,
+                "name": cleanTitle || "Privacy Policy - SAI Roots",
+                "url": pageUrl,
+                "description": description,
+                "breadcrumb": {
+                    "@type": "BreadcrumbList",
+                    "itemListElement": [
+                        { "@type": "ListItem", "position": 1, "name": "Home", "item": MASTER_DATA.siteUrl },
+                        { "@type": "ListItem", "position": 2, "name": "Privacy Policy", "item": pageUrl }
+                    ]
+                }
+            }];
+            break;
 
-  const graph = [...BASE_SCHEMA_NODES, pageNode];
+        case 'CreditsPage':
+            specificSchema = [{
+                "@type": "WebPage",
+                "@id": `${pageUrl}#creditspage`,
+                "name": cleanTitle || "Credits - SAI Roots",
+                "url": pageUrl,
+                "description": description,
+                "breadcrumb": {
+                    "@type": "BreadcrumbList",
+                    "itemListElement": [
+                        { "@type": "ListItem", "position": 1, "name": "Home", "item": MASTER_DATA.siteUrl },
+                        { "@type": "ListItem", "position": 2, "name": "Credits", "item": pageUrl }
+                    ]
+                }
+            }];
+            break;
 
-  const schemaData = {
-    "@context": "https://schema.org",
-    "@graph": graph
-  };
+        case 'ProfilePage':
+            specificSchema = [{
+                "@type": "ProfilePage",
+                "@id": `${pageUrl}#profilepage`,
+                "name": cleanTitle || "Ahmad Supembri - SAI Roots",
+                "url": pageUrl,
+                "description": description,
+                "about": { "@id": MASTER_DATA.founderId },
+                "breadcrumb": {
+                    "@type": "BreadcrumbList",
+                    "itemListElement": [
+                        { "@type": "ListItem", "position": 1, "name": "Home", "item": MASTER_DATA.siteUrl },
+                        { "@type": "ListItem", "position": 2, "name": "Ahmad Supembri", "item": pageUrl }
+                    ]
+                }
+            }];
+            break;
 
-  return `// Schema.js — ${filePath} — SAI Roots Music
-// Auto-generated by Auto Schema Generator
-// Page Type: ${pageType.type} (${pageType.subtype})
-// URL: ${pageUrl}
+        default:
+            specificSchema = [{
+                "@type": "WebPage",
+                "@id": `${pageUrl}#webpage`,
+                "name": cleanTitle,
+                "url": pageUrl,
+                "description": description
+            }];
+    }
+
+    // FINAL SCHEMA — Referensi ke entity lama, schema baru per halaman
+    const schemaObj = {
+        "@context": "https://schema.org",
+        "@graph": specificSchema
+    };
+
+    // Bungkus jadi schema.js yang inject JSON-LD
+    return `// Schema spesifik untuk: ${normPath}
+// Tipe: ${pageType.label}
+// Generated by Auto Schema Generator - SAI Roots
+// JANGAN EDIT MANUAL — regenerate via /admin_pages/auto_schema.html
 (function() {
-  const schemaData = ${JSON.stringify(schemaData, null, 2)};
-
-  const script = document.createElement('script');
+  var schemaData = ${JSON.stringify(schemaObj, null, 2)};
+  var script = document.createElement('script');
   script.type = 'application/ld+json';
-  script.textContent = JSON.stringify(schemaData, null, 2);
-  document.head.insertBefore(script, document.head.firstChild);
-})();
-`;
+  script.textContent = JSON.stringify(schemaData);
+  document.head.appendChild(script);
+})();`;
 }
 
-// =============================================
-// INJECT SCRIPT TAG KE HTML
-// =============================================
+// ============================================================
+//  NAMING — TENTUKAN PATH SCHEMA
+//  /schema/nama-halaman/schema.js
+// ============================================================
+function getSchemaPath(filePath) {
+    // Normalisasi path jadi nama folder di /schema/
+    // /lyric/konsisten-kera-sakti/index.html → lyric-konsisten-kera-sakti
+    // /track/babylon-burn.html → track-babylon-burn
+    // index.html → index
+    let name = filePath
+        .replace(/^\//, '')       // hapus leading slash
+        .replace(/\/index\.html$/, '') // hapus /index.html
+        .replace(/\.html$/, '')   // hapus .html
+        .replace(/\//g, '-');     // slash jadi dash
+
+    if (!name || name === '') name = 'index';
+
+    return `schema/${name}/schema.js`;
+}
+
+// ============================================================
+//  INJECT TAG ke HTML
+// ============================================================
 function injectSchemaTag(htmlContent, schemaPath) {
-  const scriptTag = `<script src="/${schemaPath}"><\/script>`;
+    // Cek apakah sudah ada tag schema inject
+    const schemaTagRegex = /<script\s+src="\/schema\/[^"]+\/schema\.js"[^>]*><\/script>/;
 
-  // Cek apakah sudah ada schema tag dari folder /schema/
-  const existingPattern = /<script\s+src=["']\/schema\/[^"']+["'][^>]*><\/script>/gi;
-  if (existingPattern.test(htmlContent)) {
-    // Update yang sudah ada
-    return htmlContent.replace(existingPattern, scriptTag);
-  }
+    // Buat tag baru
+    const newTag = `<script src="/${schemaPath}"></script>`;
 
-  // Inject sebelum </head> jika ada, atau setelah <head>
-  if (/<\/head>/i.test(htmlContent)) {
-    return htmlContent.replace(/<\/head>/i, `  ${scriptTag}\n</head>`);
-  }
-  if (/<head[^>]*>/i.test(htmlContent)) {
-    return htmlContent.replace(/(<head[^>]*>)/i, `$1\n  ${scriptTag}`);
-  }
-  // Fallback: taruh di awal file
-  return scriptTag + '\n' + htmlContent;
+    if (schemaTagRegex.test(htmlContent)) {
+        // Update tag yang sudah ada
+        return htmlContent.replace(schemaTagRegex, newTag);
+    } else {
+        // Inject di baris pertama setelah <head>
+        return htmlContent.replace(/<head>/i, `<head>\n    ${newTag}`);
+    }
 }
 
-// =============================================
-// LOGGING
-// =============================================
-function log(type, msg) {
-  const box = document.getElementById('logBox');
-  box.style.display = 'block';
-  const now = new Date().toTimeString().slice(0,8);
-  const cls = { ok:'log-ok', skip:'log-skip', err:'log-err', info:'log-info', dim:'log-dim' }[type] || 'log-dim';
-  const icon = { ok:'✓', skip:'⟳', err:'✗', info:'→', dim:'·' }[type] || '·';
-  box.innerHTML += `<div class="log-line"><span class="log-time">${now}</span><span class="${cls}">${icon} ${msg}</span></div>`;
-  box.scrollTop = box.scrollHeight;
+// ============================================================
+//  GITHUB WRITE — Commit file ke repo
+// ============================================================
+async function commitFile(path, content, message) {
+    const { user, repo, branch, token } = getConfig();
+    if (!token) throw new Error('GitHub token diperlukan untuk write!');
+
+    const apiUrl = `https://api.github.com/repos/${user}/${repo}/contents/${path}`;
+
+    // Cek apakah file sudah ada (untuk dapat SHA)
+    let sha = null;
+    try {
+        const checkRes = await fetch(apiUrl, { headers: apiHeaders() });
+        if (checkRes.ok) {
+            const existing = await checkRes.json();
+            sha = existing.sha;
+        }
+    } catch(e) {}
+
+    const body = {
+        message,
+        content: btoa(unescape(encodeURIComponent(content))),
+        branch
+    };
+    if (sha) body.sha = sha;
+
+    const res = await fetch(apiUrl, {
+        method: 'PUT',
+        headers: { ...apiHeaders(), 'Content-Type': 'application/json' },
+        body: JSON.stringify(body)
+    });
+
+    if (!res.ok) {
+        const err = await res.json();
+        throw new Error(`Commit gagal: ${err.message}`);
+    }
+    return await res.json();
 }
 
-function setProgress(val, label) {
-  document.getElementById('progressFill').style.width = val + '%';
-  document.getElementById('progressLabel').textContent = label;
-}
+// ============================================================
+//  STEP 1: SCAN & IDENTIFIKASI
+// ============================================================
+async function startScan() {
+    scannedPages = [];
+    generatedSchemas = {};
 
-function markFileStatus(path, icon) {
-  const id = 'fi-' + path.replace(/\//g,'-');
-  const el = document.getElementById(id);
-  if (el) el.querySelector('.file-item-status').textContent = icon;
-}
+    document.getElementById('scan-results').classList.add('hidden');
+    document.getElementById('schema-preview').classList.add('hidden');
+    document.getElementById('btn-generate').disabled = true;
+    document.getElementById('btn-inject').disabled = true;
 
-// =============================================
-// MAIN: GENERATE & PUSH
-// =============================================
-async function startGenerate() {
-  if (!htmlFiles.length) return alert('Scan dulu!');
-  document.getElementById('generateBtn').disabled = true;
-  document.getElementById('progressSection').style.display = 'block';
-  stats = { processed: 0, schemaCreated: 0, htmlUpdated: 0, skipped: 0, errors: 0 };
-
-  const total = htmlFiles.length;
-  log('info', `Mulai proses ${total} file HTML...`);
-
-  for (let i = 0; i < htmlFiles.length; i++) {
-    const file = htmlFiles[i];
-    setProgress(Math.round((i / total) * 100), `[${i+1}/${total}] ${file.path}`);
+    log('Memulai scan repository...', 'info');
 
     try {
-      // 1. Ambil konten HTML
-      log('dim', `Fetching: ${file.path}`);
-      const { content: htmlContent, sha: htmlSHA } = await getFileContent(file.path);
+        log('Mengambil daftar file HTML dari GitHub API...', 'info');
+        const files = await getAllHtmlFiles('');
+        log(`Ditemukan ${files.length} file HTML (sudah exclude /admin_pages/)`, 'ok');
 
-      // 2. Deteksi tipe halaman
-      const pageType = detectPageType(file.path, htmlContent);
-      log('info', `${file.path} → detected as: ${pageType.type} (${pageType.subtype})`);
+        setProgress(10, 'Membaca & menganalisis konten...');
 
-      // Update badge di file list
-      const id = 'fi-' + file.path.replace(/\//g,'-');
-      const el = document.getElementById(id);
-      if (el) {
-        const badge = el.querySelector('.file-item-type');
-        badge.className = `file-item-type type-${pageType.cssClass}`;
-        badge.textContent = pageType.label;
-      }
+        const tbody = document.getElementById('scan-table-body');
+        tbody.innerHTML = '';
 
-      // 3. Build schema path
-      const baseName = file.path.replace(/\.html$/, '').replace(/\//g, '_');
-      const schemaPath = `schema/${baseName}/schema.js`;
+        for (let i = 0; i < files.length; i++) {
+            const file = files[i];
+            setProgress(10 + Math.round((i / files.length) * 80), `Membaca: ${file.path}`);
+            log(`Membaca: ${file.path}`, 'info');
 
-      // 4. Generate schema.js content
-      const schemaJSContent = buildSchemaJS(file.path, pageType, htmlContent);
+            try {
+                const html = await fetchRaw(file.download_url);
+                const info = parseHtmlInfo(html, file.path);
+                const pageType = identifyPageType(info);
+                const schemaPath = getSchemaPath(file.path);
 
-      // 5. Push schema.js ke repo
-      const existingSchemaSHA = await getFileSHA(schemaPath);
-      await pushFile(
-        schemaPath,
-        schemaJSContent,
-        `schema: auto-generate ${schemaPath} for ${file.path} [${pageType.type}]`,
-        existingSchemaSHA
-      );
-      log('ok', `Schema pushed: /${schemaPath}`);
-      stats.schemaCreated++;
+                scannedPages.push({ file, info, pageType, schemaPath, html });
 
-      // 6. Inject script tag ke HTML
-      const updatedHTML = injectSchemaTag(htmlContent, schemaPath);
+                // Render ke tabel
+                const confidenceColor = {
+                    HIGH: 'text-green-400',
+                    MEDIUM: 'text-yellow-400',
+                    LOW: 'text-red-400'
+                }[pageType.confidence] || 'text-gray-400';
 
-      // Push HTML yang sudah diupdate (hanya jika berubah)
-      if (updatedHTML !== htmlContent) {
-        await pushFile(
-          file.path,
-          updatedHTML,
-          `schema: inject schema tag into ${file.path}`,
-          htmlSHA
-        );
-        log('ok', `HTML updated: ${file.path}`);
-        stats.htmlUpdated++;
-      } else {
-        log('skip', `HTML unchanged (tag already present): ${file.path}`);
-        stats.skipped++;
-      }
+                const tr = document.createElement('tr');
+                tr.className = 'border-b border-white/5 hover:bg-white/3';
+                tr.innerHTML = `
+                    <td class="py-2 px-3 text-gray-300 font-mono">${file.path}</td>
+                    <td class="py-2 px-3">${pageType.label}</td>
+                    <td class="py-2 px-3 text-blue-300">${pageType.schemaTypes.join(', ')}</td>
+                    <td class="py-2 px-3 text-gray-500 font-mono text-xs">/${schemaPath}</td>
+                    <td class="py-2 px-3 ${confidenceColor} font-bold">${pageType.confidence}</td>
+                `;
+                tbody.appendChild(tr);
 
-      markFileStatus(file.path, '✓');
-      stats.processed++;
+            } catch(e) {
+                log(`ERROR baca ${file.path}: ${e.message}`, 'error');
+            }
+        }
+
+        setProgress(100, 'Scan selesai!');
+        document.getElementById('scan-results').classList.remove('hidden');
+        document.getElementById('btn-generate').disabled = false;
+        log(`✅ Scan selesai! ${scannedPages.length} halaman teridentifikasi.`, 'ok');
 
     } catch(e) {
-      log('err', `Error on ${file.path}: ${e.message}`);
-      markFileStatus(file.path, '✗');
-      stats.errors++;
+        log(`FATAL ERROR: ${e.message}`, 'error');
+        setProgress(0, 'Error');
+    }
+}
+
+// ============================================================
+//  STEP 2: GENERATE SCHEMA.JS
+// ============================================================
+async function startGenerate() {
+    if (scannedPages.length === 0) {
+        log('Jalankan Scan dulu!', 'warn');
+        return;
     }
 
-    // Rate limiting buffer
-    await new Promise(r => setTimeout(r, 400));
-  }
+    generatedSchemas = {};
+    document.getElementById('schema-preview').classList.add('hidden');
+    log('Mulai generate schema.js per halaman...', 'info');
 
-  setProgress(100, 'Selesai!');
-  log('ok', `Done. Schema: ${stats.schemaCreated} | HTML: ${stats.htmlUpdated} | Skip: ${stats.skipped} | Error: ${stats.errors}`);
-  showSummary();
+    const previewList = document.getElementById('schema-preview-list');
+    previewList.innerHTML = '';
+
+    for (let i = 0; i < scannedPages.length; i++) {
+        const page = scannedPages[i];
+        setProgress(Math.round((i / scannedPages.length) * 100), `Generate: ${page.file.path}`);
+
+        try {
+            const schemaContent = generateSchemaContent(page.info, page.pageType);
+            generatedSchemas[page.file.path] = {
+                schemaPath: page.schemaPath,
+                content: schemaContent,
+                page
+            };
+
+            // Preview
+            const div = document.createElement('div');
+            div.className = 'border border-white/10 p-4';
+            div.innerHTML = `
+                <div class="flex justify-between items-center mb-2">
+                    <span class="text-xs text-yellow-400 font-mono">/${page.schemaPath}</span>
+                    <span class="text-xs text-gray-500">${page.pageType.label}</span>
+                </div>
+                <pre class="text-xs text-gray-400 overflow-x-auto max-h-40 overflow-y-auto">${schemaContent.replace(/</g,'&lt;').replace(/>/g,'&gt;')}</pre>
+            `;
+            previewList.appendChild(div);
+
+            log(`✅ Generated: /${page.schemaPath}`, 'ok');
+        } catch(e) {
+            log(`ERROR generate ${page.file.path}: ${e.message}`, 'error');
+        }
+    }
+
+    setProgress(100, 'Generate selesai!');
+    document.getElementById('schema-preview').classList.remove('hidden');
+    document.getElementById('btn-inject').disabled = false;
+    log(`✅ Semua schema berhasil digenerate! Siap inject.`, 'ok');
 }
 
-function showSummary() {
-  document.getElementById('summarySection').style.display = 'block';
-  document.getElementById('summaryGrid').innerHTML = `
-    <div class="summary-stat"><div class="num">${stats.schemaCreated}</div><div class="lbl">Schema Created</div></div>
-    <div class="summary-stat"><div class="num">${stats.htmlUpdated}</div><div class="lbl">HTML Updated</div></div>
-    <div class="summary-stat"><div class="num">${stats.skipped}</div><div class="lbl">Skipped</div></div>
-    <div class="summary-stat"><div class="num" style="color:${stats.errors?'var(--error)':'var(--success)'}">${stats.errors}</div><div class="lbl">Errors</div></div>
-  `;
-  document.getElementById('summarySection').scrollIntoView({ behavior: 'smooth' });
+// ============================================================
+//  STEP 3: INJECT — Commit schema.js + update HTML
+// ============================================================
+async function startInject() {
+    if (Object.keys(generatedSchemas).length === 0) {
+        log('Generate schema dulu!', 'warn');
+        return;
+    }
+
+    const { token } = getConfig();
+    if (!token) {
+        log('ERROR: GitHub Token wajib diisi untuk inject!', 'error');
+        return;
+    }
+
+    log('Mulai inject — commit schema.js + update HTML...', 'info');
+
+    const keys = Object.keys(generatedSchemas);
+    for (let i = 0; i < keys.length; i++) {
+        const key = keys[i];
+        const { schemaPath, content, page } = generatedSchemas[key];
+        setProgress(Math.round((i / keys.length) * 100), `Inject: ${key}`);
+
+        try {
+            // 1. Commit /schema/nama/schema.js
+            log(`Commit: /${schemaPath}`, 'info');
+            await commitFile(
+                schemaPath,
+                content,
+                `[auto-schema] Generate schema for ${key}`
+            );
+            log(`✅ Schema committed: /${schemaPath}`, 'ok');
+
+            // 2. Update HTML — inject <script src="...">
+            const updatedHtml = injectSchemaTag(page.html, schemaPath);
+            log(`Inject tag ke HTML: ${key}`, 'info');
+            await commitFile(
+                key,
+                updatedHtml,
+                `[auto-schema] Inject schema tag to ${key}`
+            );
+            log(`✅ HTML updated: ${key}`, 'ok');
+
+        } catch(e) {
+            log(`ERROR inject ${key}: ${e.message}`, 'error');
+        }
+    }
+
+    setProgress(100, 'Inject selesai!');
+    log('🎉 SEMUA SELESAI! Schema ter-inject ke semua halaman.', 'ok');
+    log('Cek Google Search Console setelah deploy untuk validasi Rich Results.', 'info');
 }
 </script>
+
 </body>
 </html>
