@@ -1,269 +1,513 @@
 <!DOCTYPE html>
 <html lang="id">
 <head>
-  <meta charset="UTF-8">
-  <meta name="viewport" content="width=device-width, initial-scale=1.0">
-  <title>SAI Roots - Restore Code</title>
-  <script src="https://cdn.tailwindcss.com"></script>
-  <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.6.0/css/all.min.css">
-  <style>
-    body { font-family: 'Courier New', monospace; }
-    .terminal {
-      font-family: 'Courier New', monospace;
-      background: #000;
-      color: #00ff00;
-    }
-  </style>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>SairootsMusic Restore Tool</title>
+    <style>
+        :root {
+            --bg-color: #0d1117;
+            --text-color: #c9d1d9;
+            --accent-color: #58a6ff;
+            --success-color: #2ea043;
+            --danger-color: #da3633;
+            --terminal-bg: #000000;
+            --terminal-text: #00ff00;
+        }
+
+        body {
+            font-family: 'Courier New', Courier, monospace;
+            background-color: var(--bg-color);
+            color: var(--text-color);
+            margin: 0;
+            padding: 20px;
+            display: flex;
+            justify-content: center;
+            align-items: center;
+            min-height: 100vh;
+        }
+
+        .container {
+            width: 100%;
+            max-width: 800px;
+            background: #161b22;
+            border: 1px solid #30363d;
+            border-radius: 6px;
+            padding: 20px;
+            box-shadow: 0 0 20px rgba(0,0,0,0.5);
+        }
+
+        h1, h2 {
+            text-align: center;
+            color: var(--accent-color);
+        }
+
+        /* Login Section */
+        #login-section {
+            display: flex;
+            flex-direction: column;
+            gap: 15px;
+        }
+
+        input[type="password"], select {
+            width: 100%;
+            padding: 10px;
+            background: #0d1117;
+            border: 1px solid #30363d;
+            color: white;
+            border-radius: 4px;
+            box-sizing: border-box;
+        }
+
+        button {
+            padding: 10px 20px;
+            background: var(--success-color);
+            color: white;
+            border: none;
+            border-radius: 4px;
+            cursor: pointer;
+            font-weight: bold;
+            transition: 0.2s;
+        }
+
+        button:hover {
+            opacity: 0.9;
+        }
+
+        button:disabled {
+            background: #30363d;
+            cursor: not-allowed;
+        }
+
+        /* Main App Section */
+        #app-section {
+            display: none;
+        }
+
+        .commit-list {
+            max-height: 300px;
+            overflow-y: auto;
+            border: 1px solid #30363d;
+            margin-bottom: 20px;
+        }
+
+        .commit-item {
+            padding: 10px;
+            border-bottom: 1px solid #30363d;
+            cursor: pointer;
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+        }
+
+        .commit-item:hover {
+            background: #21262d;
+        }
+
+        .commit-item.selected {
+            background: #1f6feb33;
+            border-left: 4px solid var(--accent-color);
+        }
+
+        .commit-hash {
+            font-size: 0.8em;
+            color: #8b949e;
+        }
+
+        /* Terminal Modal */
+        #terminal-modal {
+            display: none;
+            position: fixed;
+            top: 0;
+            left: 0;
+            width: 100%;
+            height: 100%;
+            background: rgba(0,0,0,0.9);
+            z-index: 1000;
+            justify-content: center;
+            align-items: center;
+        }
+
+        .terminal-window {
+            width: 90%;
+            max-width: 700px;
+            height: 80%;
+            background: var(--terminal-bg);
+            border: 2px solid #333;
+            border-radius: 5px;
+            display: flex;
+            flex-direction: column;
+            box-shadow: 0 0 30px rgba(0, 255, 0, 0.2);
+        }
+
+        .terminal-header {
+            background: #333;
+            padding: 5px 10px;
+            color: #fff;
+            font-size: 0.9em;
+            display: flex;
+            justify-content: space-between;
+        }
+
+        .terminal-body {
+            flex: 1;
+            padding: 15px;
+            overflow-y: auto;
+            color: var(--terminal-text);
+            font-size: 0.9em;
+            line-height: 1.4;
+        }
+
+        .log-line {
+            margin-bottom: 2px;
+        }
+
+        .log-success { color: #00ff00; }
+        .log-error { color: #ff0000; }
+        .log-warning { color: #ffff00; }
+        .log-info { color: #00ffff; }
+
+        .progress-bar-container {
+            height: 5px;
+            background: #333;
+            margin-top: 10px;
+        }
+
+        .progress-bar {
+            height: 100%;
+            background: var(--terminal-text);
+            width: 0%;
+            transition: width 0.2s;
+        }
+
+        .hidden { display: none !important; }
+    </style>
 </head>
-<body class="bg-gray-950 text-white min-h-screen">
+<body>
 
-  <!-- LOGIN PAGE -->
-  <div id="loginPage" class="min-h-screen flex items-center justify-center">
-    <div class="max-w-md w-full bg-gray-900 p-8 rounded-xl border border-gray-700">
-      <h1 class="text-3xl font-bold text-center mb-8 text-green-400">🔄 RESTORE CODE</h1>
-      <p class="text-center text-gray-400 mb-6">pembri/sairootsmusic.com</p>
-      
-      <div class="mb-6">
-        <label class="block text-sm mb-2">GitHub Personal Access Token</label>
-        <input id="tokenInput" type="password" 
-               class="w-full bg-gray-800 border border-gray-700 rounded-lg px-4 py-3 focus:outline-none focus:border-green-500"
-               placeholder="ghp_xxxxxxxxxxxxxxxx">
-      </div>
-
-      <button onclick="login()" 
-              class="w-full bg-green-600 hover:bg-green-500 py-4 rounded-lg font-bold text-lg transition">
-        LOGIN & MASUK
-      </button>
-
-      <p class="text-xs text-gray-500 text-center mt-6">
-        Token harus memiliki izin <span class="text-yellow-400">repo</span>
-      </p>
-    </div>
-  </div>
-
-  <!-- MAIN PAGE -->
-  <div id="mainPage" class="hidden min-h-screen p-8">
-    <div class="max-w-5xl mx-auto">
-      <div class="flex justify-between items-center mb-8">
-        <h1 class="text-3xl font-bold text-green-400">🔄 Restore Code Tool</h1>
-        <button onclick="logout()" class="text-red-400 hover:text-red-500">
-          <i class="fas fa-sign-out-alt"></i> Logout
-        </button>
-      </div>
-
-      <div class="bg-gray-900 rounded-xl p-6 border border-gray-700 mb-8">
-        <h2 class="text-xl mb-4">Riwayat Commit</h2>
-        <select id="commitSelect" class="w-full bg-gray-800 border border-gray-700 rounded-lg px-4 py-3 text-lg">
-          <!-- diisi oleh JS -->
-        </select>
-      </div>
-
-      <div class="bg-red-950 border border-red-700 rounded-xl p-6 mb-8">
-        <h3 class="text-red-400 font-bold mb-3">⚠️ Folder yang TIDAK akan di-restore:</h3>
-        <ul class="text-gray-400 space-y-1">
-          <li>• /admin_pages</li>
-          <li>• /video_cover</li>
-        </ul>
-        <p class="text-sm mt-4 text-gray-500">Semua file lain akan dikembalikan ke commit yang dipilih.</p>
-      </div>
-
-      <button onclick="startRestore()" 
-              class="w-full bg-red-600 hover:bg-red-500 py-6 rounded-xl text-2xl font-bold transition-all active:scale-95">
-        🚀 RESTORE MASAL KE COMMIT TERPILIH
-      </button>
-    </div>
-  </div>
-
-  <!-- TERMINAL PROGRESS MODAL -->
-  <div id="terminalModal" class="hidden fixed inset-0 bg-black/90 flex items-center justify-center z-50">
-    <div class="w-full max-w-3xl mx-4">
-      <div class="terminal rounded-xl border border-green-500 overflow-hidden shadow-2xl">
-        <div class="bg-gray-900 px-4 py-2 border-b border-green-500 flex items-center">
-          <div class="flex-1 text-center text-green-400 text-sm">RESTORE PROCESS - SAI ROOTS</div>
+<div class="container">
+    <!-- Login Section -->
+    <div id="login-section">
+        <h1>GITHUB RESTORE TOOL</h1>
+        <p style="text-align: center; font-size: 0.9em; color: #8b949e;">Target: pembri/sairootsmusic.com</p>
+        <div>
+            <label for="token">GitHub Personal Access Token (Scope: repo)</label>
+            <input type="password" id="token" placeholder="ghp_..." autocomplete="off">
         </div>
-        <div id="terminalOutput" class="h-96 p-6 overflow-y-auto text-sm leading-relaxed font-mono"></div>
-      </div>
-      
-      <div class="text-center mt-4">
-        <button onclick="cancelRestore()" 
-                class="text-red-400 hover:text-red-500 text-sm">
-          Batal
-        </button>
-      </div>
+        <button onclick="authenticate()">LOGIN & LOAD COMMITS</button>
+        <p id="login-error" style="color: var(--danger-color); text-align: center;"></p>
     </div>
-  </div>
 
-  <script>
+    <!-- Main App Section -->
+    <div id="app-section">
+        <h2>SELECT TARGET COMMIT</h2>
+        <p>Pilih commit yang ingin dikembalikan (Restore Point).</p>
+        
+        <div class="commit-list" id="commit-list">
+            <!-- Commits will be loaded here -->
+            <div style="padding: 20px; text-align: center;">Loading commits...</div>
+        </div>
+
+        <div style="display: flex; justify-content: space-between; align-items: center;">
+            <span id="selected-commit-display" style="color: var(--accent-color);">No commit selected</span>
+            <button id="restore-btn" onclick="startRestore()" disabled>START RESTORE</button>
+        </div>
+    </div>
+</div>
+
+<!-- Terminal Modal -->
+<div id="terminal-modal">
+    <div class="terminal-window">
+        <div class="terminal-header">
+            <span>TERMINAL - RESTORE PROCESS</span>
+            <span id="terminal-status">RUNNING...</span>
+        </div>
+        <div class="terminal-body" id="terminal-body">
+            <!-- Logs go here -->
+        </div>
+        <div class="progress-bar-container">
+            <div class="progress-bar" id="progress-bar"></div>
+        </div>
+        <div style="padding: 10px; text-align: right;">
+            <button id="close-terminal-btn" class="hidden" onclick="closeTerminal()">CLOSE</button>
+        </div>
+    </div>
+</div>
+
+<script>
+    const OWNER = 'pembri';
+    const REPO = 'sairootsmusic.com';
     let token = '';
-    let owner = 'pembri';
-    let repo = 'sairootsmusic.com';
-    let currentHeadSha = '';
+    let commits = [];
+    let selectedCommitSha = '';
+    let selectedCommitMessage = '';
 
-    function log(text, color = 'text-green-400') {
-      const term = document.getElementById('terminalOutput');
-      const line = document.createElement('div');
-      line.className = color;
-      line.innerHTML = `> ${text}`;
-      term.appendChild(line);
-      term.scrollTop = term.scrollHeight;
-    }
+    // --- Authentication & Loading Commits ---
 
-    async function login() {
-      const inputToken = document.getElementById('tokenInput').value.trim();
-      if (!inputToken) return alert("Masukkan GitHub Token!");
-
-      token = inputToken;
-
-      try {
-        const res = await fetch('https://api.github.com/user', {
-          headers: { 'Authorization': `token ${token}` }
-        });
-        if (!res.ok) throw new Error();
+    async function authenticate() {
+        const tokenInput = document.getElementById('token').value.trim();
+        if (!tokenInput) {
+            showError('Token tidak boleh kosong!');
+            return;
+        }
+        token = tokenInput;
         
-        document.getElementById('loginPage').classList.add('hidden');
-        document.getElementById('mainPage').classList.remove('hidden');
-        
-        await loadCommits();
-      } catch (e) {
-        alert("Token tidak valid atau expired!");
-      }
+        const btn = document.querySelector('#login-section button');
+        btn.disabled = true;
+        btn.innerText = 'LOADING...';
+        showError('');
+
+        try {
+            await loadCommits();
+            document.getElementById('login-section').classList.add('hidden');
+            document.getElementById('app-section').style.display = 'block';
+        } catch (err) {
+            showError('Gagal login atau load commits: ' + err.message);
+            btn.disabled = false;
+            btn.innerText = 'LOGIN & LOAD COMMITS';
+        }
     }
 
     async function loadCommits() {
-      const select = document.getElementById('commitSelect');
-      select.innerHTML = '<option value="">Memuat riwayat commit...</option>';
-
-      try {
-        const res = await fetch(`https://api.github.com/repos/\( {owner}/ \){repo}/commits?per_page=30`, {
-          headers: { 'Authorization': `token ${token}` }
+        const url = `https://api.github.com/repos/${OWNER}/${REPO}/commits?per_page=30`;
+        const response = await fetch(url, {
+            headers: {
+                'Authorization': `token ${token}`,
+                'Accept': 'application/vnd.github.v3+json'
+            }
         });
-        const commits = await res.json();
 
-        select.innerHTML = '';
-        commits.forEach(commit => {
-          const option = document.createElement('option');
-          option.value = commit.sha;
-          option.textContent = `${commit.sha.substring(0,8)} - ${commit.commit.message.substring(0,60)}`;
-          select.appendChild(option);
-        });
-      } catch (e) {
-        alert("Gagal memuat commit history");
-      }
+        if (!response.ok) {
+            throw new Error(`HTTP ${response.status}`);
+        }
+
+        commits = await response.json();
+        renderCommits();
     }
+
+    function renderCommits() {
+        const listContainer = document.getElementById('commit-list');
+        listContainer.innerHTML = '';
+
+        if (commits.length === 0) {
+            listContainer.innerHTML = '<div style="padding:10px;">Tidak ada commit ditemukan.</div>';
+            return;
+        }
+
+        commits.forEach((commit, index) => {
+            const div = document.createElement('div');
+            div.className = 'commit-item';
+            div.onclick = () => selectCommit(index, div);
+            
+            const sha = commit.sha.substring(0, 7);
+            const msg = commit.commit.message.split('\n')[0];
+            const date = new Date(commit.commit.author.date).toLocaleString();
+
+            div.innerHTML = `
+                <div>
+                    <div style="font-weight:bold;">${msg}</div>
+                    <div class="commit-hash">${sha} • ${date}</div>
+                </div>
+            `;
+            listContainer.appendChild(div);
+        });
+    }
+
+    function selectCommit(index, element) {
+        // Remove previous selection
+        document.querySelectorAll('.commit-item').forEach(el => el.classList.remove('selected'));
+        
+        // Add new selection
+        element.classList.add('selected');
+        
+        selectedCommitSha = commits[index].sha;
+        selectedCommitMessage = commits[index].commit.message.split('\n')[0];
+        
+        document.getElementById('selected-commit-display').innerText = `Selected: ${selectedCommitSha} (${selectedCommitMessage})`;
+        document.getElementById('restore-btn').disabled = false;
+    }
+
+    function showError(msg) {
+        document.getElementById('login-error').innerText = msg;
+    }
+
+    // --- Restore Logic ---
 
     async function startRestore() {
-      const sha = document.getElementById('commitSelect').value;
-      if (!sha) return alert("Pilih commit terlebih dahulu!");
+        if (!confirm(`Yakin ingin mengembalikan kode ke commit:\n${selectedCommitMessage}\n\nFile di /admin_pages dan /video cover akan DIABAIKAN.`)) {
+            return;
+        }
 
-      if (!confirm("⚠️ Anda yakin ingin mengembalikan SEMUA file (kecuali admin_pages & video_cover) ke commit ini?\n\nTindakan ini akan membuat commit baru.")) {
-        return;
-      }
+        document.getElementById('terminal-modal').style.display = 'flex';
+        const terminalBody = document.getElementById('terminal-body');
+        terminalBody.innerHTML = '';
+        document.getElementById('close-terminal-btn').classList.add('hidden');
+        document.getElementById('terminal-status').innerText = 'RUNNING...';
+        
+        log('Initializing restore sequence...', 'log-info');
+        log(`Target Commit: ${selectedCommitSha}`, 'log-info');
+        log(`Excluding: /admin_pages, /video cover`, 'log-warning');
 
-      document.getElementById('terminalModal').classList.remove('hidden');
-      document.getElementById('terminalOutput').innerHTML = '';
+        try {
+            // 1. Get all files from the Target Commit
+            log('Fetching tree structure from target commit...', 'log-info');
+            const targetTree = await getTreeFromCommit(selectedCommitSha);
+            
+            // 2. Get current HEAD tree to compare and get current SHAs
+            log('Fetching current HEAD tree...', 'log-info');
+            const currentTree = await getTreeFromCommit('HEAD');
+            
+            // Create a map of current files for easy SHA lookup: path -> sha
+            const currentFileMap = {};
+            currentTree.forEach(item => {
+                if (item.type === 'blob') {
+                    currentFileMap[item.path] = item.sha;
+                }
+            });
 
-      log("🚀 Memulai proses restore...", "text-yellow-400");
-      log(`Target Commit: ${sha.substring(0,12)}`);
+            // 3. Filter files to restore
+            const filesToRestore = targetTree.filter(item => {
+                if (item.type !== 'blob') return false;
+                
+                const pathLower = item.path.toLowerCase();
+                // Exclude logic
+                if (pathLower.startsWith('admin_pages/') || 
+                    pathLower.includes('/admin_pages/') ||
+                    pathLower.startsWith('video cover/') || 
+                    pathLower.includes('/video cover/')) {
+                    return false;
+                }
+                return true;
+            });
 
-      try {
-        // Step 1: Ambil tree dari commit yang dipilih
-        log("Mengambil tree dari commit target...");
-        const targetTreeRes = await fetch(`https://api.github.com/repos/\( {owner}/ \){repo}/git/trees/${sha}?recursive=1`, {
-          headers: { 'Authorization': `token ${token}` }
-        });
-        const targetData = await targetTreeRes.json();
+            log(`Found ${filesToRestore.length} files to process.`, 'log-info');
 
-        // Step 2: Ambil tree HEAD saat ini
-        log("Mengambil tree HEAD saat ini...");
-        const headRes = await fetch(`https://api.github.com/repos/\( {owner}/ \){repo}/git/trees/HEAD?recursive=1`, {
-          headers: { 'Authorization': `token ${token}` }
-        });
-        const headData = await headRes.json();
-        currentHeadSha = headData.sha;
+            // 4. Process each file
+            let processedCount = 0;
+            const totalFiles = filesToRestore.length;
+            const progressBar = document.getElementById('progress-bar');
 
-        const excludedFolders = ['admin_pages', 'video_cover'];
+            for (const file of filesToRestore) {
+                const path = file.path;
+                
+                // Check if file exists in current HEAD
+                if (!currentFileMap[path]) {
+                    log(`SKIP: ${path} (Does not exist in current HEAD)`, 'log-warning');
+                    processedCount++;
+                    updateProgress(processedCount, totalFiles, progressBar);
+                    continue;
+                }
 
-        // Filter tree target (hapus folder yang dikecualikan)
-        const filteredTree = targetData.tree.filter(item => {
-          if (item.type === 'tree') {
-            return !excludedFolders.some(folder => item.path.startsWith(folder));
-          }
-          return !excludedFolders.some(folder => item.path.startsWith(folder + '/'));
-        });
+                try {
+                    // Get content from target commit
+                    const contentObj = await getFileContent(selectedCommitSha, path);
+                    
+                    // Update file in current HEAD
+                    await updateFile(path, contentObj.content, currentFileMap[path]);
+                    
+                    log(`RESTORED: ${path}`, 'log-success');
+                } catch (err) {
+                    log(`ERROR: ${path} - ${err.message}`, 'log-error');
+                }
 
-        log(`Berhasil memfilter tree (${filteredTree.length} item)`);
+                processedCount++;
+                updateProgress(processedCount, totalFiles, progressBar);
+                
+                // Small delay to avoid rate limiting
+                await sleep(100); 
+            }
 
-        // Buat tree baru di GitHub
-        log("Membuat tree baru di GitHub...");
-        const newTreeRes = await fetch(`https://api.github.com/repos/\( {owner}/ \){repo}/git/trees`, {
-          method: 'POST',
-          headers: {
-            'Authorization': `token ${token}`,
-            'Content-Type': 'application/json'
-          },
-          body: JSON.stringify({
-            base_tree: currentHeadSha,
-            tree: filteredTree
-          })
-        });
+            log('-----------------------------------', 'log-info');
+            log('RESTORE COMPLETED SUCCESSFULLY', 'log-success');
+            document.getElementById('terminal-status').innerText = 'COMPLETED';
 
-        const newTree = await newTreeRes.json();
+        } catch (err) {
+            log(`CRITICAL ERROR: ${err.message}`, 'log-error');
+            document.getElementById('terminal-status').innerText = 'FAILED';
+        }
 
-        // Buat commit
-        log("Membuat commit restore...");
-        const commitRes = await fetch(`https://api.github.com/repos/\( {owner}/ \){repo}/git/commits`, {
-          method: 'POST',
-          headers: {
-            'Authorization': `token ${token}`,
-            'Content-Type': 'application/json'
-          },
-          body: JSON.stringify({
-            message: `🔄 Restore ke commit ${sha.substring(0,12)} (kecuali admin_pages & video_cover)`,
-            tree: newTree.sha,
-            parents: [currentHeadSha]
-          })
-        });
-
-        const newCommit = await commitRes.json();
-
-        // Update branch (main)
-        log("Mengupdate branch main...");
-        await fetch(`https://api.github.com/repos/\( {owner}/ \){repo}/git/refs/heads/main`, {
-          method: 'PATCH',
-          headers: {
-            'Authorization': `token ${token}`,
-            'Content-Type': 'application/json'
-          },
-          body: JSON.stringify({
-            sha: newCommit.sha
-          })
-        });
-
-        log("✅ RESTORE BERHASIL!", "text-green-400");
-        log(`New Commit: ${newCommit.sha.substring(0,12)}`, "text-green-400");
-
-        setTimeout(() => {
-          alert("Restore berhasil dilakukan!");
-          location.reload();
-        }, 2000);
-
-      } catch (err) {
-        console.error(err);
-        log("❌ ERROR: " + err.message, "text-red-400");
-      }
+        document.getElementById('close-terminal-btn').classList.remove('hidden');
     }
 
-    function cancelRestore() {
-      if (confirm("Batalkan proses restore?")) {
-        document.getElementById('terminalModal').classList.add('hidden');
-      }
+    // --- GitHub API Helpers ---
+
+    async function getTreeFromCommit(sha) {
+        // First get commit object to find tree sha
+        const commitRes = await fetch(`https://api.github.com/repos/${OWNER}/${REPO}/commits/${sha}`, {
+            headers: { 'Authorization': `token ${token}` }
+        });
+        if (!commitRes.ok) throw new Error('Failed to fetch commit details');
+        const commitData = await commitRes.json();
+        
+        const treeSha = commitData.commit.tree.sha;
+        
+        // Get recursive tree to list all files
+        const treeRes = await fetch(`https://api.github.com/repos/${OWNER}/${REPO}/git/trees/${treeSha}?recursive=1`, {
+            headers: { 'Authorization': `token ${token}` }
+        });
+        if (!treeRes.ok) throw new Error('Failed to fetch tree');
+        const treeData = await treeRes.json();
+        
+        return treeData.tree;
     }
 
-    function logout() {
-      if (confirm("Keluar dari tool ini?")) {
-        location.reload();
-      }
+    async function getFileContent(sha, path) {
+        // We can use Contents API or Git Data API. 
+        // Using Contents API is easier for getting base64 content directly.
+        const res = await fetch(`https://api.github.com/repos/${OWNER}/${REPO}/contents/${path}?ref=${sha}`, {
+            headers: { 'Authorization': `token ${token}` }
+        });
+        if (!res.ok) throw new Error('Failed to get file content');
+        return await res.json();
     }
-  </script>
+
+    async function updateFile(path, content, currentSha) {
+        const res = await fetch(`https://api.github.com/repos/${OWNER}/${REPO}/contents/${path}`, {
+            method: 'PUT',
+            headers: {
+                'Authorization': `token ${token}`,
+                'Content-Type': 'application/json'
+            },
+            body: JSON.stringify({
+                message: `Restore: Revert to ${selectedCommitSha.substring(0,7)}`,
+                content: content,
+                sha: currentSha,
+                branch: 'main' // Assuming main branch, adjust if needed
+            })
+        });
+        
+        if (!res.ok) {
+            const err = await res.json();
+            throw new Error(err.message || 'Update failed');
+        }
+        return await res.json();
+    }
+
+    // --- UI Helpers ---
+
+    function log(message, className) {
+        const terminalBody = document.getElementById('terminal-body');
+        const div = document.createElement('div');
+        div.className = `log-line ${className}`;
+        div.innerText = `> ${message}`;
+        terminalBody.appendChild(div);
+        terminalBody.scrollTop = terminalBody.scrollHeight;
+    }
+
+    function updateProgress(current, total, barElement) {
+        const percent = Math.round((current / total) * 100);
+        barElement.style.width = `${percent}%`;
+    }
+
+    function closeTerminal() {
+        document.getElementById('terminal-modal').style.display = 'none';
+    }
+
+    function sleep(ms) {
+        return new Promise(resolve => setTimeout(resolve, ms));
+    }
+
+</script>
+
 </body>
 </html>
