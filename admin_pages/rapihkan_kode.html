@@ -1,0 +1,254 @@
+<!DOCTYPE html>
+<html lang="id">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>SAI Roots | Head Organizer PRO</title>
+    <script src="https://cdn.tailwindcss.com"></script>
+    <link href="https://fonts.googleapis.com/css2?family=Anton&family=Inter:wght@400;700&display=swap" rel="stylesheet">
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.5.1/css/all.min.css">
+    <script>
+        tailwind.config = {
+            theme: {
+                extend: {
+                    colors: {
+                        rasta: { green: '#2D8659', yellow: '#FBBF24', red: '#DC2626' },
+                        dark: '#080808'
+                    }
+                }
+            }
+        }
+    </script>
+    <style>
+        body { background-color: #080808; color: #e5e7eb; font-family: 'Inter', sans-serif; }
+        .font-display { font-family: 'Anton', sans-serif; }
+        .glass { background: rgba(255, 255, 255, 0.03); border: 1px solid rgba(255, 255, 255, 0.08); backdrop-filter: blur(12px); }
+        .custom-scroll::-webkit-scrollbar { width: 5px; }
+        .custom-scroll::-webkit-scrollbar-thumb { background: #333; border-radius: 10px; }
+        .status-dot { height: 8px; width: 8px; border-radius: 50%; display: inline-block; }
+    </style>
+</head>
+<body class="p-4 md:p-10">
+    <div class="max-w-4xl mx-auto">
+        <div class="flex items-center justify-between mb-8">
+            <div>
+                <h1 class="font-display text-4xl text-white tracking-wider uppercase">Code <span class="text-rasta-yellow">Organizer</span></h1>
+                <p class="text-xs text-gray-500 tracking-[0.2em]">REPOSITORY: pembri/sairootsmusic.com</p>
+            </div>
+            <div class="text-right">
+                <span id="backup-status" class="text-[10px] bg-white/5 px-2 py-1 rounded border border-white/10 text-gray-400 italic">No Backup Found</span>
+            </div>
+        </div>
+
+        <div class="glass p-6 rounded-2xl mb-6">
+            <div class="mb-4">
+                <label class="block text-[10px] font-bold text-rasta-green uppercase mb-2 tracking-widest">GitHub Access Token</label>
+                <div class="relative">
+                    <input type="password" id="gh-token" placeholder="Paste ghp_token di sini..." 
+                           class="w-full bg-black/40 border border-white/10 rounded-xl py-3 px-4 focus:outline-none focus:border-rasta-yellow transition-all text-sm">
+                </div>
+            </div>
+            <div class="flex gap-3">
+                <button onclick="scanRepo()" class="flex-1 bg-white text-black font-bold py-3 rounded-xl hover:bg-rasta-yellow transition-all flex items-center justify-center gap-2 text-sm">
+                    <i class="fas fa-search"></i> SCAN FILES
+                </button>
+                <button onclick="restoreBackup()" id="btn-restore" class="hidden flex-1 border border-rasta-red text-rasta-red font-bold py-3 rounded-xl hover:bg-rasta-red hover:text-white transition-all flex items-center justify-center gap-2 text-sm">
+                    <i class="fas fa-history"></i> RESTORE BACKUP
+                </button>
+            </div>
+        </div>
+
+        <div id="console-box" class="hidden glass rounded-2xl overflow-hidden border-t-2 border-rasta-yellow">
+            <div class="bg-white/5 px-4 py-2 flex items-center justify-between border-b border-white/5">
+                <span class="text-[10px] font-bold uppercase tracking-widest text-gray-400">Process Console</span>
+                <div class="flex gap-1.5">
+                    <div class="w-2 h-2 rounded-full bg-rasta-red"></div>
+                    <div class="w-2 h-2 rounded-full bg-rasta-yellow"></div>
+                    <div class="w-2 h-2 rounded-full bg-rasta-green"></div>
+                </div>
+            </div>
+            <div id="log" class="h-80 overflow-y-auto p-4 font-mono text-[11px] space-y-1 custom-scroll bg-black/20">
+                <p class="text-gray-500 italic">Menunggu perintah...</p>
+            </div>
+            <div id="action-area" class="p-4 bg-white/5 border-t border-white/5 hidden">
+                <button onclick="executeClean()" class="w-full bg-rasta-green text-white font-black py-4 rounded-xl hover:scale-[1.01] active:scale-95 transition-all uppercase tracking-tighter text-lg">
+                    MULAI RAPIHKAN SEKARANG
+                </button>
+            </div>
+        </div>
+    </div>
+
+    <script>
+        let fileList = [];
+        const REPO = "pembri/sairootsmusic.com";
+
+        // Check if backup exists in LocalStorage on load
+        window.onload = () => {
+            checkBackup();
+        };
+
+        function checkBackup() {
+            const backup = localStorage.getItem('sairoots_backup');
+            if (backup) {
+                document.getElementById('backup-status').innerHTML = "🟢 Backup Ready (Persistent)";
+                document.getElementById('backup-status').classList.add('text-rasta-green');
+                document.getElementById('btn-restore').classList.remove('hidden');
+            }
+        }
+
+        function addLog(msg, type = 'info') {
+            const log = document.getElementById('log');
+            const colors = { info: 'text-gray-400', success: 'text-rasta-green', warn: 'text-rasta-yellow', error: 'text-rasta-red' };
+            const time = new Date().toLocaleTimeString();
+            log.innerHTML += `<div class="${colors[type]}"><span class="opacity-30">[${time}]</span> ${msg}</div>`;
+            log.scrollTop = log.scrollHeight;
+        }
+
+        async function scanRepo() {
+            const token = document.getElementById('gh-token').value;
+            if (!token) return alert("Token kosong! Masukkan GitHub Token lo.");
+
+            document.getElementById('console-box').classList.remove('hidden');
+            addLog("Menghubungkan ke GitHub API...", "warn");
+
+            try {
+                const res = await fetch(`https://api.github.com/repos/${REPO}/git/trees/main?recursive=1`, {
+                    headers: { 'Authorization': `token ${token}` }
+                });
+                const data = await res.json();
+                
+                // FILTER: Hanya HTML & Exclude folder /admin_pages/ dan /cover/
+                fileList = data.tree.filter(item => {
+                    const isHtml = item.path.endsWith('.html');
+                    const isExcluded = item.path.startsWith('admin_pages/') || item.path.startsWith('cover/');
+                    const isSelf = item.path.includes('rapihkan_kode.html');
+                    return isHtml && !isExcluded && !isSelf;
+                });
+
+                addLog(`Scan Selesai. Ditemukan ${fileList.length} file (Folder admin_pages & cover diabaikan).`, "success");
+                document.getElementById('action-area').classList.remove('hidden');
+            } catch (err) {
+                addLog("Error Scan: " + err.message, "error");
+            }
+        }
+
+        function processHead(html) {
+            const headMatch = html.match(/<head>([\s\S]*?)<\/head>/i);
+            if (!headMatch) return html;
+
+            let headContent = headMatch[1];
+
+            const extract = (regex) => {
+                let found = [];
+                let match;
+                while ((match = regex.exec(headContent)) !== null) {
+                    found.push(match[0]);
+                }
+                headContent = headContent.replace(regex, '');
+                return found;
+            };
+
+            // 1. Links & Icons
+            const icons = extract(/<link\s+rel="(icon|shortcut icon|apple-touch-icon|manifest|canonical)"[\s\S]*?>/gi);
+            
+            // 2. SEO Meta
+            const title = extract(/<title>[\s\S]*?<\/title>/gi);
+            const seo = extract(/<meta\s+name="(description|keywords|author|robots)"[\s\S]*?>/gi);
+
+            // 3. Open Graph
+            const og = extract(/<meta\s+property="og:[\s\S]*?>/gi);
+            const twitter = extract(/<meta\s+name="twitter:[\s\S]*?>/gi);
+
+            // Re-assembly sesuai urutan instruksi lo
+            const sortedHead = [
+                "\n    ",
+                ...icons,
+                "\n    ",
+                ...title,
+                ...seo,
+                "\n    ",
+                ...og,
+                ...twitter,
+                "\n    ",
+                headContent.trim()
+            ].join('\n    ');
+
+            return html.replace(/<head>([\s\S]*?)<\/head>/i, `<head>${sortedHead}\n</head>`);
+        }
+
+        async function executeClean() {
+            const token = document.getElementById('gh-token').value;
+            let backupData = JSON.parse(localStorage.getItem('sairoots_backup') || '{}');
+
+            addLog("Mengeksekusi perapihan kode...", "warn");
+
+            for (let file of fileList) {
+                try {
+                    const res = await fetch(file.url, { headers: { 'Authorization': `token ${token}` } });
+                    const data = await res.json();
+                    const originalContent = atob(data.content);
+
+                    // Simpan ke Persistent Backup (LocalStorage)
+                    backupData[file.path] = { sha: data.sha, content: originalContent };
+                    localStorage.setItem('sairoots_backup', JSON.stringify(backupData));
+
+                    const cleanedContent = processHead(originalContent);
+
+                    await fetch(`https://api.github.com/repos/${REPO}/contents/${file.path}`, {
+                        method: 'PUT',
+                        headers: { 'Authorization': `token ${token}`, 'Content-Type': 'application/json' },
+                        body: JSON.stringify({
+                            message: `🔧 SAI Roots Toolkit: Reorganized Head for ${file.path}`,
+                            content: btoa(unescape(encodeURIComponent(cleanedContent))),
+                            sha: data.sha
+                        })
+                    });
+
+                    addLog(`Done: ${file.path}`, "success");
+                } catch (e) {
+                    addLog(`Failed: ${file.path} | ${e.message}`, "error");
+                }
+            }
+            addLog("PROSES SELESAI!", "success");
+            checkBackup();
+        }
+
+        async function restoreBackup() {
+            const token = document.getElementById('gh-token').value;
+            const backupData = JSON.parse(localStorage.getItem('sairoots_backup'));
+            
+            if (!token) return alert("Masukkan token untuk restore!");
+            if (!confirm("Yakin mau balikin semua file ke versi awal?")) return;
+
+            addLog("Memulai Restore dari LocalStorage...", "warn");
+
+            for (let path in backupData) {
+                try {
+                    // Ambil SHA terbaru karena file di repo sudah berubah
+                    const currentFile = await fetch(`https://api.github.com/repos/${REPO}/contents/${path}`, {
+                        headers: { 'Authorization': `token ${token}` }
+                    });
+                    const currentData = await currentFile.json();
+
+                    await fetch(`https://api.github.com/repos/${REPO}/contents/${path}`, {
+                        method: 'PUT',
+                        headers: { 'Authorization': `token ${token}`, 'Content-Type': 'application/json' },
+                        body: JSON.stringify({
+                            message: `⏪ Restore: Reverted ${path} to pre-cleanup state`,
+                            content: btoa(unescape(encodeURIComponent(backupData[path].content))),
+                            sha: currentData.sha
+                        })
+                    });
+                    addLog(`Restored: ${path}`, "info");
+                } catch (e) {
+                    addLog(`Gagal Restore ${path}`, "error");
+                }
+            }
+            
+            addLog("RESTORE TOTAL SELESAI!", "success");
+            localStorage.removeItem('sairoots_backup');
+            location.reload();
+        }
+    </script>
+</body>
+</html>
