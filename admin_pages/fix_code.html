@@ -3,7 +3,7 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>SAI Roots | Alien Character Cleaner</title>
+    <title>SAI Roots | Alien Character Cleaner PRO</title>
     <script src="https://cdn.tailwindcss.com"></script>
     <link href="https://fonts.googleapis.com/css2?family=Anton&family=Inter:wght@400;700&display=swap" rel="stylesheet">
     <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.5.1/css/all.min.css">
@@ -30,8 +30,11 @@
     <div class="max-w-4xl mx-auto">
         <div class="flex items-center justify-between mb-8">
             <div>
-                <h1 class="font-display text-4xl text-white tracking-wider uppercase">Alien <span class="text-rasta-red">Cleaner</span></h1>
-                <p class="text-xs text-gray-500 tracking-[0.2em]">MEMBASMI KARAKTER MOJIBAKE / ANEH</p>
+                <h1 class="font-display text-4xl text-white tracking-wider uppercase">Alien <span class="text-rasta-red">Cleaner PRO</span></h1>
+                <p class="text-xs text-gray-500 tracking-[0.2em]">MEMBASMI MOJIBAKE + BACKUP SYSTEM</p>
+            </div>
+            <div class="text-right">
+                <span id="backup-status" class="text-[10px] bg-white/5 px-2 py-1 rounded border border-white/10 text-gray-400 italic">No Backup Found</span>
             </div>
         </div>
 
@@ -41,23 +44,49 @@
                 <input type="password" id="gh-token" placeholder="Paste ghp_token di sini..." 
                        class="w-full bg-black/40 border border-white/10 rounded-xl py-3 px-4 focus:outline-none focus:border-rasta-red transition-all text-sm">
             </div>
-            <button onclick="scanRepo()" class="w-full bg-white text-black font-bold py-3 rounded-xl hover:bg-rasta-red hover:text-white transition-all flex items-center justify-center gap-2 text-sm">
-                <i class="fas fa-radar"></i> SCAN & BERSIHKAN SEKARANG
-            </button>
+            <div class="flex gap-3">
+                <button onclick="scanRepo()" class="flex-1 bg-white text-black font-bold py-3 rounded-xl hover:bg-rasta-red hover:text-white transition-all flex items-center justify-center gap-2 text-sm">
+                    <i class="fas fa-search"></i> SCAN FILE
+                </button>
+                <button onclick="restoreBackup()" id="btn-restore" class="hidden flex-1 border border-rasta-yellow text-rasta-yellow font-bold py-3 rounded-xl hover:bg-rasta-yellow hover:text-black transition-all flex items-center justify-center gap-2 text-sm">
+                    <i class="fas fa-history"></i> RESTORE BACKUP
+                </button>
+            </div>
         </div>
 
         <div id="console-box" class="hidden glass rounded-2xl overflow-hidden border-t-2 border-rasta-red">
-            <div class="bg-white/5 px-4 py-2 border-b border-white/5 text-[10px] font-bold uppercase tracking-widest text-gray-400">
-                Live Log
+            <div class="bg-white/5 px-4 py-2 flex items-center justify-between border-b border-white/5">
+                <span class="text-[10px] font-bold uppercase tracking-widest text-gray-400">Process Console</span>
+                <div class="flex gap-1.5">
+                    <div class="w-2 h-2 rounded-full bg-rasta-red"></div>
+                    <div class="w-2 h-2 rounded-full bg-rasta-yellow"></div>
+                    <div class="w-2 h-2 rounded-full bg-rasta-green"></div>
+                </div>
             </div>
             <div id="log" class="h-80 overflow-y-auto p-4 font-mono text-[11px] space-y-1 custom-scroll bg-black/20">
-                <p class="text-gray-500 italic">Siap membasmi huruf alien...</p>
+                <p class="text-gray-500 italic">Menunggu perintah scan...</p>
+            </div>
+            <div id="action-area" class="p-4 bg-white/5 border-t border-white/5 hidden">
+                <button onclick="executeClean()" class="w-full bg-rasta-red text-white font-black py-4 rounded-xl hover:scale-[1.01] active:scale-95 transition-all uppercase tracking-tighter text-lg">
+                    MULAI BASMI ALIEN SEKARANG
+                </button>
             </div>
         </div>
     </div>
 
     <script>
+        let fileList = [];
         const REPO = "pembri/sairootsmusic.com";
+
+        window.onload = () => { checkBackup(); };
+
+        function checkBackup() {
+            if (localStorage.getItem('alien_backup')) {
+                document.getElementById('backup-status').innerHTML = "🟢 Backup Ready (Aman)";
+                document.getElementById('backup-status').classList.add('text-rasta-green');
+                document.getElementById('btn-restore').classList.remove('hidden');
+            }
+        }
 
         function addLog(msg, type = 'info') {
             const log = document.getElementById('log');
@@ -81,26 +110,21 @@
             return btoa(binary);
         }
 
-        // KAMUS PEMBERSIH HURUF ALIEN (MOJIBAKE)
+        // KAMUS PEMBERSIH ALIEN
         function cleanAlienCharacters(text) {
-            let cleaned = text
-                // 1. Perbaiki yang bisa diselamatkan ke simbol asli
-                .replace(/Ã‚Â©|Â©/g, '©')        // Simbol Copyright
-                .replace(/Ã¢Â€Â¦/g, '...')       // Titik tiga (ellipsis)
-                .replace(/Ã¢Â€Â™/g, "'")         // Tanda kutip tunggal
-                .replace(/Ã¢Â€Âœ/g, '"')         // Kutip ganda buka
-                .replace(/Ã¢Â€Â/g, '"')         // Kutip ganda tutup
-                .replace(/Ã¢Â€Â“|Ã¢Â€Â”/g, '-')   // Garis hubung (dash)
-                
-                // 2. Sapu bersih sisa karakter aneh (yang nggak bisa diselamatkan)
+            return text
+                .replace(/Ã‚Â©/g, '©')        
+                .replace(/Ã¢Â€Â¦/g, '...')       
+                .replace(/Ã¢Â€Â™/g, "'")         
+                .replace(/Ã¢Â€Âœ/g, '"')         
+                .replace(/Ã¢Â€Â/g, '"')         
+                .replace(/Ã¢Â€Â“|Ã¢Â€Â”/g, '-')   
                 .replace(/Ã/g, '')
                 .replace(/Â/g, '')
                 .replace(/¦/g, '')
                 .replace(//g, '')
                 .replace(/¢/g, '')
-                .replace(//g, ''); // Karakter unknown diamond hitam
-            
-            return cleaned;
+                .replace(/\uFFFD/g, ''); // Simbol diamond tanda tanya hitam
         }
 
         async function scanRepo() {
@@ -108,7 +132,7 @@
             if (!token) return alert("Isi tokennya dulu cok!");
 
             document.getElementById('console-box').classList.remove('hidden');
-            addLog("Mencari sarang alien di repository...", "warn");
+            addLog("Mencari file target...", "warn");
 
             try {
                 const res = await fetch(`https://api.github.com/repos/${REPO}/git/trees/main?recursive=1`, {
@@ -116,50 +140,100 @@
                 });
                 const data = await res.json();
                 
-                let fileList = data.tree.filter(item => {
+                fileList = data.tree.filter(item => {
+                    // FILTER FOLDER HARAM
                     return item.path.endsWith('.html') && 
                            !item.path.startsWith('admin_pages/') && 
-                           !item.path.startsWith('cover/');
+                           !item.path.startsWith('cover/') &&
+                           !item.path.includes('pembersih_alien.html') &&
+                           !item.path.includes('rapihkan_kode.html');
                 });
 
-                addLog(`Ditemukan ${fileList.length} file HTML. Mulai proses pembersihan...`, "info");
-                
-                let filesFixed = 0;
-
-                for (let file of fileList) {
-                    try {
-                        const fileRes = await fetch(file.url, { headers: { 'Authorization': `token ${token}` } });
-                        const fileData = await fileRes.json();
-                        
-                        const originalContent = decodeUTF8Base64(fileData.content);
-                        const cleanedContent = cleanAlienCharacters(originalContent);
-
-                        // Cuma nge-push kalau isi file beneran berubah (ada alien yang kehapus)
-                        if (originalContent !== cleanedContent) {
-                            addLog(`⚠️ Ditemukan alien di: ${file.path} -> Sedang membersihkan...`, "warn");
-                            
-                            await fetch(`https://api.github.com/repos/${REPO}/contents/${file.path}`, {
-                                method: 'PUT',
-                                headers: { 'Authorization': `token ${token}`, 'Content-Type': 'application/json' },
-                                body: JSON.stringify({
-                                    message: `🧹 SAI Roots Toolkit: Cleaned Alien/Mojibake Characters`,
-                                    content: encodeUTF8Base64(cleanedContent),
-                                    sha: fileData.sha
-                                })
-                            });
-                            addLog(`✅ Bersih: ${file.path}`, "success");
-                            filesFixed++;
-                        }
-                    } catch (e) {
-                        addLog(`Gagal cek ${file.path} | ${e.message}`, "error");
-                    }
-                }
-                
-                addLog(`PROSES SELESAI! ${filesFixed} file berhasil dibersihkan dari huruf alien.`, "success");
-
+                addLog(`Scan Selesai. ${fileList.length} file HTML siap dicek. Folder haram aman.`, "success");
+                document.getElementById('action-area').classList.remove('hidden');
             } catch (err) {
                 addLog("Error Koneksi: " + err.message, "error");
             }
+        }
+
+        async function executeClean() {
+            const token = document.getElementById('gh-token').value;
+            let backupData = JSON.parse(localStorage.getItem('alien_backup') || '{}');
+            let filesFixed = 0;
+
+            addLog("Mulai proses pembersihan alien...", "warn");
+
+            for (let file of fileList) {
+                try {
+                    const fileRes = await fetch(file.url, { headers: { 'Authorization': `token ${token}` } });
+                    const fileData = await fileRes.json();
+                    
+                    const originalContent = decodeUTF8Base64(fileData.content);
+                    const cleanedContent = cleanAlienCharacters(originalContent);
+
+                    // CUMA DI-PUSH & BACKUP KALAU BENERAN ADA ALIENNYA
+                    if (originalContent !== cleanedContent) {
+                        addLog(`⚠️ Alien terdeteksi di: ${file.path} -> Membersihkan...`, "warn");
+                        
+                        // Save Backup dulu sebelum eksekusi
+                        backupData[file.path] = { sha: fileData.sha, content: originalContent };
+                        localStorage.setItem('alien_backup', JSON.stringify(backupData));
+
+                        await fetch(`https://api.github.com/repos/${REPO}/contents/${file.path}`, {
+                            method: 'PUT',
+                            headers: { 'Authorization': `token ${token}`, 'Content-Type': 'application/json' },
+                            body: JSON.stringify({
+                                message: `🧹 SAI Roots Toolkit: Cleaned Mojibake Characters`,
+                                content: encodeUTF8Base64(cleanedContent),
+                                sha: fileData.sha
+                            })
+                        });
+                        addLog(`✅ Bersih: ${file.path}`, "success");
+                        filesFixed++;
+                    }
+                } catch (e) {
+                    addLog(`Gagal proses ${file.path} | ${e.message}`, "error");
+                }
+            }
+            
+            addLog(`PROSES SELESAI! ${filesFixed} file berhasil dibersihkan.`, "success");
+            checkBackup();
+        }
+
+        async function restoreBackup() {
+            const token = document.getElementById('gh-token').value;
+            const backupData = JSON.parse(localStorage.getItem('alien_backup'));
+            
+            if (!token) return alert("Masukkan token untuk restore!");
+            if (!confirm("Yakin mau balikin file yang kena bersih tadi ke aslinya?")) return;
+
+            addLog("Memulai Restore...", "warn");
+
+            for (let path in backupData) {
+                try {
+                    const currentFile = await fetch(`https://api.github.com/repos/${REPO}/contents/${path}`, {
+                        headers: { 'Authorization': `token ${token}` }
+                    });
+                    const currentData = await currentFile.json();
+
+                    await fetch(`https://api.github.com/repos/${REPO}/contents/${path}`, {
+                        method: 'PUT',
+                        headers: { 'Authorization': `token ${token}`, 'Content-Type': 'application/json' },
+                        body: JSON.stringify({
+                            message: `⏪ Restore: Reverted ${path} to pre-clean state`,
+                            content: encodeUTF8Base64(backupData[path].content),
+                            sha: currentData.sha
+                        })
+                    });
+                    addLog(`Restored: ${path}`, "info");
+                } catch (e) {
+                    addLog(`Gagal Restore ${path}`, "error");
+                }
+            }
+            
+            addLog("RESTORE TOTAL SELESAI!", "success");
+            localStorage.removeItem('alien_backup');
+            location.reload();
         }
     </script>
 </body>
