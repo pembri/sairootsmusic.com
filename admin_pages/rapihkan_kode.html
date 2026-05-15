@@ -1,254 +1,799 @@
 <!DOCTYPE html>
 <html lang="id">
 <head>
-    <meta charset="UTF-8">
-    <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>SAI Roots | Head Organizer PRO</title>
-    <script src="https://cdn.tailwindcss.com"></script>
-    <link href="https://fonts.googleapis.com/css2?family=Anton&family=Inter:wght@400;700&display=swap" rel="stylesheet">
-    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.5.1/css/all.min.css">
-    <script>
-        tailwind.config = {
-            theme: {
-                extend: {
-                    colors: {
-                        rasta: { green: '#2D8659', yellow: '#FBBF24', red: '#DC2626' },
-                        dark: '#080808'
-                    }
-                }
-            }
-        }
-    </script>
-    <style>
-        body { background-color: #080808; color: #e5e7eb; font-family: 'Inter', sans-serif; }
-        .font-display { font-family: 'Anton', sans-serif; }
-        .glass { background: rgba(255, 255, 255, 0.03); border: 1px solid rgba(255, 255, 255, 0.08); backdrop-filter: blur(12px); }
-        .custom-scroll::-webkit-scrollbar { width: 5px; }
-        .custom-scroll::-webkit-scrollbar-thumb { background: #333; border-radius: 10px; }
-        .status-dot { height: 8px; width: 8px; border-radius: 50%; display: inline-block; }
-    </style>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Rapihkan Kode — sairootsmusic.com</title>
+<style>
+  @import url('https://fonts.googleapis.com/css2?family=JetBrains+Mono:wght@400;700&family=Syne:wght@700;800&display=swap');
+
+  :root {
+    --bg: #0a0a0a;
+    --surface: #111111;
+    --border: #222222;
+    --green: #2D8659;
+    --yellow: #FBBF24;
+    --red: #DC2626;
+    --text: #e8e8e8;
+    --muted: #555;
+    --mono: 'JetBrains Mono', monospace;
+    --display: 'Syne', sans-serif;
+  }
+
+  * { box-sizing: border-box; margin: 0; padding: 0; }
+
+  body {
+    background: var(--bg);
+    color: var(--text);
+    font-family: var(--mono);
+    font-size: 13px;
+    min-height: 100vh;
+  }
+
+  .stripe {
+    height: 3px;
+    background: linear-gradient(90deg, var(--green), var(--yellow), var(--red));
+    position: fixed;
+    top: 0; left: 0; right: 0;
+    z-index: 100;
+  }
+
+  header {
+    padding: 32px 40px 24px;
+    border-bottom: 1px solid var(--border);
+    margin-top: 3px;
+  }
+
+  header h1 {
+    font-family: var(--display);
+    font-size: 28px;
+    font-weight: 800;
+    letter-spacing: -0.5px;
+    color: #fff;
+  }
+
+  header h1 span { color: var(--yellow); }
+  header p { color: var(--muted); margin-top: 4px; font-size: 12px; }
+
+  .container { max-width: 960px; margin: 0 auto; padding: 32px 40px; }
+
+  .token-section {
+    background: var(--surface);
+    border: 1px solid var(--border);
+    padding: 24px;
+    margin-bottom: 24px;
+  }
+
+  .token-section label {
+    display: block;
+    color: var(--yellow);
+    font-size: 11px;
+    letter-spacing: 2px;
+    text-transform: uppercase;
+    margin-bottom: 10px;
+  }
+
+  .token-row {
+    display: flex;
+    gap: 10px;
+    align-items: center;
+  }
+
+  .token-row input {
+    flex: 1;
+    background: var(--bg);
+    border: 1px solid var(--border);
+    color: var(--text);
+    font-family: var(--mono);
+    font-size: 13px;
+    padding: 10px 14px;
+    outline: none;
+    transition: border-color 0.2s;
+  }
+
+  .token-row input:focus { border-color: var(--yellow); }
+
+  button {
+    background: transparent;
+    border: 1px solid var(--border);
+    color: var(--text);
+    font-family: var(--mono);
+    font-size: 12px;
+    padding: 10px 18px;
+    cursor: pointer;
+    transition: all 0.15s;
+    white-space: nowrap;
+    letter-spacing: 1px;
+    text-transform: uppercase;
+  }
+
+  button:hover { border-color: var(--yellow); color: var(--yellow); }
+  button:disabled { opacity: 0.35; cursor: not-allowed; }
+
+  button.primary {
+    background: var(--yellow);
+    border-color: var(--yellow);
+    color: #000;
+    font-weight: 700;
+  }
+
+  button.primary:hover { background: #e0a800; border-color: #e0a800; color: #000; }
+  button.danger { border-color: var(--red); color: var(--red); }
+  button.danger:hover { background: var(--red); color: #fff; }
+  button.success { border-color: var(--green); color: var(--green); }
+  button.success:hover { background: var(--green); color: #fff; }
+
+  .info-box {
+    background: var(--surface);
+    border: 1px solid var(--border);
+    border-left: 3px solid var(--green);
+    padding: 16px 20px;
+    margin-bottom: 24px;
+    font-size: 12px;
+    color: var(--muted);
+    line-height: 1.8;
+  }
+
+  .info-box strong { color: var(--text); }
+
+  .controls {
+    display: flex;
+    gap: 10px;
+    margin-bottom: 24px;
+    flex-wrap: wrap;
+    align-items: center;
+  }
+
+  .stats {
+    margin-left: auto;
+    font-size: 11px;
+    color: var(--muted);
+    display: flex;
+    gap: 16px;
+  }
+
+  .stats span strong { color: var(--text); }
+
+  #log {
+    background: var(--surface);
+    border: 1px solid var(--border);
+    padding: 20px;
+    font-size: 12px;
+    line-height: 1.9;
+    max-height: 200px;
+    overflow-y: auto;
+    margin-bottom: 24px;
+    display: none;
+  }
+
+  #log .log-ok { color: var(--green); }
+  #log .log-skip { color: var(--muted); }
+  #log .log-err { color: var(--red); }
+  #log .log-info { color: var(--yellow); }
+
+  .file-list {
+    display: flex;
+    flex-direction: column;
+    gap: 6px;
+  }
+
+  .file-item {
+    background: var(--surface);
+    border: 1px solid var(--border);
+    display: grid;
+    grid-template-columns: 1fr auto auto auto;
+    gap: 12px;
+    align-items: center;
+    padding: 12px 16px;
+    transition: border-color 0.15s;
+  }
+
+  .file-item:hover { border-color: #333; }
+
+  .file-item .path {
+    color: var(--text);
+    font-size: 12px;
+    overflow: hidden;
+    text-overflow: ellipsis;
+    white-space: nowrap;
+  }
+
+  .file-item .path .folder { color: var(--muted); }
+
+  .badge {
+    font-size: 10px;
+    padding: 2px 8px;
+    letter-spacing: 1px;
+    text-transform: uppercase;
+    border: 1px solid;
+    white-space: nowrap;
+  }
+
+  .badge.pending { border-color: var(--muted); color: var(--muted); }
+  .badge.done { border-color: var(--green); color: var(--green); }
+  .badge.restored { border-color: var(--yellow); color: var(--yellow); }
+  .badge.error { border-color: var(--red); color: var(--red); }
+  .badge.skipped { border-color: #333; color: #444; }
+  .badge.processing { border-color: var(--yellow); color: var(--yellow); animation: blink 0.8s infinite; }
+
+  @keyframes blink { 0%,100%{opacity:1} 50%{opacity:0.4} }
+
+  .file-actions { display: flex; gap: 6px; }
+  .file-actions button { padding: 5px 10px; font-size: 10px; }
+
+  .empty {
+    text-align: center;
+    padding: 60px;
+    color: var(--muted);
+    border: 1px dashed var(--border);
+  }
+
+  .progress-bar-wrap {
+    height: 2px;
+    background: var(--border);
+    margin-bottom: 16px;
+    display: none;
+  }
+
+  .progress-bar {
+    height: 100%;
+    background: linear-gradient(90deg, var(--green), var(--yellow));
+    width: 0%;
+    transition: width 0.3s;
+  }
+
+  .section-title {
+    font-size: 11px;
+    letter-spacing: 2px;
+    text-transform: uppercase;
+    color: var(--muted);
+    margin-bottom: 12px;
+    display: flex;
+    align-items: center;
+    gap: 10px;
+  }
+
+  .section-title::after {
+    content: '';
+    flex: 1;
+    height: 1px;
+    background: var(--border);
+  }
+
+  .diff-modal {
+    display: none;
+    position: fixed;
+    inset: 0;
+    background: rgba(0,0,0,0.85);
+    z-index: 200;
+    padding: 40px;
+    overflow-y: auto;
+  }
+
+  .diff-modal.open { display: flex; align-items: flex-start; justify-content: center; }
+
+  .diff-inner {
+    background: var(--surface);
+    border: 1px solid var(--border);
+    width: 100%;
+    max-width: 860px;
+    padding: 28px;
+  }
+
+  .diff-inner h3 {
+    font-family: var(--display);
+    font-size: 18px;
+    color: #fff;
+    margin-bottom: 4px;
+  }
+
+  .diff-inner .diff-path { color: var(--muted); font-size: 11px; margin-bottom: 20px; }
+
+  .diff-cols {
+    display: grid;
+    grid-template-columns: 1fr 1fr;
+    gap: 16px;
+  }
+
+  .diff-col label {
+    display: block;
+    font-size: 10px;
+    letter-spacing: 2px;
+    text-transform: uppercase;
+    margin-bottom: 8px;
+  }
+
+  .diff-col.before label { color: var(--red); }
+  .diff-col.after label { color: var(--green); }
+
+  .diff-col pre {
+    background: var(--bg);
+    border: 1px solid var(--border);
+    padding: 14px;
+    font-size: 11px;
+    line-height: 1.7;
+    overflow-x: auto;
+    max-height: 400px;
+    overflow-y: auto;
+    white-space: pre-wrap;
+    word-break: break-all;
+  }
+
+  .diff-actions { display: flex; gap: 10px; margin-top: 20px; justify-content: flex-end; }
+
+  ::-webkit-scrollbar { width: 4px; height: 4px; }
+  ::-webkit-scrollbar-track { background: transparent; }
+  ::-webkit-scrollbar-thumb { background: var(--border); }
+</style>
 </head>
-<body class="p-4 md:p-10">
-    <div class="max-w-4xl mx-auto">
-        <div class="flex items-center justify-between mb-8">
-            <div>
-                <h1 class="font-display text-4xl text-white tracking-wider uppercase">Code <span class="text-rasta-yellow">Organizer</span></h1>
-                <p class="text-xs text-gray-500 tracking-[0.2em]">REPOSITORY: pembri/sairootsmusic.com</p>
-            </div>
-            <div class="text-right">
-                <span id="backup-status" class="text-[10px] bg-white/5 px-2 py-1 rounded border border-white/10 text-gray-400 italic">No Backup Found</span>
-            </div>
-        </div>
+<body>
 
-        <div class="glass p-6 rounded-2xl mb-6">
-            <div class="mb-4">
-                <label class="block text-[10px] font-bold text-rasta-green uppercase mb-2 tracking-widest">GitHub Access Token</label>
-                <div class="relative">
-                    <input type="password" id="gh-token" placeholder="Paste ghp_token di sini..." 
-                           class="w-full bg-black/40 border border-white/10 rounded-xl py-3 px-4 focus:outline-none focus:border-rasta-yellow transition-all text-sm">
-                </div>
-            </div>
-            <div class="flex gap-3">
-                <button onclick="scanRepo()" class="flex-1 bg-white text-black font-bold py-3 rounded-xl hover:bg-rasta-yellow transition-all flex items-center justify-center gap-2 text-sm">
-                    <i class="fas fa-search"></i> SCAN FILES
-                </button>
-                <button onclick="restoreBackup()" id="btn-restore" class="hidden flex-1 border border-rasta-red text-rasta-red font-bold py-3 rounded-xl hover:bg-rasta-red hover:text-white transition-all flex items-center justify-center gap-2 text-sm">
-                    <i class="fas fa-history"></i> RESTORE BACKUP
-                </button>
-            </div>
-        </div>
+<div class="stripe"></div>
 
-        <div id="console-box" class="hidden glass rounded-2xl overflow-hidden border-t-2 border-rasta-yellow">
-            <div class="bg-white/5 px-4 py-2 flex items-center justify-between border-b border-white/5">
-                <span class="text-[10px] font-bold uppercase tracking-widest text-gray-400">Process Console</span>
-                <div class="flex gap-1.5">
-                    <div class="w-2 h-2 rounded-full bg-rasta-red"></div>
-                    <div class="w-2 h-2 rounded-full bg-rasta-yellow"></div>
-                    <div class="w-2 h-2 rounded-full bg-rasta-green"></div>
-                </div>
-            </div>
-            <div id="log" class="h-80 overflow-y-auto p-4 font-mono text-[11px] space-y-1 custom-scroll bg-black/20">
-                <p class="text-gray-500 italic">Menunggu perintah...</p>
-            </div>
-            <div id="action-area" class="p-4 bg-white/5 border-t border-white/5 hidden">
-                <button onclick="executeClean()" class="w-full bg-rasta-green text-white font-black py-4 rounded-xl hover:scale-[1.01] active:scale-95 transition-all uppercase tracking-tighter text-lg">
-                    MULAI RAPIHKAN SEKARANG
-                </button>
-            </div>
-        </div>
+<header>
+  <h1>Rapihkan <span>Kode</span></h1>
+  <p>sairootsmusic.com — GitHub Head Organizer · pembri/sairootsmusic.com</p>
+</header>
+
+<div class="container">
+
+  <div class="token-section">
+    <label>GitHub Personal Access Token</label>
+    <div class="token-row">
+      <input type="password" id="gh-token" placeholder="ghp_xxxxxxxxxxxxxxxxxxxx" autocomplete="off">
+      <button onclick="scanRepo()" id="btn-scan">⟳ Scan Repo</button>
     </div>
+  </div>
 
-    <script>
-        let fileList = [];
-        const REPO = "pembri/sairootsmusic.com";
+  <div class="info-box">
+    <strong>Aturan rapih:</strong><br>
+    1. <strong style="color:var(--green)">Links &amp; Icons</strong> — favicon, apple-touch-icon, manifest, canonical<br>
+    2. <strong style="color:var(--yellow)">SEO Meta</strong> — title, description, keywords, author<br>
+    3. <strong style="color:var(--red)">Open Graph</strong> — og:*, twitter:*, theme-color, apple-mobile-web-app<br>
+    Sisanya (charset, viewport, script, style, dll) <strong>tidak digeser</strong> &mdash; cuma urutan 3 grup itu yang dibenerin.<br>
+    Folder <strong>/admin_pages</strong> dan <strong>/cover</strong> dilewati otomatis.
+  </div>
 
-        // Check if backup exists in LocalStorage on load
-        window.onload = () => {
-            checkBackup();
-        };
+  <div class="controls" id="controls" style="display:none">
+    <button class="primary" onclick="rapihkanSemua()" id="btn-all">▶ Rapihkan Semua</button>
+    <button onclick="restoreAll()" class="danger" id="btn-restore-all">↩ Restore Semua</button>
+    <button onclick="openDiff(currentDiffIdx)" id="btn-diff" style="display:none">⊟ Lihat Diff</button>
+    <div class="stats">
+      <span>Total: <strong id="stat-total">0</strong></span>
+      <span>Done: <strong id="stat-done" style="color:var(--green)">0</strong></span>
+      <span>Restored: <strong id="stat-restored" style="color:var(--yellow)">0</strong></span>
+      <span>Error: <strong id="stat-err" style="color:var(--red)">0</strong></span>
+    </div>
+  </div>
 
-        function checkBackup() {
-            const backup = localStorage.getItem('sairoots_backup');
-            if (backup) {
-                document.getElementById('backup-status').innerHTML = "🟢 Backup Ready (Persistent)";
-                document.getElementById('backup-status').classList.add('text-rasta-green');
-                document.getElementById('btn-restore').classList.remove('hidden');
-            }
-        }
+  <div class="progress-bar-wrap" id="progress-wrap">
+    <div class="progress-bar" id="progress-bar"></div>
+  </div>
 
-        function addLog(msg, type = 'info') {
-            const log = document.getElementById('log');
-            const colors = { info: 'text-gray-400', success: 'text-rasta-green', warn: 'text-rasta-yellow', error: 'text-rasta-red' };
-            const time = new Date().toLocaleTimeString();
-            log.innerHTML += `<div class="${colors[type]}"><span class="opacity-30">[${time}]</span> ${msg}</div>`;
-            log.scrollTop = log.scrollHeight;
-        }
+  <div id="log"></div>
 
-        async function scanRepo() {
-            const token = document.getElementById('gh-token').value;
-            if (!token) return alert("Token kosong! Masukkan GitHub Token lo.");
+  <div class="section-title" id="list-title" style="display:none">File HTML Ditemukan</div>
 
-            document.getElementById('console-box').classList.remove('hidden');
-            addLog("Menghubungkan ke GitHub API...", "warn");
+  <div class="file-list" id="file-list">
+    <div class="empty">Token GitHub belum dimasukkan. Scan repo dulu.</div>
+  </div>
 
-            try {
-                const res = await fetch(`https://api.github.com/repos/${REPO}/git/trees/main?recursive=1`, {
-                    headers: { 'Authorization': `token ${token}` }
-                });
-                const data = await res.json();
-                
-                // FILTER: Hanya HTML & Exclude folder /admin_pages/ dan /cover/
-                fileList = data.tree.filter(item => {
-                    const isHtml = item.path.endsWith('.html');
-                    const isExcluded = item.path.startsWith('admin_pages/') || item.path.startsWith('cover/');
-                    const isSelf = item.path.includes('rapihkan_kode.html');
-                    return isHtml && !isExcluded && !isSelf;
-                });
+</div>
 
-                addLog(`Scan Selesai. Ditemukan ${fileList.length} file (Folder admin_pages & cover diabaikan).`, "success");
-                document.getElementById('action-area').classList.remove('hidden');
-            } catch (err) {
-                addLog("Error Scan: " + err.message, "error");
-            }
-        }
+<!-- Diff Modal -->
+<div class="diff-modal" id="diff-modal">
+  <div class="diff-inner">
+    <h3>Preview Perubahan</h3>
+    <div class="diff-path" id="diff-path"></div>
+    <div class="diff-cols">
+      <div class="diff-col before">
+        <label>Sebelum (Original)</label>
+        <pre id="diff-before"></pre>
+      </div>
+      <div class="diff-col after">
+        <label>Sesudah (Dirapiin)</label>
+        <pre id="diff-after"></pre>
+      </div>
+    </div>
+    <div class="diff-actions">
+      <button onclick="closeDiff()">Tutup</button>
+    </div>
+  </div>
+</div>
 
-        function processHead(html) {
-            const headMatch = html.match(/<head>([\s\S]*?)<\/head>/i);
-            if (!headMatch) return html;
+<script>
+const REPO = 'pembri/sairootsmusic.com';
+const SKIP_FOLDERS = ['/admin_pages', '/cover'];
 
-            let headContent = headMatch[1];
+let files = []; // { path, sha, originalContent, rapihContent, status }
+let currentDiffIdx = -1;
 
-            const extract = (regex) => {
-                let found = [];
-                let match;
-                while ((match = regex.exec(headContent)) !== null) {
-                    found.push(match[0]);
-                }
-                headContent = headContent.replace(regex, '');
-                return found;
-            };
+// ── HELPERS ──────────────────────────────────────────────────────────────────
 
-            // 1. Links & Icons
-            const icons = extract(/<link\s+rel="(icon|shortcut icon|apple-touch-icon|manifest|canonical)"[\s\S]*?>/gi);
-            
-            // 2. SEO Meta
-            const title = extract(/<title>[\s\S]*?<\/title>/gi);
-            const seo = extract(/<meta\s+name="(description|keywords|author|robots)"[\s\S]*?>/gi);
+function token() { return document.getElementById('gh-token').value.trim(); }
 
-            // 3. Open Graph
-            const og = extract(/<meta\s+property="og:[\s\S]*?>/gi);
-            const twitter = extract(/<meta\s+name="twitter:[\s\S]*?>/gi);
+function apiHeaders() {
+  return {
+    'Authorization': `token ${token()}`,
+    'Accept': 'application/vnd.github.v3+json'
+  };
+}
 
-            // Re-assembly sesuai urutan instruksi lo
-            const sortedHead = [
-                "\n    ",
-                ...icons,
-                "\n    ",
-                ...title,
-                ...seo,
-                "\n    ",
-                ...og,
-                ...twitter,
-                "\n    ",
-                headContent.trim()
-            ].join('\n    ');
+function log(msg, type = 'info') {
+  const el = document.getElementById('log');
+  el.style.display = 'block';
+  el.innerHTML += `<div class="log-${type}">${msg}</div>`;
+  el.scrollTop = el.scrollHeight;
+}
 
-            return html.replace(/<head>([\s\S]*?)<\/head>/i, `<head>${sortedHead}\n</head>`);
-        }
+function updateStats() {
+  document.getElementById('stat-total').textContent = files.length;
+  document.getElementById('stat-done').textContent = files.filter(f => f.status === 'done').length;
+  document.getElementById('stat-restored').textContent = files.filter(f => f.status === 'restored').length;
+  document.getElementById('stat-err').textContent = files.filter(f => f.status === 'error').length;
+}
 
-        async function executeClean() {
-            const token = document.getElementById('gh-token').value;
-            let backupData = JSON.parse(localStorage.getItem('sairoots_backup') || '{}');
+function setProgress(n, total) {
+  const wrap = document.getElementById('progress-wrap');
+  const bar = document.getElementById('progress-bar');
+  wrap.style.display = 'block';
+  bar.style.width = (n / total * 100) + '%';
+}
 
-            addLog("Mengeksekusi perapihan kode...", "warn");
+// ── SCAN REPO ────────────────────────────────────────────────────────────────
 
-            for (let file of fileList) {
-                try {
-                    const res = await fetch(file.url, { headers: { 'Authorization': `token ${token}` } });
-                    const data = await res.json();
-                    const originalContent = atob(data.content);
+async function scanRepo() {
+  if (!token()) { alert('Masukkan GitHub Token dulu!'); return; }
+  const btn = document.getElementById('btn-scan');
+  btn.disabled = true;
+  btn.textContent = '⟳ Scanning...';
+  document.getElementById('log').innerHTML = '';
+  document.getElementById('log').style.display = 'none';
+  files = [];
 
-                    // Simpan ke Persistent Backup (LocalStorage)
-                    backupData[file.path] = { sha: data.sha, content: originalContent };
-                    localStorage.setItem('sairoots_backup', JSON.stringify(backupData));
+  try {
+    log('Mengambil daftar file dari repo...', 'info');
+    const allHtml = await getAllHtmlFiles();
+    log(`Ditemukan ${allHtml.length} file HTML (setelah skip folder terlarang)`, 'ok');
 
-                    const cleanedContent = processHead(originalContent);
+    files = allHtml.map(f => ({ path: f.path, sha: f.sha, originalContent: null, rapihContent: null, status: 'pending' }));
 
-                    await fetch(`https://api.github.com/repos/${REPO}/contents/${file.path}`, {
-                        method: 'PUT',
-                        headers: { 'Authorization': `token ${token}`, 'Content-Type': 'application/json' },
-                        body: JSON.stringify({
-                            message: `🔧 SAI Roots Toolkit: Reorganized Head for ${file.path}`,
-                            content: btoa(unescape(encodeURIComponent(cleanedContent))),
-                            sha: data.sha
-                        })
-                    });
+    renderFileList();
+    document.getElementById('controls').style.display = 'flex';
+    document.getElementById('list-title').style.display = 'flex';
+    updateStats();
+  } catch (e) {
+    log('Error: ' + e.message, 'err');
+    alert('Gagal scan repo. Cek token & koneksi.\n' + e.message);
+  }
 
-                    addLog(`Done: ${file.path}`, "success");
-                } catch (e) {
-                    addLog(`Failed: ${file.path} | ${e.message}`, "error");
-                }
-            }
-            addLog("PROSES SELESAI!", "success");
-            checkBackup();
-        }
+  btn.disabled = false;
+  btn.textContent = '⟳ Scan Repo';
+}
 
-        async function restoreBackup() {
-            const token = document.getElementById('gh-token').value;
-            const backupData = JSON.parse(localStorage.getItem('sairoots_backup'));
-            
-            if (!token) return alert("Masukkan token untuk restore!");
-            if (!confirm("Yakin mau balikin semua file ke versi awal?")) return;
+async function getAllHtmlFiles() {
+  // Use git trees API to get all files recursively
+  const res = await fetch(`https://api.github.com/repos/${REPO}/git/trees/HEAD?recursive=1`, { headers: apiHeaders() });
+  if (!res.ok) throw new Error(`HTTP ${res.status}: ${await res.text()}`);
+  const data = await res.json();
 
-            addLog("Memulai Restore dari LocalStorage...", "warn");
+  return data.tree.filter(item => {
+    if (item.type !== 'blob') return false;
+    if (!item.path.endsWith('.html')) return false;
+    for (const skip of SKIP_FOLDERS) {
+      if (item.path.startsWith(skip.replace(/^\//, ''))) return false;
+    }
+    return true;
+  });
+}
 
-            for (let path in backupData) {
-                try {
-                    // Ambil SHA terbaru karena file di repo sudah berubah
-                    const currentFile = await fetch(`https://api.github.com/repos/${REPO}/contents/${path}`, {
-                        headers: { 'Authorization': `token ${token}` }
-                    });
-                    const currentData = await currentFile.json();
+// ── RENDER FILE LIST ──────────────────────────────────────────────────────────
 
-                    await fetch(`https://api.github.com/repos/${REPO}/contents/${path}`, {
-                        method: 'PUT',
-                        headers: { 'Authorization': `token ${token}`, 'Content-Type': 'application/json' },
-                        body: JSON.stringify({
-                            message: `⏪ Restore: Reverted ${path} to pre-cleanup state`,
-                            content: btoa(unescape(encodeURIComponent(backupData[path].content))),
-                            sha: currentData.sha
-                        })
-                    });
-                    addLog(`Restored: ${path}`, "info");
-                } catch (e) {
-                    addLog(`Gagal Restore ${path}`, "error");
-                }
-            }
-            
-            addLog("RESTORE TOTAL SELESAI!", "success");
-            localStorage.removeItem('sairoots_backup');
-            location.reload();
-        }
-    </script>
+function renderFileList() {
+  const list = document.getElementById('file-list');
+  if (files.length === 0) {
+    list.innerHTML = '<div class="empty">Tidak ada file HTML ditemukan.</div>';
+    return;
+  }
+
+  list.innerHTML = files.map((f, i) => {
+    const parts = f.path.split('/');
+    const name = parts.pop();
+    const folder = parts.length ? parts.join('/') + '/' : '';
+    const canRestore = f.status === 'done' || f.status === 'restored';
+    const canDiff = f.rapihContent !== null;
+
+    return `<div class="file-item" id="fi-${i}">
+      <div class="path"><span class="folder">${escHtml(folder)}</span>${escHtml(name)}</div>
+      <span class="badge ${f.status}" id="badge-${i}">${badgeLabel(f.status)}</span>
+      <div class="file-actions">
+        ${canDiff ? `<button onclick="openDiff(${i})">⊟ Diff</button>` : ''}
+        <button onclick="rapihkanSatu(${i})" id="btn-r-${i}">▶ Rapihkan</button>
+        ${canRestore ? `<button class="danger" onclick="restoreOne(${i})">↩ Restore</button>` : ''}
+      </div>
+    </div>`;
+  }).join('');
+}
+
+function badgeLabel(s) {
+  return { pending:'Pending', done:'Done ✓', restored:'Restored', error:'Error', processing:'Processing...', skipped:'Skipped' }[s] || s;
+}
+
+function escHtml(s) { return s.replace(/&/g,'&amp;').replace(/</g,'&lt;').replace(/>/g,'&gt;'); }
+
+function updateFileItem(i) {
+  const el = document.getElementById(`fi-${i}`);
+  if (!el) return;
+  const f = files[i];
+  const parts = f.path.split('/');
+  const name = parts.pop();
+  const folder = parts.length ? parts.join('/') + '/' : '';
+  const canRestore = f.status === 'done' || f.status === 'restored';
+  const canDiff = f.rapihContent !== null;
+  el.querySelector('.file-actions').innerHTML = `
+    ${canDiff ? `<button onclick="openDiff(${i})">⊟ Diff</button>` : ''}
+    <button onclick="rapihkanSatu(${i})" id="btn-r-${i}">▶ Rapihkan</button>
+    ${canRestore ? `<button class="danger" onclick="restoreOne(${i})">↩ Restore</button>` : ''}
+  `;
+  const badge = document.getElementById(`badge-${i}`);
+  badge.className = `badge ${f.status}`;
+  badge.textContent = badgeLabel(f.status);
+}
+
+// ── CORE: RAPIHKAN HEAD ───────────────────────────────────────────────────────
+
+function rapihkanHead(html) {
+  // Extract <head>...</head>
+  const headMatch = html.match(/<head([^>]*)>([\s\S]*?)<\/head>/i);
+  if (!headMatch) return html; // no head, skip
+
+  const headAttrs = headMatch[1];
+  const headContent = headMatch[2];
+
+  // Tokenize: split into lines/tags preserving whitespace
+  // We parse tag by tag
+  const tokens = tokenizeHead(headContent);
+
+  // Categorize each token
+  const group1 = []; // Links & Icons
+  const group2 = []; // SEO Meta
+  const group3 = []; // Open Graph
+  const rest   = []; // Everything else
+
+  for (const tok of tokens) {
+    const cat = categorize(tok);
+    if (cat === 1) group1.push(tok);
+    else if (cat === 2) group2.push(tok);
+    else if (cat === 3) group3.push(tok);
+    else rest.push(tok);
+  }
+
+  // Rebuild head: group1, group2, group3, then rest
+  // Add spacing between groups
+  let newHead = '\n';
+
+  if (group1.length) {
+    newHead += '    <!-- Links & Icons -->\n';
+    newHead += group1.map(t => '    ' + t.trim()).join('\n') + '\n\n';
+  }
+  if (group2.length) {
+    newHead += '    <!-- SEO Meta -->\n';
+    newHead += group2.map(t => '    ' + t.trim()).join('\n') + '\n\n';
+  }
+  if (group3.length) {
+    newHead += '    <!-- Open Graph -->\n';
+    newHead += group3.map(t => '    ' + t.trim()).join('\n') + '\n\n';
+  }
+  if (rest.length) {
+    const restStr = rest.map(t => t.trim()).filter(Boolean);
+    if (restStr.length) {
+      newHead += restStr.join('\n    ');
+      newHead = newHead.trimEnd() + '\n';
+    }
+  }
+
+  const newHeadFull = `<head${headAttrs}>${newHead}</head>`;
+  return html.replace(/<head([^>]*)>[\s\S]*?<\/head>/i, newHeadFull);
+}
+
+function tokenizeHead(headContent) {
+  const tokens = [];
+  // Match HTML tags (including multi-line) and text nodes
+  const re = /(<[^>]+\/?>|<!--[\s\S]*?-->|<[a-z][a-z0-9]*[\s\S]*?<\/[a-z][a-z0-9]*>)/gi;
+  let lastIndex = 0;
+  let m;
+
+  while ((m = re.exec(headContent)) !== null) {
+    // text before this match
+    const before = headContent.slice(lastIndex, m.index).trim();
+    if (before) tokens.push(before);
+    tokens.push(m[0]);
+    lastIndex = re.lastIndex;
+  }
+  const after = headContent.slice(lastIndex).trim();
+  if (after) tokens.push(after);
+
+  return tokens.filter(t => t.trim());
+}
+
+function categorize(tok) {
+  const t = tok.trim().toLowerCase();
+
+  // ── GROUP 1: Links & Icons ──
+  if (t.startsWith('<link')) {
+    // canonical
+    if (/rel=["']canonical["']/.test(t)) return 1;
+    // manifest
+    if (/rel=["']manifest["']/.test(t)) return 1;
+    // icon types
+    if (/rel=["'](icon|shortcut icon|apple-touch-icon)["']/.test(t)) return 1;
+    // android chrome icons
+    if (/android-chrome/.test(t)) return 1;
+  }
+
+  // ── GROUP 2: SEO Meta ──
+  if (t.startsWith('<title')) return 2;
+  if (t.startsWith('<meta')) {
+    if (/name=["'](description|keywords|author)["']/.test(t)) return 2;
+  }
+
+  // ── GROUP 3: Open Graph / Twitter / App ──
+  if (t.startsWith('<meta')) {
+    if (/property=["']og:/.test(t)) return 3;
+    if (/name=["']twitter:/.test(t)) return 3;
+    if (/name=["']theme-color["']/.test(t)) return 3;
+    if (/name=["']apple-mobile-web-app/.test(t)) return 3;
+  }
+
+  return 0; // rest
+}
+
+// ── FETCH & PUSH ──────────────────────────────────────────────────────────────
+
+async function fetchFileContent(path) {
+  const res = await fetch(`https://api.github.com/repos/${REPO}/contents/${path}`, { headers: apiHeaders() });
+  if (!res.ok) throw new Error(`Fetch failed: HTTP ${res.status}`);
+  const data = await res.json();
+  const content = atob(data.content.replace(/\n/g, ''));
+  return { content, sha: data.sha };
+}
+
+async function pushFile(path, sha, content, message) {
+  const encoded = btoa(unescape(encodeURIComponent(content)));
+  const res = await fetch(`https://api.github.com/repos/${REPO}/contents/${path}`, {
+    method: 'PUT',
+    headers: { ...apiHeaders(), 'Content-Type': 'application/json' },
+    body: JSON.stringify({ message, content: encoded, sha })
+  });
+  if (!res.ok) throw new Error(`Push failed: HTTP ${res.status}: ${await res.text()}`);
+  const data = await res.json();
+  return data.content.sha;
+}
+
+// ── RAPIHKAN SATU ─────────────────────────────────────────────────────────────
+
+async function rapihkanSatu(i) {
+  const f = files[i];
+  f.status = 'processing';
+  updateFileItem(i);
+
+  try {
+    log(`📄 Fetching: ${f.path}`, 'info');
+    const { content, sha } = await fetchFileContent(f.path);
+    f.originalContent = content;
+    f.sha = sha;
+
+    const rapih = rapihkanHead(content);
+    f.rapihContent = rapih;
+
+    if (rapih === content) {
+      log(`⊘ Sudah rapih: ${f.path}`, 'skip');
+      f.status = 'done';
+      updateFileItem(i);
+      updateStats();
+      return;
+    }
+
+    const newSha = await pushFile(f.path, sha, rapih, `rapihkan: urutan head — ${f.path}`);
+    f.sha = newSha;
+    f.status = 'done';
+    log(`✓ Done: ${f.path}`, 'ok');
+  } catch (e) {
+    f.status = 'error';
+    log(`✗ Error ${f.path}: ${e.message}`, 'err');
+  }
+
+  updateFileItem(i);
+  updateStats();
+}
+
+// ── RAPIHKAN SEMUA ────────────────────────────────────────────────────────────
+
+async function rapihkanSemua() {
+  if (!token()) { alert('Masukkan GitHub Token!'); return; }
+  const btn = document.getElementById('btn-all');
+  btn.disabled = true;
+  document.getElementById('log').innerHTML = '';
+  log('▶ Mulai rapihkan semua file...', 'info');
+
+  const toProcess = files.filter(f => f.status !== 'done');
+
+  for (let i = 0; i < files.length; i++) {
+    if (files[i].status === 'done') continue;
+    await rapihkanSatu(i);
+    setProgress(files.filter(f => f.status === 'done' || f.status === 'error').length, files.length);
+    await sleep(300); // rate limit aman
+  }
+
+  log('✓ Selesai!', 'ok');
+  btn.disabled = false;
+}
+
+// ── RESTORE ───────────────────────────────────────────────────────────────────
+
+async function restoreOne(i) {
+  const f = files[i];
+  if (!f.originalContent) { alert('Tidak ada backup untuk file ini.'); return; }
+  if (!confirm(`Restore ${f.path} ke versi original?`)) return;
+
+  f.status = 'processing';
+  updateFileItem(i);
+
+  try {
+    const newSha = await pushFile(f.path, f.sha, f.originalContent, `restore: kembalikan head original — ${f.path}`);
+    f.sha = newSha;
+    f.status = 'restored';
+    log(`↩ Restored: ${f.path}`, 'info');
+  } catch (e) {
+    f.status = 'error';
+    log(`✗ Restore error ${f.path}: ${e.message}`, 'err');
+  }
+
+  updateFileItem(i);
+  updateStats();
+}
+
+async function restoreAll() {
+  const restorable = files.filter(f => f.originalContent && f.status === 'done');
+  if (restorable.length === 0) { alert('Tidak ada file yang bisa di-restore (belum ada yang dirapiin).'); return; }
+  if (!confirm(`Restore ${restorable.length} file ke versi original?`)) return;
+
+  for (const f of restorable) {
+    const i = files.indexOf(f);
+    await restoreOne(i);
+    await sleep(300);
+  }
+}
+
+// ── DIFF MODAL ────────────────────────────────────────────────────────────────
+
+function openDiff(i) {
+  const f = files[i];
+  currentDiffIdx = i;
+  if (!f.rapihContent) return;
+  document.getElementById('diff-path').textContent = f.path;
+  document.getElementById('diff-before').textContent = extractHead(f.originalContent || '');
+  document.getElementById('diff-after').textContent = extractHead(f.rapihContent);
+  document.getElementById('diff-modal').classList.add('open');
+}
+
+function closeDiff() {
+  document.getElementById('diff-modal').classList.remove('open');
+}
+
+function extractHead(html) {
+  const m = html.match(/<head[^>]*>([\s\S]*?)<\/head>/i);
+  return m ? m[1].trim() : '(tidak ada head)';
+}
+
+// ── UTILS ─────────────────────────────────────────────────────────────────────
+
+function sleep(ms) { return new Promise(r => setTimeout(r, ms)); }
+
+// Close diff on backdrop click
+document.getElementById('diff-modal').addEventListener('click', function(e) {
+  if (e.target === this) closeDiff();
+});
+</script>
 </body>
 </html>
