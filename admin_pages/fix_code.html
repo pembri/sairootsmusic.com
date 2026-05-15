@@ -1,0 +1,166 @@
+<!DOCTYPE html>
+<html lang="id">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>SAI Roots | Alien Character Cleaner</title>
+    <script src="https://cdn.tailwindcss.com"></script>
+    <link href="https://fonts.googleapis.com/css2?family=Anton&family=Inter:wght@400;700&display=swap" rel="stylesheet">
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.5.1/css/all.min.css">
+    <script>
+        tailwind.config = {
+            theme: {
+                extend: {
+                    colors: {
+                        rasta: { green: '#2D8659', yellow: '#FBBF24', red: '#DC2626' }
+                    }
+                }
+            }
+        }
+    </script>
+    <style>
+        body { background-color: #080808; color: #e5e7eb; font-family: 'Inter', sans-serif; }
+        .font-display { font-family: 'Anton', sans-serif; }
+        .glass { background: rgba(255, 255, 255, 0.03); border: 1px solid rgba(255, 255, 255, 0.08); backdrop-filter: blur(12px); }
+        .custom-scroll::-webkit-scrollbar { width: 5px; }
+        .custom-scroll::-webkit-scrollbar-thumb { background: #333; border-radius: 10px; }
+    </style>
+</head>
+<body class="p-4 md:p-10">
+    <div class="max-w-4xl mx-auto">
+        <div class="flex items-center justify-between mb-8">
+            <div>
+                <h1 class="font-display text-4xl text-white tracking-wider uppercase">Alien <span class="text-rasta-red">Cleaner</span></h1>
+                <p class="text-xs text-gray-500 tracking-[0.2em]">MEMBASMI KARAKTER MOJIBAKE / ANEH</p>
+            </div>
+        </div>
+
+        <div class="glass p-6 rounded-2xl mb-6">
+            <div class="mb-4">
+                <label class="block text-[10px] font-bold text-rasta-green uppercase mb-2 tracking-widest">GitHub Access Token</label>
+                <input type="password" id="gh-token" placeholder="Paste ghp_token di sini..." 
+                       class="w-full bg-black/40 border border-white/10 rounded-xl py-3 px-4 focus:outline-none focus:border-rasta-red transition-all text-sm">
+            </div>
+            <button onclick="scanRepo()" class="w-full bg-white text-black font-bold py-3 rounded-xl hover:bg-rasta-red hover:text-white transition-all flex items-center justify-center gap-2 text-sm">
+                <i class="fas fa-radar"></i> SCAN & BERSIHKAN SEKARANG
+            </button>
+        </div>
+
+        <div id="console-box" class="hidden glass rounded-2xl overflow-hidden border-t-2 border-rasta-red">
+            <div class="bg-white/5 px-4 py-2 border-b border-white/5 text-[10px] font-bold uppercase tracking-widest text-gray-400">
+                Live Log
+            </div>
+            <div id="log" class="h-80 overflow-y-auto p-4 font-mono text-[11px] space-y-1 custom-scroll bg-black/20">
+                <p class="text-gray-500 italic">Siap membasmi huruf alien...</p>
+            </div>
+        </div>
+    </div>
+
+    <script>
+        const REPO = "pembri/sairootsmusic.com";
+
+        function addLog(msg, type = 'info') {
+            const log = document.getElementById('log');
+            const colors = { info: 'text-gray-400', success: 'text-rasta-green', warn: 'text-rasta-yellow', error: 'text-rasta-red' };
+            log.innerHTML += `<div class="${colors[type]}"><span class="opacity-30">[${new Date().toLocaleTimeString()}]</span> ${msg}</div>`;
+            log.scrollTop = log.scrollHeight;
+        }
+
+        // Engine Encode/Decode Aman (UTF-8)
+        function decodeUTF8Base64(base64) {
+            const binString = atob(base64);
+            const bytes = new Uint8Array(binString.length);
+            for (let i = 0; i < binString.length; i++) bytes[i] = binString.charCodeAt(i);
+            return new TextDecoder('utf-8').decode(bytes);
+        }
+
+        function encodeUTF8Base64(str) {
+            const bytes = new TextEncoder().encode(str);
+            let binary = '';
+            for (let i = 0; i < bytes.byteLength; i++) binary += String.fromCharCode(bytes[i]);
+            return btoa(binary);
+        }
+
+        // KAMUS PEMBERSIH HURUF ALIEN (MOJIBAKE)
+        function cleanAlienCharacters(text) {
+            let cleaned = text
+                // 1. Perbaiki yang bisa diselamatkan ke simbol asli
+                .replace(/Ã‚Â©|Â©/g, '©')        // Simbol Copyright
+                .replace(/Ã¢Â€Â¦/g, '...')       // Titik tiga (ellipsis)
+                .replace(/Ã¢Â€Â™/g, "'")         // Tanda kutip tunggal
+                .replace(/Ã¢Â€Âœ/g, '"')         // Kutip ganda buka
+                .replace(/Ã¢Â€Â/g, '"')         // Kutip ganda tutup
+                .replace(/Ã¢Â€Â“|Ã¢Â€Â”/g, '-')   // Garis hubung (dash)
+                
+                // 2. Sapu bersih sisa karakter aneh (yang nggak bisa diselamatkan)
+                .replace(/Ã/g, '')
+                .replace(/Â/g, '')
+                .replace(/¦/g, '')
+                .replace(//g, '')
+                .replace(/¢/g, '')
+                .replace(//g, ''); // Karakter unknown diamond hitam
+            
+            return cleaned;
+        }
+
+        async function scanRepo() {
+            const token = document.getElementById('gh-token').value;
+            if (!token) return alert("Isi tokennya dulu cok!");
+
+            document.getElementById('console-box').classList.remove('hidden');
+            addLog("Mencari sarang alien di repository...", "warn");
+
+            try {
+                const res = await fetch(`https://api.github.com/repos/${REPO}/git/trees/main?recursive=1`, {
+                    headers: { 'Authorization': `token ${token}` }
+                });
+                const data = await res.json();
+                
+                let fileList = data.tree.filter(item => {
+                    return item.path.endsWith('.html') && 
+                           !item.path.startsWith('admin_pages/') && 
+                           !item.path.startsWith('cover/');
+                });
+
+                addLog(`Ditemukan ${fileList.length} file HTML. Mulai proses pembersihan...`, "info");
+                
+                let filesFixed = 0;
+
+                for (let file of fileList) {
+                    try {
+                        const fileRes = await fetch(file.url, { headers: { 'Authorization': `token ${token}` } });
+                        const fileData = await fileRes.json();
+                        
+                        const originalContent = decodeUTF8Base64(fileData.content);
+                        const cleanedContent = cleanAlienCharacters(originalContent);
+
+                        // Cuma nge-push kalau isi file beneran berubah (ada alien yang kehapus)
+                        if (originalContent !== cleanedContent) {
+                            addLog(`⚠️ Ditemukan alien di: ${file.path} -> Sedang membersihkan...`, "warn");
+                            
+                            await fetch(`https://api.github.com/repos/${REPO}/contents/${file.path}`, {
+                                method: 'PUT',
+                                headers: { 'Authorization': `token ${token}`, 'Content-Type': 'application/json' },
+                                body: JSON.stringify({
+                                    message: `🧹 SAI Roots Toolkit: Cleaned Alien/Mojibake Characters`,
+                                    content: encodeUTF8Base64(cleanedContent),
+                                    sha: fileData.sha
+                                })
+                            });
+                            addLog(`✅ Bersih: ${file.path}`, "success");
+                            filesFixed++;
+                        }
+                    } catch (e) {
+                        addLog(`Gagal cek ${file.path} | ${e.message}`, "error");
+                    }
+                }
+                
+                addLog(`PROSES SELESAI! ${filesFixed} file berhasil dibersihkan dari huruf alien.`, "success");
+
+            } catch (err) {
+                addLog("Error Koneksi: " + err.message, "error");
+            }
+        }
+    </script>
+</body>
+</html>
