@@ -3,349 +3,171 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>SAI Roots - Ultra Restore Tool</title>
-    <link href="https://fonts.googleapis.com/css2?family=JetBrains+Mono:wght@400;700&family=Inter:wght@400;600&display=swap" rel="stylesheet">
+    <title>GitHub Bulk Restore - SAI Roots</title>
     <style>
-        :root {
-            --bg-color: #0b0e14;
-            --card-bg: #151921;
-            --text-color: #d1d5db;
-            --accent-red: #ff4d4d;
-            --accent-yellow: #ffcb2b;
-            --accent-green: #00ff88;
-            --border-color: #2d333b;
-        }
-
         body {
-            background-color: var(--bg-color);
-            color: var(--text-color);
-            font-family: 'Inter', sans-serif;
-            margin: 0;
+            font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+            background-color: #121212;
+            color: #e0e0e0;
             display: flex;
             justify-content: center;
-            align-items: center;
-            min-height: 100vh;
+            padding: 20px;
         }
-
         .container {
-            width: 95%;
-            max-width: 900px;
-            background: var(--card-bg);
-            border: 1px solid var(--border-color);
-            border-radius: 12px;
-            padding: 2rem;
-            box-shadow: 0 20px 50px rgba(0,0,0,0.6);
-        }
-
-        h1 {
-            text-align: center;
-            font-size: 1.6rem;
-            margin-bottom: 1.5rem;
-            color: var(--accent-green);
-            text-transform: uppercase;
-            letter-spacing: 3px;
-            border-bottom: 2px solid var(--accent-green);
-            display: inline-block;
-            padding-bottom: 5px;
-        }
-
-        .center-wrapper { text-align: center; }
-
-        /* Login Section */
-        #login-section { display: flex; flex-direction: column; gap: 1.5rem; max-width: 400px; margin: 0 auto; }
-        
-        input {
-            background: #000;
-            border: 1px solid var(--border-color);
-            color: var(--accent-green);
-            padding: 15px;
-            border-radius: 8px;
-            font-family: 'JetBrains Mono', monospace;
-            font-size: 1rem;
-            outline: none;
-            text-align: center;
-        }
-
-        .btn {
-            cursor: pointer;
-            padding: 15px 25px;
-            border: none;
-            border-radius: 8px;
-            font-weight: 700;
-            transition: all 0.3s ease;
-            text-transform: uppercase;
-            letter-spacing: 1px;
-        }
-
-        .btn-primary { background: var(--accent-green); color: #000; }
-        .btn-primary:hover { box-shadow: 0 0 20px rgba(0, 255, 136, 0.4); transform: scale(1.02); }
-        .btn-primary:disabled { background: #333; color: #777; cursor: not-allowed; transform: none; }
-
-        /* Dashboard */
-        #dashboard { display: none; }
-        
-        .commit-list {
-            background: #000;
-            max-height: 350px;
-            overflow-y: scroll;
-            border: 1px solid var(--border-color);
-            border-radius: 8px;
-            margin: 1.5rem 0;
-        }
-
-        .commit-item {
-            padding: 15px;
-            border-bottom: 1px solid #111;
-            cursor: pointer;
-            display: flex;
-            justify-content: space-between;
-            align-items: center;
-        }
-
-        .commit-item:hover { background: #111; }
-        .commit-item.selected { border-left: 5px solid var(--accent-yellow); background: #1a1a10; }
-
-        .commit-msg { font-weight: 600; color: #fff; display: block; margin-bottom: 5px; }
-        .commit-meta { font-size: 0.75rem; color: #666; font-family: 'JetBrains Mono'; }
-
-        /* Terminal Overlay */
-        #terminal-overlay {
-            display: none;
-            position: fixed;
-            top: 0; left: 0; width: 100%; height: 100%;
-            background: rgba(0,0,0,0.95);
-            z-index: 9999;
+            background-color: #1e1e1e;
             padding: 30px;
+            border-radius: 8px;
+            box-shadow: 0 4px 15px rgba(0,0,0,0.5);
+            width: 100%;
+            max-width: 600px;
+            border-top: 4px solid #f1c40f; /* Kuning aksen */
+        }
+        h2 { color: #f1c40f; text-align: center; }
+        label { display: block; margin-bottom: 8px; font-weight: bold; }
+        input {
+            width: 100%;
+            padding: 12px;
+            margin-bottom: 20px;
+            border-radius: 4px;
+            border: 1px solid #333;
+            background-color: #252525;
+            color: white;
             box-sizing: border-box;
         }
-
-        .terminal-window {
-            height: 100%;
-            overflow-y: auto;
-            font-family: 'JetBrains Mono', monospace;
-            font-size: 14px;
-            color: #00ff41; /* Klasik Hacker Green */
-            line-height: 1.6;
+        button {
+            width: 100%;
+            padding: 15px;
+            background-color: #27ae60; /* Hijau aksen */
+            color: white;
+            border: none;
+            border-radius: 4px;
+            cursor: pointer;
+            font-size: 16px;
+            font-weight: bold;
         }
-
-        .log-error { color: var(--accent-red); font-weight: bold; }
-        .log-warn { color: var(--accent-yellow); }
-        .log-info { color: #00d9ff; }
-
-        .blink { animation: blink 1s infinite; }
-        @keyframes blink { 50% { opacity: 0; } }
-
-        /* Scrollbar */
-        ::-webkit-scrollbar { width: 6px; }
-        ::-webkit-scrollbar-track { background: #000; }
-        ::-webkit-scrollbar-thumb { background: #333; border-radius: 10px; }
+        button:hover { background-color: #2ecc71; }
+        button:disabled { background-color: #555; cursor: not-allowed; }
+        #status {
+            margin-top: 20px;
+            padding: 15px;
+            background-color: #000;
+            border-radius: 4px;
+            font-family: monospace;
+            font-size: 13px;
+            height: 200px;
+            overflow-y: auto;
+            white-space: pre-wrap;
+            border-left: 3px solid #e74c3c; /* Merah aksen */
+        }
     </style>
 </head>
 <body>
 
 <div class="container">
-    <div class="center-wrapper">
-        <h1>Restore Center</h1>
-    </div>
+    <h2>Restore Previous Code</h2>
+    <p style="font-size: 12px; color: #888; text-align: center;">Target Repo: pembri/sairootsmusic.com</p>
+    
+    <label for="token">GitHub Personal Access Token:</label>
+    <input type="password" id="token" placeholder="ghp_xxxxxxxxxxxx">
 
-    <!-- Login -->
-    <div id="login-section">
-        <p style="text-align: center;">Enter GitHub Token to sync <b>pembri/sairootsmusic.com</b></p>
-        <input type="password" id="gh-token" placeholder="PASTE_TOKEN_HERE">
-        <button class="btn btn-primary" onclick="initConnect()">Access System</button>
-    </div>
+    <button id="startBtn" onclick="startRestore()">MULAI RESTORE MASSAL</button>
 
-    <!-- Dashboard -->
-    <div id="dashboard">
-        <p>Target: <span style="color:var(--accent-green)">pembri/sairootsmusic.com</span></p>
-        <div style="font-size: 0.8rem; color: #888; background: #000; padding: 10px; border-radius: 5px;">
-             SECURITY: <b>/admin_pages</b> & <b>/video cover</b> locked and protected.
-        </div>
-        
-        <div id="commit-container" class="commit-list">
-            <!-- Commits -->
-        </div>
-
-        <div style="display: flex; justify-content: space-between; align-items: center;">
-            <span id="selection-status" style="font-size: 0.9rem; color: var(--accent-yellow);">Please select a point...</span>
-            <button class="btn btn-primary" id="btn-restore" onclick="runMassRestore()" disabled>GAS RESTORE MASAL</button>
-        </div>
-    </div>
-</div>
-
-<!-- Terminal UI -->
-<div id="terminal-overlay">
-    <div class="terminal-window" id="term-box">
-        <div>[SYSTEM] INITIALIZING TERMINAL... READY.</div>
-    </div>
+    <div id="status">Menunggu perintah...</div>
 </div>
 
 <script>
-    const CONFIG = {
-        owner: 'pembri',
-        repo: 'sairootsmusic.com',
-        protected: ['admin_pages/', 'video cover/']
-    };
+    const owner = 'pembri';
+    const repo = 'sairootsmusic.com';
+    const logArea = document.getElementById('status');
+    const startBtn = document.getElementById('startBtn');
 
-    let token = '';
-    let targetSHA = '';
-
-    const termBox = document.getElementById('term-box');
-
-    function log(msg, style = '') {
-        const line = document.createElement('div');
-        line.className = style;
-        line.innerHTML = `> [${new Date().toLocaleTimeString()}] ${msg}`;
-        termBox.appendChild(line);
-        termBox.scrollTop = termBox.scrollHeight;
+    function log(msg) {
+        logArea.innerText += `> ${msg}\n`;
+        logArea.scrollTop = logArea.scrollHeight;
     }
 
-    async function initConnect() {
-        token = document.getElementById('gh-token').value;
-        if(!token) return alert("Token kosong!");
-
-        try {
-            const res = await fetch(`https://api.github.com/repos/${CONFIG.owner}/${CONFIG.repo}/commits?per_page=50`, {
-                headers: { 'Authorization': `token ${token}` }
-            });
-            if(res.ok) {
-                const data = await res.json();
-                loadCommits(data);
-            } else {
-                throw new Error("Invalid Token/Repository");
+    async function fetchGitHub(endpoint, token, options = {}) {
+        const res = await fetch(`https://api.github.com/repos/${owner}/${repo}${endpoint}`, {
+            ...options,
+            headers: {
+                'Authorization': `token ${token}`,
+                'Accept': 'application/vnd.github.v3+json',
+                ...options.headers
             }
-        } catch (e) {
-            alert(e.message);
-        }
-    }
-
-    function loadCommits(data) {
-        document.getElementById('login-section').style.display = 'none';
-        document.getElementById('dashboard').style.display = 'block';
-        const container = document.getElementById('commit-container');
-
-        // Filter: Hanya ambil commit unik berdasarkan pesan (Grouping)
-        const seen = new Set();
-        data.forEach(c => {
-            if(seen.has(c.commit.message)) return;
-            seen.add(c.commit.message);
-
-            const div = document.createElement('div');
-            div.className = 'commit-item';
-            div.onclick = () => {
-                document.querySelectorAll('.commit-item').forEach(el => el.classList.remove('selected'));
-                div.classList.add('selected');
-                targetSHA = c.sha;
-                document.getElementById('btn-restore').disabled = false;
-                document.getElementById('selection-status').innerHTML = `Target: ${c.sha.substring(0,7)}`;
-            };
-            div.innerHTML = `
-                <div>
-                    <span class="commit-msg">${c.commit.message}</span>
-                    <span class="commit-meta">${c.sha.substring(0,8)} • ${new Date(c.commit.author.date).toLocaleString()}</span>
-                </div>
-                <div style="color:var(--accent-green)">●</div>
-            `;
-            container.appendChild(div);
         });
+        if (!res.ok) throw new Error(`Error: ${res.status} - ${await res.text()}`);
+        return res.json();
     }
 
-    async function runMassRestore() {
-        if(!confirm("PERINGATAN: Ini akan mengembalikan kode secara MASAL. Lanjutkan?")) return;
+    async function startRestore() {
+        const token = document.getElementById('token').value;
+        if (!token) return alert('Masukkan Token GitHub!');
 
-        document.getElementById('terminal-overlay').style.display = 'block';
-        log("STARTING DEEP-RESTORE SEQUENCE...", "log-warn");
-        
+        startBtn.disabled = true;
+        logArea.innerText = "";
+        log("Memulai proses pencarian commit terakhir...");
+
         try {
-            // 1. Ambil Tree Target (Full Recursive)
-            log(`Fetching target tree (SHA: ${targetSHA.substring(0,7)})...`);
-            const targetCommitRes = await fetch(`https://api.github.com/repos/${CONFIG.owner}/${CONFIG.repo}/git/commits/${targetSHA}`, {
-                headers: { 'Authorization': `token ${token}` }
-            });
-            const targetCommit = await targetCommitRes.json();
-            const targetTreeRes = await fetch(`https://api.github.com/repos/${CONFIG.owner}/${CONFIG.repo}/git/trees/${targetCommit.tree.sha}?recursive=1`, {
-                headers: { 'Authorization': `token ${token}` }
-            });
-            const targetTreeData = await targetTreeRes.json();
+            // 1. Dapatkan daftar commit terbaru
+            const commits = await fetchGitHub('/commits', token);
+            if (commits.length < 2) throw new Error("Tidak ada commit sebelumnya untuk di-restore.");
 
-            // 2. Ambil Tree Saat Ini untuk Proteksi
-            log("Fetching current state for protection check...");
-            const currentRefRes = await fetch(`https://api.github.com/repos/${CONFIG.owner}/${CONFIG.repo}/branches/main`, {
-                headers: { 'Authorization': `token ${token}` }
-            });
-            const currentRef = await currentRefRes.json();
-            const currentTreeRes = await fetch(`https://api.github.com/repos/${CONFIG.owner}/${CONFIG.repo}/git/trees/${currentRef.commit.commit.tree.sha}?recursive=1`, {
-                headers: { 'Authorization': `token ${token}` }
-            });
-            const currentTreeData = await currentTreeRes.json();
+            const latestCommitSha = commits[0].sha;
+            const previousCommitSha = commits[1].sha; // Target restore (kode sebelum ini)
 
-            // 3. Logic Merging Masal
-            log("Filtering and merging data objects...");
+            log(`Commit Saat Ini: ${latestCommitSha.substring(0,7)}`);
+            log(`Target Restore: ${previousCommitSha.substring(0,7)}`);
+
+            // 2. Ambil daftar file dari commit target (Tree)
+            const treeData = await fetchGitHub(`/git/trees/${previousCommitSha}?recursive=1`, token);
             
-            // Filter target: Buang file yang ada di folder proteksi
-            const filteredTarget = targetTreeData.tree.filter(item => {
-                const isProtected = CONFIG.protected.some(folder => item.path.startsWith(folder));
-                return !isProtected && item.type === 'blob';
+            // 3. Filter file .html yang bukan folder terlarang
+            const filesToRestore = treeData.tree.filter(file => {
+                const isHtml = file.path.endsWith('.html');
+                const isForbidden = file.path.startsWith('admin_pages/') || file.path.startsWith('video_cover/');
+                return isHtml && !isForbidden && file.type === 'blob';
             });
 
-            // Filter current: Ambil HANYA file yang ada di folder proteksi
-            const protectedAssets = currentTreeData.tree.filter(item => {
-                const isProtected = CONFIG.protected.some(folder => item.path.startsWith(folder));
-                return isProtected && item.type === 'blob';
-            });
+            log(`Ditemukan ${filesToRestore.length} file HTML untuk di-restore.`);
 
-            log(`Target files to restore: ${filteredTarget.length}`, 'log-info');
-            log(`Protected files preserved: ${protectedAssets.length}`, 'log-info');
+            // 4. Proses restore satu per satu dengan jeda 1 detik
+            for (const file of filesToRestore) {
+                try {
+                    log(`Mengembalikan: ${file.path}...`);
+                    
+                    // Ambil konten file dari commit sebelumnya
+                    const blobData = await fetchGitHub(`/git/blobs/${file.sha}`, token);
+                    
+                    // Lakukan commit ulang ke file tersebut
+                    // Kita perlu mendapatkan SHA file saat ini di branch main untuk update
+                    const currentFileStatus = await fetchGitHub(`/contents/${file.path}`, token);
+                    
+                    const updateData = {
+                        message: `Restore ${file.path} to version from ${previousCommitSha.substring(0,7)}`,
+                        content: blobData.content, // Konten sudah base64 dari API blob
+                        sha: currentFileStatus.sha // SHA file sekarang agar bisa di-overwrite
+                    };
 
-            const finalTreeArray = [...filteredTarget, ...protectedAssets].map(item => ({
-                path: item.path,
-                mode: item.mode,
-                type: item.type,
-                sha: item.sha
-            }));
+                    await fetchGitHub(`/contents/${file.path}`, token, {
+                        method: 'PUT',
+                        body: JSON.stringify(updateData)
+                    });
 
-            // 4. Create New Tree Masal
-            log("Injecting new tree to GitHub Git Database...");
-            const newTreeRes = await fetch(`https://api.github.com/repos/${CONFIG.owner}/${CONFIG.repo}/git/trees`, {
-                method: 'POST',
-                headers: { 'Authorization': `token ${token}`, 'Content-Type': 'application/json' },
-                body: JSON.stringify({ tree: finalTreeArray })
-            });
-            const newTree = await newTreeRes.json();
-
-            // 5. Create Commit
-            log("Sealing commit with master-key...");
-            const newCommitRes = await fetch(`https://api.github.com/repos/${CONFIG.owner}/${CONFIG.repo}/git/commits`, {
-                method: 'POST',
-                headers: { 'Authorization': `token ${token}`, 'Content-Type': 'application/json' },
-                body: JSON.stringify({
-                    message: `⚡ MASS RESTORE: Reverted to ${targetSHA.substring(0,7)} (Protected Folders Kept)`,
-                    tree: newTree.sha,
-                    parents: [currentRef.commit.sha]
-                })
-            });
-            const newCommit = await newCommitRes.json();
-
-            // 6. Push ke Main
-            log("Updating Main Branch HEAD...", "log-warn");
-            const pushRes = await fetch(`https://api.github.com/repos/${CONFIG.owner}/${CONFIG.repo}/git/refs/heads/main`, {
-                method: 'PATCH',
-                headers: { 'Authorization': `token ${token}`, 'Content-Type': 'application/json' },
-                body: JSON.stringify({ sha: newCommit.sha, force: true })
-            });
-
-            if(pushRes.ok) {
-                log("DATABASE SYNCHRONIZED SUCCESSFULLY!", "log-warn");
-                log("ALL FILES RESTORED IN ONE SINGLE COMMIT.", "log-info");
-                log("DONE. <span class='blink'>_</span>");
-                alert("GASS! Restore Masal Berhasil.");
-            } else {
-                throw new Error("Push Failed");
+                    log(`SUKSES: ${file.path} dikembalikan.`);
+                } catch (err) {
+                    log(`GAGAL: ${file.path} - ${err.message}`);
+                }
+                
+                // Jeda 1 detik sesuai permintaan
+                await new Promise(resolve => setTimeout(resolve, 1000));
             }
 
-        } catch (err) {
-            log(`CRITICAL ERROR: ${err.message}`, "log-error");
-            console.error(err);
+            log("PROSES SELESAI!");
+
+        } catch (error) {
+            log(`FATAL ERROR: ${error.message}`);
+        } finally {
+            startBtn.disabled = false;
         }
     }
 </script>
