@@ -3,172 +3,164 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>GitHub Bulk Restore - SAI Roots</title>
+    <title>GitHub Mass Restore - SAI Roots</title>
     <style>
         body {
-            font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
             background-color: #121212;
             color: #e0e0e0;
-            display: flex;
-            justify-content: center;
+            font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
             padding: 20px;
         }
         .container {
-            background-color: #1e1e1e;
-            padding: 30px;
-            border-radius: 8px;
-            box-shadow: 0 4px 15px rgba(0,0,0,0.5);
-            width: 100%;
-            max-width: 600px;
-            border-top: 4px solid #f1c40f; /* Kuning aksen */
-        }
-        h2 { color: #f1c40f; text-align: center; }
-        label { display: block; margin-bottom: 8px; font-weight: bold; }
-        input {
-            width: 100%;
-            padding: 12px;
-            margin-bottom: 20px;
-            border-radius: 4px;
+            max-width: 800px;
+            margin: auto;
             border: 1px solid #333;
-            background-color: #252525;
-            color: white;
+            padding: 20px;
+            border-radius: 8px;
+            background: #1a1a1a;
+        }
+        h2 { color: #f1c40f; border-bottom: 2px solid #e74c3c; padding-bottom: 10px; }
+        label { display: block; margin: 10px 0 5px; font-weight: bold; }
+        input, textarea {
+            width: 100%;
+            padding: 10px;
+            background: #2c2c2c;
+            border: 1px solid #444;
+            color: #fff;
+            border-radius: 4px;
             box-sizing: border-box;
         }
+        textarea { height: 120px; font-family: monospace; }
         button {
-            width: 100%;
-            padding: 15px;
-            background-color: #27ae60; /* Hijau aksen */
+            margin-top: 20px;
+            padding: 12px 25px;
+            background: #27ae60;
             color: white;
             border: none;
-            border-radius: 4px;
             cursor: pointer;
-            font-size: 16px;
-            font-weight: bold;
-        }
-        button:hover { background-color: #2ecc71; }
-        button:disabled { background-color: #555; cursor: not-allowed; }
-        #status {
-            margin-top: 20px;
-            padding: 15px;
-            background-color: #000;
             border-radius: 4px;
-            font-family: monospace;
-            font-size: 13px;
-            height: 200px;
-            overflow-y: auto;
-            white-space: pre-wrap;
-            border-left: 3px solid #e74c3c; /* Merah aksen */
+            font-weight: bold;
+            width: 100%;
         }
+        button:hover { background: #2ecc71; }
+        #log {
+            margin-top: 20px;
+            background: #000;
+            padding: 15px;
+            height: 300px;
+            overflow-y: auto;
+            font-size: 13px;
+            border-radius: 4px;
+            border: 1px solid #444;
+        }
+        .status-success { color: #2ecc71; }
+        .status-error { color: #e74c3c; }
+        .status-info { color: #3498db; }
     </style>
 </head>
 <body>
 
 <div class="container">
-    <h2>Restore Previous Code</h2>
-    <p style="font-size: 12px; color: #888; text-align: center;">Target Repo: pembri/sairootsmusic.com</p>
+    <h2>Mass Restore Code (SAI Roots)</h2>
     
-    <label for="token">GitHub Personal Access Token:</label>
+    <label>GitHub Personal Access Token:</label>
     <input type="password" id="token" placeholder="ghp_xxxxxxxxxxxx">
 
-    <button id="startBtn" onclick="startRestore()">MULAI RESTORE MASSAL</button>
+    <label>Daftar Commit SHA (Satu per baris):</label>
+    <textarea id="shaList" placeholder="7d5930313294774a1b2a3043d423d7aaa7a561b8&#10;30746c4a0141efa3ca198977263f547bb114f476"></textarea>
 
-    <div id="status">Menunggu perintah...</div>
+    <button onclick="startRestore()">Eksekusi Restore Masal</button>
+
+    <div id="log">Menunggu perintah...</div>
 </div>
 
 <script>
-    const owner = 'pembri';
-    const repo = 'sairootsmusic.com';
-    const logArea = document.getElementById('status');
-    const startBtn = document.getElementById('startBtn');
+    const OWNER = 'pembri';
+    const REPO = 'sairootsmusic.com';
+    const PROTECTED_FOLDERS = ['admin_pages/', 'video cover/'];
 
-    function log(msg) {
-        logArea.innerText += `> ${msg}\n`;
-        logArea.scrollTop = logArea.scrollHeight;
-    }
-
-    async function fetchGitHub(endpoint, token, options = {}) {
-        const res = await fetch(`https://api.github.com/repos/${owner}/${repo}${endpoint}`, {
-            ...options,
-            headers: {
-                'Authorization': `token ${token}`,
-                'Accept': 'application/vnd.github.v3+json',
-                ...options.headers
-            }
-        });
-        if (!res.ok) throw new Error(`Error: ${res.status} - ${await res.text()}`);
-        return res.json();
+    function writeLog(message, type = 'info') {
+        const logDiv = document.getElementById('log');
+        const span = document.createElement('div');
+        span.className = `status-${type}`;
+        span.innerText = `[${new Date().toLocaleTimeString()}] ${message}`;
+        logDiv.appendChild(span);
+        logDiv.scrollTop = logDiv.scrollHeight;
     }
 
     async function startRestore() {
         const token = document.getElementById('token').value;
-        if (!token) return alert('Masukkan Token GitHub!');
+        const shaInput = document.getElementById('shaList').value.trim();
+        
+        if (!token || !shaInput) {
+            alert("Token dan SHA List wajib diisi!");
+            return;
+        }
 
-        startBtn.disabled = true;
-        logArea.innerText = "";
-        log("Memulai proses pencarian commit terakhir...");
+        const shas = shaInput.split('\n').map(s => s.trim()).filter(s => s !== "");
+        writeLog(`Memulai proses restore untuk ${shas.length} commit...`, 'info');
 
-        try {
-            // 1. Dapatkan daftar commit terbaru
-            const commits = await fetchGitHub('/commits', token);
-            if (commits.length < 2) throw new Error("Tidak ada commit sebelumnya untuk di-restore.");
+        for (const sha of shas) {
+            try {
+                writeLog(`Memproses Commit: ${sha}...`);
+                
+                // 1. Ambil detail commit untuk melihat file apa saja yang berubah
+                const commitData = await fetch(`https://api.github.com/repos/${OWNER}/${REPO}/commits/${sha}`, {
+                    headers: { 'Authorization': `token ${token}` }
+                }).then(res => res.json());
 
-            const latestCommitSha = commits[0].sha;
-            const previousCommitSha = commits[1].sha; // Target restore (kode sebelum ini)
+                if (!commitData.files) throw new Error("Commit tidak ditemukan atau akses ditolak.");
 
-            log(`Commit Saat Ini: ${latestCommitSha.substring(0,7)}`);
-            log(`Target Restore: ${previousCommitSha.substring(0,7)}`);
+                for (const file of commitData.files) {
+                    const filePath = file.filename;
 
-            // 2. Ambil daftar file dari commit target (Tree)
-            const treeData = await fetchGitHub(`/git/trees/${previousCommitSha}?recursive=1`, token);
-            
-            // 3. Filter file .html yang bukan folder terlarang
-            const filesToRestore = treeData.tree.filter(file => {
-                const isHtml = file.path.endsWith('.html');
-                const isForbidden = file.path.startsWith('admin_pages/') || file.path.startsWith('video_cover/');
-                return isHtml && !isForbidden && file.type === 'blob';
-            });
-
-            log(`Ditemukan ${filesToRestore.length} file HTML untuk di-restore.`);
-
-            // 4. Proses restore satu per satu dengan jeda 1 detik
-            for (const file of filesToRestore) {
-                try {
-                    log(`Mengembalikan: ${file.path}...`);
+                    // Cek apakah file berada di folder yang diproteksi
+                    const isProtected = PROTECTED_FOLDERS.some(folder => filePath.startsWith(folder));
                     
-                    // Ambil konten file dari commit sebelumnya
-                    const blobData = await fetchGitHub(`/git/blobs/${file.sha}`, token);
-                    
-                    // Lakukan commit ulang ke file tersebut
-                    // Kita perlu mendapatkan SHA file saat ini di branch main untuk update
-                    const currentFileStatus = await fetchGitHub(`/contents/${file.path}`, token);
-                    
-                    const updateData = {
-                        message: `Restore ${file.path} to version from ${previousCommitSha.substring(0,7)}`,
-                        content: blobData.content, // Konten sudah base64 dari API blob
-                        sha: currentFileStatus.sha // SHA file sekarang agar bisa di-overwrite
-                    };
+                    if (isProtected) {
+                        writeLog(`Melewati file terproteksi: ${filePath}`, 'info');
+                        continue;
+                    }
 
-                    await fetchGitHub(`/contents/${file.path}`, token, {
+                    // 2. Ambil konten file dari commit tersebut
+                    const contentData = await fetch(`https://api.github.com/repos/${OWNER}/${REPO}/contents/${filePath}?ref=${sha}`, {
+                        headers: { 'Authorization': `token ${token}` }
+                    }).then(res => res.json());
+
+                    // 3. Ambil SHA file saat ini di branch utama (untuk keperluan update)
+                    const currentFile = await fetch(`https://api.github.com/repos/${OWNER}/${REPO}/contents/${filePath}`, {
+                        headers: { 'Authorization': `token ${token}` }
+                    }).then(res => res.json());
+
+                    // 4. Lakukan Commit Ulang (Restore)
+                    const updateResponse = await fetch(`https://api.github.com/repos/${OWNER}/${REPO}/contents/${filePath}`, {
                         method: 'PUT',
-                        body: JSON.stringify(updateData)
+                        headers: { 
+                            'Authorization': `token ${token}`,
+                            'Content-Type': 'application/json'
+                        },
+                        body: JSON.stringify({
+                            message: `Restore ${filePath} from commit ${sha}`,
+                            content: contentData.content,
+                            sha: currentFile.sha // SHA file sekarang di branch utama
+                        })
                     });
 
-                    log(`SUKSES: ${file.path} dikembalikan.`);
-                } catch (err) {
-                    log(`GAGAL: ${file.path} - ${err.message}`);
+                    if (updateResponse.ok) {
+                        writeLog(`Berhasil Restore: ${filePath}`, 'success');
+                    } else {
+                        writeLog(`Gagal Restore: ${filePath}`, 'error');
+                    }
+
+                    // Jeda 1 detik sesuai permintaan
+                    await new Promise(resolve => setTimeout(resolve, 1000));
                 }
-                
-                // Jeda 1 detik sesuai permintaan
-                await new Promise(resolve => setTimeout(resolve, 1000));
+
+            } catch (error) {
+                writeLog(`Error pada commit ${sha}: ${error.message}`, 'error');
             }
-
-            log("PROSES SELESAI!");
-
-        } catch (error) {
-            log(`FATAL ERROR: ${error.message}`);
-        } finally {
-            startBtn.disabled = false;
         }
+        writeLog("--- Semua Proses Selesai ---", 'success');
     }
 </script>
 
