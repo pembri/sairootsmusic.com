@@ -25,7 +25,6 @@
         .glass { background: rgba(255, 255, 255, 0.03); border: 1px solid rgba(255, 255, 255, 0.08); backdrop-filter: blur(12px); }
         .custom-scroll::-webkit-scrollbar { width: 5px; }
         .custom-scroll::-webkit-scrollbar-thumb { background: #333; border-radius: 10px; }
-        .status-dot { height: 8px; width: 8px; border-radius: 50%; display: inline-block; }
     </style>
 </head>
 <body class="p-4 md:p-10">
@@ -43,10 +42,8 @@
         <div class="glass p-6 rounded-2xl mb-6">
             <div class="mb-4">
                 <label class="block text-[10px] font-bold text-rasta-green uppercase mb-2 tracking-widest">GitHub Access Token</label>
-                <div class="relative">
-                    <input type="password" id="gh-token" placeholder="Paste ghp_token di sini..." 
-                           class="w-full bg-black/40 border border-white/10 rounded-xl py-3 px-4 focus:outline-none focus:border-rasta-yellow transition-all text-sm">
-                </div>
+                <input type="password" id="gh-token" placeholder="Paste ghp_token di sini..." 
+                       class="w-full bg-black/40 border border-white/10 rounded-xl py-3 px-4 focus:outline-none focus:border-rasta-yellow transition-all text-sm">
             </div>
             <div class="flex gap-3">
                 <button onclick="scanRepo()" class="flex-1 bg-white text-black font-bold py-3 rounded-xl hover:bg-rasta-yellow transition-all flex items-center justify-center gap-2 text-sm">
@@ -82,15 +79,11 @@
         let fileList = [];
         const REPO = "pembri/sairootsmusic.com";
 
-        // Check if backup exists in LocalStorage on load
-        window.onload = () => {
-            checkBackup();
-        };
+        window.onload = () => { checkBackup(); };
 
         function checkBackup() {
-            const backup = localStorage.getItem('sairoots_backup');
-            if (backup) {
-                document.getElementById('backup-status').innerHTML = "🟢 Backup Ready (Persistent)";
+            if (localStorage.getItem('sairoots_backup')) {
+                document.getElementById('backup-status').innerHTML = "🟢 Backup Ready";
                 document.getElementById('backup-status').classList.add('text-rasta-green');
                 document.getElementById('btn-restore').classList.remove('hidden');
             }
@@ -99,14 +92,35 @@
         function addLog(msg, type = 'info') {
             const log = document.getElementById('log');
             const colors = { info: 'text-gray-400', success: 'text-rasta-green', warn: 'text-rasta-yellow', error: 'text-rasta-red' };
-            const time = new Date().toLocaleTimeString();
-            log.innerHTML += `<div class="${colors[type]}"><span class="opacity-30">[${time}]</span> ${msg}</div>`;
+            log.innerHTML += `<div class="${colors[type]}"><span class="opacity-30">[${new Date().toLocaleTimeString()}]</span> ${msg}</div>`;
             log.scrollTop = log.scrollHeight;
         }
 
+        // ==========================================
+        // ENGINE ENCODING ANTI-MOJIBAKE (UTF-8 SAFE)
+        // ==========================================
+        function decodeUTF8Base64(base64) {
+            const binString = atob(base64);
+            const bytes = new Uint8Array(binString.length);
+            for (let i = 0; i < binString.length; i++) {
+                bytes[i] = binString.charCodeAt(i);
+            }
+            return new TextDecoder('utf-8').decode(bytes);
+        }
+
+        function encodeUTF8Base64(str) {
+            const bytes = new TextEncoder().encode(str);
+            let binary = '';
+            for (let i = 0; i < bytes.byteLength; i++) {
+                binary += String.fromCharCode(bytes[i]);
+            }
+            return btoa(binary);
+        }
+        // ==========================================
+
         async function scanRepo() {
             const token = document.getElementById('gh-token').value;
-            if (!token) return alert("Token kosong! Masukkan GitHub Token lo.");
+            if (!token) return alert("Token kosong!");
 
             document.getElementById('console-box').classList.remove('hidden');
             addLog("Menghubungkan ke GitHub API...", "warn");
@@ -117,15 +131,14 @@
                 });
                 const data = await res.json();
                 
-                // FILTER: Hanya HTML & Exclude folder /admin_pages/ dan /cover/
                 fileList = data.tree.filter(item => {
-                    const isHtml = item.path.endsWith('.html');
-                    const isExcluded = item.path.startsWith('admin_pages/') || item.path.startsWith('cover/');
-                    const isSelf = item.path.includes('rapihkan_kode.html');
-                    return isHtml && !isExcluded && !isSelf;
+                    return item.path.endsWith('.html') && 
+                           !item.path.startsWith('admin_pages/') && 
+                           !item.path.startsWith('cover/') && 
+                           !item.path.includes('rapihkan_kode.html');
                 });
 
-                addLog(`Scan Selesai. Ditemukan ${fileList.length} file (Folder admin_pages & cover diabaikan).`, "success");
+                addLog(`Scan Selesai. Ditemukan ${fileList.length} file HTML.`, "success");
                 document.getElementById('action-area').classList.remove('hidden');
             } catch (err) {
                 addLog("Error Scan: " + err.message, "error");
@@ -133,11 +146,7 @@
         }
 
         function processAndBeautify(html) {
-            // 1. BEAUTIFY GLOBAL: Sapu bersih enter berlebihan di SELURUH file HTML
-            // Regex ini mendeteksi 2 enter atau lebih, lalu mengubahnya jadi 1 enter saja
             let cleanedHTML = html.replace(/\n\s*\n+/g, '\n');
-
-            // 2. PROSES HEAD: Grouping dan urutkan
             const headMatch = cleanedHTML.match(/<head>([\s\S]*?)<\/head>/i);
             if (!headMatch) return cleanedHTML;
 
@@ -147,34 +156,24 @@
                 let found = [];
                 let match;
                 while ((match = regex.exec(headContent)) !== null) {
-                    found.push(match[0].trim()); // Dihapus spasi/enter bawaannya biar gampang ditata ulang
+                    found.push(match[0].trim());
                 }
                 headContent = headContent.replace(regex, '');
                 return found;
             };
 
-            // Ekstraksi tag
             const icons = extract(/<link\s+rel="(icon|shortcut icon|apple-touch-icon|manifest|canonical)"[\s\S]*?>/gi);
             const title = extract(/<title>[\s\S]*?<\/title>/gi);
             const seo = extract(/<meta\s+name="(description|keywords|author|robots)"[\s\S]*?>/gi);
             const og = extract(/<meta\s+property="og:[\s\S]*?>/gi);
             const twitter = extract(/<meta\s+name="twitter:[\s\S]*?>/gi);
 
-            // Bersihkan sisa head dari enter berlebih
             let remainingHead = headContent.replace(/\n\s*\n+/g, '\n').trim();
 
-            // 3. REASSEMBLY: Gabungkan kembali semua tag <head> dengan rapat
-            // Filter menghilangkan baris kosong, join menggabungkan dengan 1 enter + 2 spasi indentasi
             const sortedHead = [
-                ...icons,
-                ...title,
-                ...seo,
-                ...og,
-                ...twitter,
-                remainingHead
+                ...icons, ...title, ...seo, ...og, ...twitter, remainingHead
             ].filter(item => item !== "").join('\n  ');
 
-            // Ganti bagian <head> lama dengan versi yang sudah rapi
             return cleanedHTML.replace(/<head>([\s\S]*?)<\/head>/i, `<head>\n  ${sortedHead}\n</head>`);
         }
 
@@ -188,21 +187,24 @@
                 try {
                     const res = await fetch(file.url, { headers: { 'Authorization': `token ${token}` } });
                     const data = await res.json();
-                    const originalContent = atob(data.content);
+                    
+                    // PENGGUNAAN DECODE YANG SUDAH AMAN
+                    const originalContent = decodeUTF8Base64(data.content);
 
-                    // Simpan ke Persistent Backup (LocalStorage)
                     backupData[file.path] = { sha: data.sha, content: originalContent };
                     localStorage.setItem('sairoots_backup', JSON.stringify(backupData));
 
-                    // Panggil fungsi baru yang merangkap grouping + beautify
                     const cleanedContent = processAndBeautify(originalContent);
+                    
+                    // PENGGUNAAN ENCODE YANG SUDAH AMAN
+                    const base64Content = encodeUTF8Base64(cleanedContent);
 
                     await fetch(`https://api.github.com/repos/${REPO}/contents/${file.path}`, {
                         method: 'PUT',
                         headers: { 'Authorization': `token ${token}`, 'Content-Type': 'application/json' },
                         body: JSON.stringify({
-                            message: `🔧 SAI Roots Toolkit: Reorganized Head & Minified HTML for ${file.path}`,
-                            content: btoa(unescape(encodeURIComponent(cleanedContent))),
+                            message: `🔧 SAI Roots Toolkit: Reorganized Head & Minified HTML (UTF-8 Safe)`,
+                            content: base64Content,
                             sha: data.sha
                         })
                     });
@@ -223,22 +225,24 @@
             if (!token) return alert("Masukkan token untuk restore!");
             if (!confirm("Yakin mau balikin semua file ke versi awal?")) return;
 
-            addLog("Memulai Restore dari LocalStorage...", "warn");
+            addLog("Memulai Restore...", "warn");
 
             for (let path in backupData) {
                 try {
-                    // Ambil SHA terbaru karena file di repo sudah berubah
                     const currentFile = await fetch(`https://api.github.com/repos/${REPO}/contents/${path}`, {
                         headers: { 'Authorization': `token ${token}` }
                     });
                     const currentData = await currentFile.json();
+
+                    // MENGGUNAKAN ENCODE YANG SUDAH AMAN UNTUK RESTORE
+                    const base64Content = encodeUTF8Base64(backupData[path].content);
 
                     await fetch(`https://api.github.com/repos/${REPO}/contents/${path}`, {
                         method: 'PUT',
                         headers: { 'Authorization': `token ${token}`, 'Content-Type': 'application/json' },
                         body: JSON.stringify({
                             message: `⏪ Restore: Reverted ${path} to pre-cleanup state`,
-                            content: btoa(unescape(encodeURIComponent(backupData[path].content))),
+                            content: base64Content,
                             sha: currentData.sha
                         })
                     });
