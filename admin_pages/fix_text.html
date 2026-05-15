@@ -1,0 +1,206 @@
+<!DOCTYPE html>
+<html lang="id">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>SAI Roots | Text & Space Fixer</title>
+    <script src="https://cdn.tailwindcss.com"></script>
+    <link href="https://fonts.googleapis.com/css2?family=Anton&family=Inter:wght@400;700&display=swap" rel="stylesheet">
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.5.1/css/all.min.css">
+    <script>
+        tailwind.config = {
+            theme: {
+                extend: {
+                    colors: {
+                        rasta: { green: '#2D8659', yellow: '#FBBF24', red: '#DC2626' },
+                        dark: '#050505'
+                    }
+                }
+            }
+        }
+    </script>
+    <style>
+        body { background-color: #050505; color: #e5e7eb; font-family: 'Inter', sans-serif; }
+        .font-display { font-family: 'Anton', sans-serif; }
+        .glass { background: rgba(255, 255, 255, 0.02); border: 1px solid rgba(255, 255, 255, 0.07); backdrop-filter: blur(15px); }
+        .custom-scroll::-webkit-scrollbar { width: 4px; }
+        .custom-scroll::-webkit-scrollbar-thumb { background: #444; border-radius: 10px; }
+    </style>
+</head>
+<body class="p-4 md:p-10">
+    <div class="max-w-3xl mx-auto">
+        <div class="flex items-center justify-between mb-8">
+            <div>
+                <h1 class="font-display text-5xl text-white tracking-tighter uppercase">FIX <span class="text-rasta-red">TEXT</span></h1>
+                <p class="text-[10px] text-gray-500 tracking-[0.3em]">CLEANER & SPACE NORMALIZER</p>
+            </div>
+            <div id="backup-indicator" class="hidden px-3 py-1 rounded-full border border-rasta-green/30 bg-rasta-green/10 text-rasta-green text-[10px] font-bold">
+                BACKUP SAVED
+            </div>
+        </div>
+
+        <div class="glass p-6 rounded-3xl mb-6">
+            <div class="mb-5">
+                <label class="block text-[10px] font-bold text-gray-500 uppercase mb-2 tracking-widest">GitHub Token</label>
+                <input type="password" id="gh-token" placeholder="Paste ghp_token..." 
+                       class="w-full bg-black/50 border border-white/10 rounded-2xl py-4 px-5 focus:outline-none focus:border-rasta-yellow transition-all text-sm">
+            </div>
+            <div class="flex gap-3">
+                <button onclick="scanFiles()" class="flex-1 bg-white text-black font-black py-4 rounded-2xl hover:bg-rasta-yellow transition-all text-xs uppercase tracking-widest">
+                    Scan Halaman
+                </button>
+                <button onclick="restoreAll()" id="btn-restore" class="hidden flex-1 border border-rasta-red text-rasta-red font-bold py-4 rounded-2xl hover:bg-rasta-red hover:text-white transition-all text-xs uppercase tracking-widest">
+                    Kembalikan Semula
+                </button>
+            </div>
+        </div>
+
+        <div id="terminal" class="hidden glass rounded-3xl overflow-hidden">
+            <div class="bg-white/5 px-5 py-3 border-b border-white/5 flex justify-between items-center">
+                <span class="text-[10px] font-bold text-gray-400">CONSOLE LOG</span>
+                <span id="file-count" class="text-[10px] text-rasta-yellow">0 Files Found</span>
+            </div>
+            <div id="log" class="h-80 overflow-y-auto p-5 font-mono text-[11px] space-y-1 custom-scroll bg-black/40"></div>
+            <div id="action-btn-container" class="p-5 border-t border-white/5 hidden">
+                <button onclick="startFixing()" class="w-full bg-rasta-green text-white font-black py-5 rounded-2xl hover:scale-[1.02] active:scale-95 transition-all text-lg tracking-tighter">
+                    BERSIHKAN & RAPATKAN KODE!
+                </button>
+            </div>
+        </div>
+    </div>
+
+    <script>
+        let fileQueue = [];
+        const REPO = "pembri/sairootsmusic.com";
+
+        window.onload = () => {
+            if(localStorage.getItem('fix_text_backup')) {
+                document.getElementById('backup-indicator').classList.remove('hidden');
+                document.getElementById('btn-restore').classList.remove('hidden');
+            }
+        };
+
+        function addLog(msg, color = 'text-gray-500') {
+            const log = document.getElementById('log');
+            log.innerHTML += `<div class="${color}"><span class="opacity-30">#</span> ${msg}</div>`;
+            log.scrollTop = log.scrollHeight;
+        }
+
+        async function scanFiles() {
+            const token = document.getElementById('gh-token').value;
+            if(!token) return alert("Isi tokennya dulu!");
+
+            document.getElementById('terminal').classList.remove('hidden');
+            addLog("Menghubungkan ke GitHub...", "text-rasta-yellow");
+
+            try {
+                const res = await fetch(`https://api.github.com/repos/${REPO}/git/trees/main?recursive=1`, {
+                    headers: { 'Authorization': `token ${token}` }
+                });
+                const data = await res.json();
+                
+                fileQueue = data.tree.filter(item => {
+                    const isHtml = item.path.endsWith('.html');
+                    const isHaram = item.path.startsWith('admin_pages/') || item.path.startsWith('cover/');
+                    return isHtml && !isHaram && !item.path.includes('fix_text.html');
+                });
+
+                document.getElementById('file-count').innerText = `${fileQueue.length} Files Found`;
+                addLog(`Scan Berhasil: ${fileQueue.length} file siap dibersihkan.`, "text-rasta-green");
+                document.getElementById('action-btn-container').classList.remove('hidden');
+            } catch (err) {
+                addLog("Error: " + err.message, "text-rasta-red");
+            }
+        }
+
+        function cleanLogic(content) {
+            let result = content;
+
+            // 1. FIX KARAKTER SAMPAH (Encoding Fix)
+            result = result.replace(/â Ž/g, '<i class="fas fa-times pointer-events-none"></i>');
+            result = result.replace(/Ã‚Â¢Ã‚Â|Ã‚Â|/g, ''); 
+            result = result.replace(/Ã‚Â|Ã‚Â¢Ã‚Â|Ã‚Â/g, '');
+            result = result.replace(/Ã‚Â©/g, '&copy;');
+            result = result.replace(/â€¢/g, '&bull;');
+            result = result.replace(/Ã‚Â|/g, '&bull;');
+
+            // 2. NORMALISASI ENTER (Rapatkan Kode)
+            // Menghapus baris yang hanya berisi spasi/tabs
+            result = result.replace(/^\s*[\r\n]/gm, '\n');
+            // Mengganti 2 atau lebih enter berurutan menjadi hanya 1 enter
+            result = result.replace(/(\n\s*){2,}/g, '\n');
+
+            return result.trim();
+        }
+
+        async function startFixing() {
+            const token = document.getElementById('gh-token').value;
+            let backups = JSON.parse(localStorage.getItem('fix_text_backup') || '{}');
+
+            addLog("Memulai pembersihan konten & enter...", "text-rasta-yellow");
+
+            for (let file of fileQueue) {
+                try {
+                    const res = await fetch(file.url, { headers: { 'Authorization': `token ${token}` } });
+                    const data = await res.json();
+                    const oldCode = atob(data.content);
+
+                    // Simpan Backup
+                    backups[file.path] = { sha: data.sha, content: oldCode };
+                    localStorage.setItem('fix_text_backup', JSON.stringify(backups));
+
+                    const newCode = cleanLogic(oldCode);
+
+                    if (oldCode === newCode) {
+                        addLog(`Skip: ${file.path} (Sudah bersih)`, "text-gray-600");
+                        continue;
+                    }
+
+                    await fetch(`https://api.github.com/repos/${REPO}/contents/${file.path}`, {
+                        method: 'PUT',
+                        headers: { 'Authorization': `token ${token}`, 'Content-Type': 'application/json' },
+                        body: JSON.stringify({
+                            message: `🧹 Clean: Fixed text encoding & spacing in ${file.path}`,
+                            content: btoa(unescape(encodeURIComponent(newCode))),
+                            sha: data.sha
+                        })
+                    });
+
+                    addLog(`Sukses: ${file.path} (Teks dibersihkan & kode dirapatkan)`, "text-rasta-green");
+                } catch (e) {
+                    addLog(`Gagal: ${file.path} | ${e.message}`, "text-rasta-red");
+                }
+            }
+            addLog("SEMUA PROSES SELESAI!", "text-rasta-green");
+            location.reload();
+        }
+
+        async function restoreAll() {
+            const token = document.getElementById('gh-token').value;
+            const backups = JSON.parse(localStorage.getItem('fix_text_backup'));
+            if(!confirm("Yakin mau balikin kode ke kondisi awal (sebelum dirapatkan)?")) return;
+
+            addLog("Mereset kode ke versi backup...", "text-rasta-red");
+
+            for (let path in backups) {
+                try {
+                    const current = await (await fetch(`https://api.github.com/repos/${REPO}/contents/${path}`, { headers: { 'Authorization': `token ${token}` } })).json();
+                    await fetch(`https://api.github.com/repos/${REPO}/contents/${path}`, {
+                        method: 'PUT',
+                        headers: { 'Authorization': `token ${token}`, 'Content-Type': 'application/json' },
+                        body: JSON.stringify({
+                            message: `⏪ Restore: Reverted spacing & text in ${path}`,
+                            content: btoa(unescape(encodeURIComponent(backups[path].content))),
+                            sha: current.sha
+                        })
+                    });
+                    addLog(`Restored: ${path}`, "text-gray-400");
+                } catch (e) { addLog(`Gagal Restore: ${path}`, "text-rasta-red"); }
+            }
+            localStorage.removeItem('fix_text_backup');
+            alert("Restore selesai!");
+            location.reload();
+        }
+    </script>
+</body>
+</html>
