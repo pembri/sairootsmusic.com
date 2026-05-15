@@ -3,7 +3,7 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>SAI Roots | Head Organizer PRO</title>
+    <title>SAI Roots | Head Organizer & Beautifier PRO</title>
     <script src="https://cdn.tailwindcss.com"></script>
     <link href="https://fonts.googleapis.com/css2?family=Anton&family=Inter:wght@400;700&display=swap" rel="stylesheet">
     <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.5.1/css/all.min.css">
@@ -132,9 +132,14 @@
             }
         }
 
-        function processHead(html) {
-            const headMatch = html.match(/<head>([\s\S]*?)<\/head>/i);
-            if (!headMatch) return html;
+        function processAndBeautify(html) {
+            // 1. BEAUTIFY GLOBAL: Sapu bersih enter berlebihan di SELURUH file HTML
+            // Regex ini mendeteksi 2 enter atau lebih, lalu mengubahnya jadi 1 enter saja
+            let cleanedHTML = html.replace(/\n\s*\n+/g, '\n');
+
+            // 2. PROSES HEAD: Grouping dan urutkan
+            const headMatch = cleanedHTML.match(/<head>([\s\S]*?)<\/head>/i);
+            if (!headMatch) return cleanedHTML;
 
             let headContent = headMatch[1];
 
@@ -142,45 +147,42 @@
                 let found = [];
                 let match;
                 while ((match = regex.exec(headContent)) !== null) {
-                    found.push(match[0]);
+                    found.push(match[0].trim()); // Dihapus spasi/enter bawaannya biar gampang ditata ulang
                 }
                 headContent = headContent.replace(regex, '');
                 return found;
             };
 
-            // 1. Links & Icons
+            // Ekstraksi tag
             const icons = extract(/<link\s+rel="(icon|shortcut icon|apple-touch-icon|manifest|canonical)"[\s\S]*?>/gi);
-            
-            // 2. SEO Meta
             const title = extract(/<title>[\s\S]*?<\/title>/gi);
             const seo = extract(/<meta\s+name="(description|keywords|author|robots)"[\s\S]*?>/gi);
-
-            // 3. Open Graph
             const og = extract(/<meta\s+property="og:[\s\S]*?>/gi);
             const twitter = extract(/<meta\s+name="twitter:[\s\S]*?>/gi);
 
-            // Re-assembly sesuai urutan instruksi lo
+            // Bersihkan sisa head dari enter berlebih
+            let remainingHead = headContent.replace(/\n\s*\n+/g, '\n').trim();
+
+            // 3. REASSEMBLY: Gabungkan kembali semua tag <head> dengan rapat
+            // Filter menghilangkan baris kosong, join menggabungkan dengan 1 enter + 2 spasi indentasi
             const sortedHead = [
-                "\n    ",
                 ...icons,
-                "\n    ",
                 ...title,
                 ...seo,
-                "\n    ",
                 ...og,
                 ...twitter,
-                "\n    ",
-                headContent.trim()
-            ].join('\n    ');
+                remainingHead
+            ].filter(item => item !== "").join('\n  ');
 
-            return html.replace(/<head>([\s\S]*?)<\/head>/i, `<head>${sortedHead}\n</head>`);
+            // Ganti bagian <head> lama dengan versi yang sudah rapi
+            return cleanedHTML.replace(/<head>([\s\S]*?)<\/head>/i, `<head>\n  ${sortedHead}\n</head>`);
         }
 
         async function executeClean() {
             const token = document.getElementById('gh-token').value;
             let backupData = JSON.parse(localStorage.getItem('sairoots_backup') || '{}');
 
-            addLog("Mengeksekusi perapihan kode...", "warn");
+            addLog("Mengeksekusi perapihan & perapatan kode...", "warn");
 
             for (let file of fileList) {
                 try {
@@ -192,13 +194,14 @@
                     backupData[file.path] = { sha: data.sha, content: originalContent };
                     localStorage.setItem('sairoots_backup', JSON.stringify(backupData));
 
-                    const cleanedContent = processHead(originalContent);
+                    // Panggil fungsi baru yang merangkap grouping + beautify
+                    const cleanedContent = processAndBeautify(originalContent);
 
                     await fetch(`https://api.github.com/repos/${REPO}/contents/${file.path}`, {
                         method: 'PUT',
                         headers: { 'Authorization': `token ${token}`, 'Content-Type': 'application/json' },
                         body: JSON.stringify({
-                            message: `🔧 SAI Roots Toolkit: Reorganized Head for ${file.path}`,
+                            message: `🔧 SAI Roots Toolkit: Reorganized Head & Minified HTML for ${file.path}`,
                             content: btoa(unescape(encodeURIComponent(cleanedContent))),
                             sha: data.sha
                         })
