@@ -3,7 +3,7 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>SAI Roots - Lyric Automated Sync Tools</title>
+    <title>SAI Roots - Lyric Deep Sync Tools</title>
     <script src="https://cdn.tailwindcss.com"></script>
     <link href="https://fonts.googleapis.com/css2?family=Anton&family=Inter:wght@400;600&display=swap" rel="stylesheet">
     <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.5.1/css/all.min.css">
@@ -38,10 +38,10 @@
     <main class="container mx-auto px-4 max-w-4xl flex-1 flex flex-col justify-center">
         <header class="text-center mb-10">
             <h1 class="font-display text-4xl md:text-5xl uppercase tracking-wider text-white mb-2">
-                SAI ROOTS <span class="text-rasta-yellow">LYRIC MANAGER</span>
+                SAI ROOTS <span class="text-rasta-yellow">LYRIC DEEP MANAGER</span>
             </h1>
             <p class="text-xs md:text-sm text-gray-400 uppercase tracking-widest font-light">
-                Automated Mass GitHub API Rewrite & <span class="text-rasta-red">Anti-Panic Rollback System</span>
+                Deep Directory Structure (/lyric/song-title/index.html) Sync & <span class="text-rasta-red">Rollback Engine</span>
             </p>
         </header>
 
@@ -49,24 +49,24 @@
             
             <div class="grid grid-cols-1 md:grid-cols-2 gap-4 mb-6 text-xs uppercase tracking-wider text-gray-400 bg-neutral-950 p-4 border border-white/5">
                 <div><span class="text-gray-600">Repository:</span> <strong class="text-white">pembri/sairootsmusic.com</strong></div>
-                <div><span class="text-gray-600">Target Folder:</span> <strong class="text-rasta-yellow">/lyric</strong></div>
+                <div><span class="text-gray-600">Target Deep Mapping:</span> <strong class="text-rasta-yellow">/lyric/*/index.html</strong></div>
                 <div><span class="text-gray-600">Status Token:</span> <strong class="text-rasta-green">Connected / Active</strong></div>
-                <div><span class="text-gray-600">Backup Engine:</span> <strong class="text-white">localStorage Ready</strong></div>
+                <div><span class="text-gray-600">Anti-Panic Storage:</span> <strong class="text-white">localStorage Ready</strong></div>
             </div>
 
             <div class="grid grid-cols-1 md:grid-cols-2 gap-4">
-                <button id="btnExecute" onclick="startMassUpdate()" class="font-display text-lg uppercase tracking-widest bg-rasta-green hover:bg-opacity-90 text-white py-4 px-6 border border-white/10 transition-all duration-200 flex items-center justify-center gap-3 active:scale-[0.99]">
-                    <i class="fa-solid fa-bolt text-rasta-yellow animate-pulse"></i> 1-Click Mass Update
+                <button id="btnExecute" onclick="startDeepMassUpdate()" class="font-display text-lg uppercase tracking-widest bg-rasta-green hover:bg-opacity-90 text-white py-4 px-6 border border-white/10 transition-all duration-200 flex items-center justify-center gap-3 active:scale-[0.99]">
+                    <i class="fa-solid fa-bolt text-rasta-yellow animate-pulse"></i> 1-Click Deep Update
                 </button>
 
-                <button id="btnRestore" onclick="startMassRestore()" class="font-display text-lg uppercase tracking-widest bg-neutral-800 hover:bg-rasta-red text-gray-400 hover:text-white py-4 px-6 border border-white/10 transition-all duration-200 flex items-center justify-center gap-3 active:scale-[0.99]">
-                    <i class="fa-solid fa-rotate-left"></i> Restore Kode Lama
+                <button id="btnRestore" onclick="startDeepMassRestore()" class="font-display text-lg uppercase tracking-widest bg-neutral-800 hover:bg-rasta-red text-gray-400 hover:text-white py-4 px-6 border border-white/10 transition-all duration-200 flex items-center justify-center gap-3 active:scale-[0.99]">
+                    <i class="fa-solid fa-rotate-left"></i> Restore index.html Lama
                 </button>
             </div>
 
             <div class="text-center mt-3">
                 <p class="text-[10px] text-gray-500 uppercase tracking-widest italic">
-                    *Gunakan tombol restore jika terjadi eror pada hasil live website GitHub. Data lama dikunci aman di browser Anda.
+                    *Alat ini akan masuk ke setiap folder judul lagu untuk merubah index.html masing-masing.
                 </p>
             </div>
         </div>
@@ -74,27 +74,25 @@
         <div class="bg-neutral-900 border border-white/5 p-4 flex flex-col h-64">
             <div class="flex justify-between items-center mb-2 pb-2 border-b border-white/5">
                 <span class="text-xs font-semibold uppercase tracking-wider text-gray-400 flex items-center gap-2">
-                    <i class="fa-solid fa-terminal text-rasta-yellow"></i> System Process Log
+                    <i class="fa-solid fa-terminal text-rasta-yellow"></i> System Deep Processing Log
                 </span>
                 <span id="progressIndicator" class="text-[11px] font-mono text-gray-500 uppercase tracking-wider">Idle</span>
             </div>
             <div id="logConsole" class="log-box flex-1 overflow-y-auto font-mono text-xs text-gray-400 space-y-1 bg-neutral-950 p-3 select-text">
-                <div class="text-gray-600">&gt; Sistem siap digunakan, bos. Klik tombol di atas untuk memulai jalurnya...</div>
+                <div class="text-gray-600">&gt; Sistem siap memetakan folder dalam, bos. Silakan klik tombol di atas...</div>
             </div>
         </div>
     </main>
 
     <footer class="text-center mt-6 w-full shrink-0">
-        <p class="text-[11px] text-gray-600 tracking-[0.2em] uppercase">© 2026 <span class="text-white font-medium">SAI Roots Music</span>. High-Security Script.</p>
+        <p class="text-[11px] text-gray-600 tracking-[0.2em] uppercase">© 2026 <span class="text-white font-medium">SAI Roots Music</span>. Deep Integration System.</p>
     </footer>
 
     <script>
-        // Kunci Data Kredensial Langsung Sesuai Perintah
         const GITHUB_TOKEN = "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";
         const REPO = "pembri/sairootsmusic.com";
-        const FOLDER_PATH = "lyric";
+        const ROOT_LYRIC_PATH = "lyric";
 
-        // Fungsi mencetak riwayat proses ke konsol layar
         function printLog(text, colorClass = "text-gray-400") {
             const consoleBox = document.getElementById("logConsole");
             const logEntry = document.createElement("div");
@@ -104,9 +102,9 @@
             consoleBox.scrollTop = consoleBox.scrollHeight;
         }
 
-        // ==================== ALUR EKSEKUSI UTAMA (MASS UPDATE) ====================
-        async function startMassUpdate() {
-            if(!confirm("Yakin ingin memproses konversi enter massal di folder /lyric sekarang, bos?")) return;
+        // ==================== EKSEKUSI MASSAL STRUKTUR BARU ====================
+        async function startDeepMassUpdate() {
+            if(!confirm("Yakin ingin memproses konversi massal file 'index.html' di dalam seluruh sub-folder /lyric, bos?")) return;
             
             const btnExecute = document.getElementById("btnExecute");
             const btnRestore = document.getElementById("btnRestore");
@@ -116,130 +114,126 @@
             btnRestore.disabled = true;
             document.getElementById("logConsole").innerHTML = "";
             
-            printLog("Memulai pemindaian folder di repositori GitHub...", "text-white font-semibold");
-            progressIndicator.innerText = "Scanning Folder...";
+            printLog("Memindai struktur direktori utama /lyric...", "text-white font-semibold");
+            progressIndicator.innerText = "Scanning Root...";
 
             try {
-                // 1. Ambil daftar semua berkas di folder /lyric via GitHub API
-                const url = `https://api.github.com/repos/${REPO}/contents/${FOLDER_PATH}`;
-                const response = await fetch(url, {
+                // 1. Ambil daftar semua item di dalam folder /lyric
+                const rootUrl = `https://api.github.com/repos/${REPO}/contents/${ROOT_LYRIC_PATH}`;
+                const rootResponse = await fetch(rootUrl, {
                     headers: { "Authorization": `token ${GITHUB_TOKEN}`, "Accept": "application/vnd.github.v3+json" }
                 });
 
-                if(!response.ok) throw new Error("Gagal terhubung ke GitHub API. Periksa repositori atau token kamu.");
+                if(!rootResponse.ok) throw new Error("Gagal mengambil data direktori root /lyric.");
                 
-                const files = await response.ok ? await response.json() : [];
-                const htmlFiles = files.filter(file => file.name.endsWith('.html'));
+                const rootItems = await rootResponse.json();
+                // Filter hanya yang tipenya "dir" (sub-folder judul lagu)
+                const songFolders = rootItems.filter(item => item.type === "dir");
 
-                if(htmlFiles.length === 0) {
-                    printLog("Tidak ada file berekstensi .html di dalam folder /lyric, bos.", "text-rasta-red");
+                if(songFolders.length === 0) {
+                    printLog("Tidak ditemukan sub-folder judul lagu di dalam direktori /lyric.", "text-rasta-red");
                     progressIndicator.innerText = "Aborted";
-                    btnExecute.disabled = false;
-                    btnRestore.disabled = false;
                     return;
                 }
 
-                printLog(`Ditemukan ${htmlFiles.length} file lirik .html. Mempersiapkan mesin backup...`, "text-rasta-yellow");
+                printLog(`Ditemukan ${songFolders.length} folder lagu. Memulai penyelaman file index.html...`, "text-rasta-yellow");
                 
-                // Siapkan wadah lokal simpanan cadangan kode lama
                 const backupData = {};
                 let successCount = 0;
 
-                // 2. Iterasi perulangan otomatis untuk mendownload dan merubah isi file satu per satu
-                for (let i = 0; i < htmlFiles.length; i++) {
-                    const fileInfo = htmlFiles[i];
-                    progressIndicator.innerText = `Processing [${i + 1}/${htmlFiles.length}]`;
-                    printLog(`Membaca file: <span class="text-white">${fileInfo.name}</span>...`);
+                // 2. Selami satu per satu folder lagu untuk menembak index.html
+                for (let i = 0; i < songFolders.length; i++) {
+                    const folderInfo = songFolders[i];
+                    const folderName = folderInfo.name; // Contoh: "konsisten-kera-sakti"
+                    const targetIndexPath = `${ROOT_LYRIC_PATH}/${folderName}/index.html`;
 
-                    // Ambil detail content file (termasuk kode SHA dan enkripsi Base64)
-                    const fileUrl = fileInfo.url;
-                    const fileResponse = await fetch(fileUrl, {
+                    progressIndicator.innerText = `Folder [${i + 1}/${songFolders.length}]`;
+                    printLog(`Memeriksa: <span class="text-white">/lyric/${folderName}/index.html</span>...`);
+
+                    // Ambil data file index.html spesifik dari sub-folder tersebut
+                    const fileApiUrl = `https://api.github.com/repos/${REPO}/contents/${targetIndexPath}`;
+                    const fileResponse = await fetch(fileApiUrl, {
                         headers: { "Authorization": `token ${GITHUB_TOKEN}` }
                     });
-                    const fileData = await fileResponse.json();
-                    
-                    // Decode teks HTML asli dari Base64 ke string utf-8 biasa
-                    const originalHtml = decodeURIComponent(escape(atob(fileData.content)));
-                    
-                    // Rekam kode lama ke objek backup lokal (menggunakan nama file sebagai key penanda)
-                    backupData[fileInfo.name] = { html: originalHtml, sha: fileData.sha };
 
-                    // 3. LOGIKA REGEX UTAMA: Hanya merubah susunan di dalam ql-editor saja
+                    // Jika di dalam folder tersebut ternyata tidak ada index.html, lewati agar tidak rusak
+                    if (!fileResponse.ok) {
+                        printLog(`-> File index.html tidak ditemukan di folder '${folderName}'. Dilewati.`, "text-gray-500");
+                        continue;
+                    }
+
+                    const fileData = await fileResponse.json();
+                    const originalHtml = decodeURIComponent(escape(atob(fileData.content)));
+
+                    // Simpan cadangan kode lama ke database browser (Key menggunakan jalur path lengkap agar presisi)
+                    backupData[targetIndexPath] = { html: originalHtml, sha: fileData.sha };
+
+                    // 3. PROSES STRUKTUR TEMPATAN (Hanya ql-editor)
                     const regexBlock = /(<div class="[^"]*ql-editor[^"]*"[^>]*>)([\s\S]*?)(<\/div>)/i;
 
                     if (regexBlock.test(originalHtml)) {
                         const newHtml = originalHtml.replace(regexBlock, function(match, openingTag, innerContent, closingTag) {
-                            // Bersihkan tag closing </p> ganti jadi karakter pindah baris (\n)
                             let cleanText = innerContent.replace(/<\/p>/gi, "\n");
-                            // Buang sisa tag opening <p>
                             cleanText = cleanText.replace(/<p[^>]*>/gi, "");
-                            // Potong spasi/enter berlebih di bagian ujung teks lirik
                             return openingTag + cleanText.trim() + closingTag;
                         });
 
-                        // Cek apakah ada perubahan nyata setelah di-regex
                         if (newHtml === originalHtml) {
-                            printLog(`-> File ${fileInfo.name} dilewati (sudah berformat enter).`, "text-gray-500");
+                            printLog(`-> Konten lirik di folder '${folderName}' sudah berformat enter.`, "text-gray-500");
                             continue;
                         }
 
-                        // 4. Kirim pembaruan kode baru kembali ke repositori GitHub via PUT method
-                        printLog(`-> Mengonversi struktur lirik & memperbarui ke GitHub...`, "text-rasta-yellow");
-                        const updateUrl = `https://api.github.com/repos/${REPO}/contents/${FOLDER_PATH}/${fileInfo.name}`;
-                        
-                        // Encode string utf-8 kembali ke format Base64 yang valid untuk GitHub API
+                        // 4. Update file index.html ke GitHub kembali
+                        printLog(`-> Merefactor teks lirik & push ke GitHub...`, "text-rasta-yellow");
                         const encodedContent = btoa(unescape(encodeURIComponent(newHtml)));
 
-                        const updateResponse = await fetch(updateUrl, {
+                        const updateResponse = await fetch(fileApiUrl, {
                             method: "PUT",
-                            headers: { 
-                                "Authorization": `token ${GITHUB_TOKEN}`,
-                                "Content-Type": "application/json"
-                            },
+                            headers: { "Authorization": `token ${GITHUB_TOKEN}`, "Content-Type": "application/json" },
                             body: JSON.stringify({
-                                message: `Refactor: Update massal struktur baris lirik file ${fileInfo.name} ke enter bersih`,
+                                message: `Refactor: Update enter lirik bersih pada file /lyric/${folderName}/index.html`,
                                 content: encodedContent,
-                                sha: fileData.sha // Sertifikasi kode SHA asli wajib disertakan agar terhindar dari konflik git
+                                sha: fileData.sha
                             })
                         });
 
                         if(updateResponse.ok) {
-                            printLog(`-> BERHASIL: File ${fileInfo.name} sukses diperbarui online!`, "text-rasta-green");
+                            printLog(`-> BERHASIL: /lyric/${folderName}/index.html ter-update!`, "text-rasta-green");
                             successCount++;
                         } else {
-                            printLog(`-> GAGAL API: File ${fileInfo.name} gagal diubah di repositori.`, "text-rasta-red");
+                            printLog(`-> GAGAL API: Gagal mengunggah kode baru untuk folder '${folderName}'.`, "text-rasta-red");
                         }
                     } else {
-                        printLog(`-> ERROR: File ${fileInfo.name} dilewati karena tidak ditemukan class 'ql-editor'.`, "text-rasta-red");
+                        printLog(`-> SKIPPED: Tidak ditemukan struktur class 'ql-editor' pada index.html ini.`, "text-rasta-red");
                     }
                 }
 
-                // 5. KUNCI CADANGAN DATA KE LOCALSTORAGE (Sistem Anti-Panic)
-                localStorage.setItem("sairoots_lyric_backup", JSON.stringify(backupData));
+                // 5. Kunci data lama permanen di localStorage browser
+                localStorage.setItem("sairoots_deep_lyric_backup", JSON.stringify(backupData));
                 printLog("--------------------------------------------------", "text-gray-600");
-                printLog(`PROSES SELESAI MASALAH! Berhasil mengonversi ${successCount} file lirik.`, "text-rasta-green font-semibold");
-                printLog("Seluruh kode asli versi tag &lt;p&gt; lama telah berhasil dibackup aman di localStorage browser.", "text-white");
-                progressIndicator.innerText = "Success / Synced";
+                printLog(`SELESAI! Total ${successCount} file index.html berhasil dirombak ke enter bersih.`, "text-rasta-green font-semibold");
+                printLog("Seluruh kode asli pra-konversi aman dikunci di localStorage.", "text-white");
+                progressIndicator.innerText = "Deep Synced";
 
             } catch (err) {
-                printLog(`Kepanikan Sistem: ${err.message}`, "text-rasta-red font-semibold");
-                progressIndicator.innerText = "System Error";
+                printLog(`Eror Fatal Mesin: ${err.message}`, "text-rasta-red font-semibold");
+                progressIndicator.innerText = "Fatal Error";
             } finally {
                 btnExecute.disabled = false;
                 btnRestore.disabled = false;
             }
         }
 
-        // ==================== ALUR PEMULIHAN KODE (ANTI PANIC RESTORE) ====================
-        async function startMassRestore() {
-            const savedBackup = localStorage.getItem("sairoots_lyric_backup");
+        // ==================== RESTORE MASSAL STRUKTUR BARU ====================
+        async function startDeepMassRestore() {
+            const savedBackup = localStorage.getItem("sairoots_deep_lyric_backup");
             
             if(!savedBackup) {
-                alert("Tidak ada riwayat data backup lama yang tersimpan di browser ini, bos!");
+                alert("Tidak ada arsip pemulihan struktur folder dalam di browser ini, bos!");
                 return;
             }
 
-            if(!confirm("⚠️ PERINGATAN KRUSIAL: Apakah kamu yakin ingin mengembalikan seluruh berkas lirik di GitHub ke kode versi lama (tag <p>)? Tindakan ini akan membatalkan seluruh konversi terakhir.")) return;
+            if(!confirm("⚠️ KEMBALIKAN KODE LAMA: Anda yakin ingin mengembalikan seluruh file index.html ke format tag <p> semula?")) return;
 
             const btnExecute = document.getElementById("btnExecute");
             const btnRestore = document.getElementById("btnRestore");
@@ -249,65 +243,61 @@
             btnRestore.disabled = true;
             document.getElementById("logConsole").innerHTML = "";
 
-            printLog("Mesin penyelamat diaktifkan. Membaca arsip backup lokal...", "text-white font-semibold");
-            progressIndicator.innerText = "Restoring...";
+            printLog("Menyalakan sistem rollback direktori dalam...", "text-white font-semibold");
+            progressIndicator.innerText = "Deep Rollback...";
 
             try {
                 const backupData = JSON.parse(savedBackup);
-                const fileNames = Object.keys(backupData);
+                const targetPaths = Object.keys(backupData); // Berisi daftar path lengkap "/lyric/judul/index.html"
                 let restoreCount = 0;
 
-                for (let i = 0; i < fileNames.length; i++) {
-                    const fileName = fileNames[i];
-                    progressIndicator.innerText = `Rollback [${i + 1}/${fileNames.length}]`;
-                    printLog(`Memulihkan berkas asli: <span class="text-white">${fileName}</span>...`);
+                for (let i = 0; i < targetPaths.length; i++) {
+                    const targetPath = targetPaths[i];
+                    progressIndicator.innerText = `Rollback [${i + 1}/${targetPaths.length}]`;
+                    printLog(`Memulihkan berkas: <span class="text-white">/${targetPath}</span>...`);
 
-                    // Ambil SHA terbaru dari GitHub untuk file ini guna mencegah tabrakan/konflik git (SHA lama bisa saja kadaluwarsa)
-                    const checkUrl = `https://api.github.com/repos/${REPO}/contents/${FOLDER_PATH}/${fileName}`;
+                    // Ambil SHA paling baru dari GitHub agar tidak terjadi conflict mismatch git
+                    const checkUrl = `https://api.github.com/repos/${REPO}/contents/${targetPath}`;
                     const checkResponse = await fetch(checkUrl, {
                         headers: { "Authorization": `token ${GITHUB_TOKEN}` }
                     });
-                    
+
                     if(!checkResponse.ok) {
-                        printLog(`-> Gagal sinkronisasi SHA terbaru untuk file ${fileName}. File dilewati.`, "text-rasta-red");
+                        printLog(`-> Gagal sinkronisasi SHA live untuk /${targetPath}. Dilewati.`, "text-rasta-red");
                         continue;
                     }
-                    
+
                     const currentGitData = await checkResponse.json();
-                    const oldHtmlContent = backupData[fileName].html;
+                    const oldHtmlContent = backupData[targetPath].html;
 
-                    // Kembalikan kode HTML versi tag <p> lama ke GitHub
+                    // Push balik kode tag <p> lama
                     const encodedContent = btoa(unescape(encodeURIComponent(oldHtmlContent)));
-                    const restoreUrl = `https://api.github.com/repos/${REPO}/contents/${FOLDER_PATH}/${fileName}`;
-
-                    const restoreResponse = await fetch(restoreUrl, {
+                    
+                    const restoreResponse = await fetch(checkUrl, {
                         method: "PUT",
-                        headers: { 
-                            "Authorization": `token ${GITHUB_TOKEN}`,
-                            "Content-Type": "application/json"
-                        },
+                        headers: { "Authorization": `token ${GITHUB_TOKEN}`, "Content-Type": "application/json" },
                         body: JSON.stringify({
-                            message: `Rollback: Mengembalikan struktur lirik file ${fileName} ke kondisi awal asli (tag <p>)`,
+                            message: `Rollback: Mengembalikan kode /${targetPath} ke format asli bawaan (tag <p>)`,
                             content: encodedContent,
-                            sha: currentGitData.sha // Gunakan SHA paling mutakhir dari hasil hit barusan
+                            sha: currentGitData.sha
                         })
                     });
 
                     if(restoreResponse.ok) {
-                        printLog(`-> RESTORED: File ${fileName} berhasil dipulihkan total ke versi lama!`, "text-rasta-green");
+                        printLog(`-> RESTORED: /${targetPath} berhasil dikembalikan!`, "text-rasta-green");
                         restoreCount++;
                     } else {
-                        printLog(`-> GAGAL RESTORE: Respon penulisan ulang API ditolak untuk file ${fileName}.`, "text-rasta-red");
+                        printLog(`-> GAGAL RESTORE: Tolakan push API pada jalur /${targetPath}.`, "text-rasta-red");
                     }
                 }
 
                 printLog("--------------------------------------------------", "text-gray-600");
-                printLog(`PROSES RESTORE SELESAI! Berhasil memulihkan ${restoreCount} file lirik ke format semula.`, "text-rasta-yellow font-semibold");
-                progressIndicator.innerText = "Restored Successfully";
+                printLog(`ROLLBACK BERHASIL! ${restoreCount} berkas index.html dikembalikan ke kondisi semula.`, "text-rasta-yellow font-semibold");
+                progressIndicator.innerText = "Rollback Done";
 
             } catch (err) {
                 printLog(`Gagal Pemulihan: ${err.message}`, "text-rasta-red font-semibold");
-                progressIndicator.innerText = "Restore Error";
+                progressIndicator.innerText = "Rollback Error";
             } finally {
                 btnExecute.disabled = false;
                 btnRestore.disabled = false;
