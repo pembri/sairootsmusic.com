@@ -1,120 +1,208 @@
 <!DOCTYPE html>
 <html lang="id">
 <head>
-    <meta charset="UTF-8">
-    <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>SAI Roots | Lirik Generator & CMS</title>
-    <script src="https://cdn.tailwindcss.com"></script>
-    <link href="https://fonts.googleapis.com/css2?family=Anton&family=Inter:wght@300;400;600&display=swap" rel="stylesheet">
-    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.5.1/css/all.min.css">
-    <script>
-        tailwind.config = { 
-            theme: { 
-                extend: { 
-                    colors: { rasta: { green: '#2D8659', yellow: '#FBBF24', red: '#DC2626' }, neutral: { 950: '#050505' } },
-                    fontFamily: { sans: ['Inter', 'sans-serif'], display: ['Anton', 'sans-serif'] }
-                } 
-            } 
-        }
-    </script>
-    <style>
-        body { background-color: #050505; color: #f0f0f0; }
-        .glass { background: rgba(5, 5, 5, 0.85); backdrop-filter: blur(12px); border: 1px solid rgba(255,255,255,0.1); }
-        .rasta-gradient { background: linear-gradient(90deg, #2D8659 0%, #FBBF24 50%, #DC2626 100%); }
-    </style>
+  <link rel="icon" type="image/x-icon" href="/favicon.ico">
+  <link rel="shortcut icon" type="image/x-icon" href="/favicon.ico">
+  <title>Lirik Generator | SAI Roots</title>
+  <meta name="robots" content="noindex, nofollow"> <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no">
+  <script src="./tailwindcss.js"></script>
+  <script src="https://cdn.jsdelivr.net/npm/fuse.js@7.0.0/dist/fuse.min.js"></script>
+  <link href="https://fonts.googleapis.com/css2?family=Anton&family=Inter:wght@300;400;600&display=swap" rel="stylesheet">
+  <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.5.1/css/all.min.css">
+  <script>
+      tailwind.config = { theme: { extend: { colors: { rasta: { green: '#2D8659', yellow: '#FBBF24', red: '#DC2626' }, neutral: { 950: '#050505' } }, fontFamily: { sans: ['Inter', 'sans-serif'], display: ['Anton', 'sans-serif'] } } } }
+  </script>
+  <style>
+      body { background-color: #050505; color: #f0f0f0; }
+      .glass { background: rgba(5, 5, 5, 0.85); backdrop-filter: blur(12px); border-bottom: 1px solid rgba(255,255,255,0.03); border: 1px solid rgba(255,255,255,0.1); }
+      .rasta-stripe { height: 3px; background: linear-gradient(90deg, #2D8659 0%, #FBBF24 50%, #DC2626 100%); width: 100%; position: fixed; top: 0; z-index: 60; }
+      #mobile-menu { transition: transform 0.4s cubic-bezier(0.4, 0, 0.2, 1); overflow-y: auto; }
+      .menu-open { transform: translateX(0) !important; }
+      .ql-editor { font-size: 1.125rem; line-height: 1.8; color: #d1d5db; white-space: pre-wrap; overflow-wrap: break-word; word-break: break-word; max-width: 100%; }
+      /* CSS tambahan untuk form generator agar rapi */
+      .input-field { width: 100%; background: rgba(255,255,255,0.05); border: 1px solid rgba(255,255,255,0.1); border-radius: 0.375rem; padding: 0.75rem 1rem; color: white; outline: none; transition: border-color 0.2s; }
+      .input-field:focus { border-color: #FBBF24; }
+  </style>
 </head>
-<body class="min-h-screen p-6 font-sans">
-    
-    <div class="max-w-4xl mx-auto">
-        <div class="text-center mb-10">
-            <h1 class="text-4xl font-display uppercase tracking-widest mb-2"><span class="text-rasta-green">SAI</span> <span class="text-rasta-yellow">Roots</span> <span class="text-rasta-red">Generator</span></h1>
-            <p class="text-gray-400 text-sm">GitHub API Content Manager - Repository: pembri/sairootsmusic.com</p>
-        </div>
-
-        <div id="notification" class="hidden mb-6 p-4 rounded-md text-white font-medium text-sm text-center transition-all"></div>
-
-        <div id="login-section" class="glass rounded-xl p-8 max-w-md mx-auto">
-            <h2 class="text-2xl font-display mb-4 text-white">Login GitHub API</h2>
-            <p class="text-xs text-gray-400 mb-6">Masukkan Personal Access Token (PAT) dengan akses 'repo' untuk membaca dan menulis file ke repository.</p>
-            <input type="password" id="gh-token" placeholder="ghp_xxxxxxxxxxxxxxxxxxxx" class="w-full bg-black border border-white/20 rounded-md py-3 px-4 focus:outline-none focus:border-rasta-green text-white mb-4">
-            <button onclick="login()" class="w-full rasta-gradient text-black font-bold py-3 px-4 rounded-md hover:opacity-90 transition">Masuk / Simpan Token</button>
-        </div>
-
-        <div id="dashboard-section" class="hidden">
-            <div class="flex justify-between items-center mb-6">
-                <div class="flex gap-4">
-                    <button onclick="switchTab('create')" id="tab-create" class="px-6 py-2 bg-white/10 rounded-md font-bold text-white border border-white/20 hover:bg-white/20 transition">Tulis Lirik Baru</button>
-                    <button onclick="switchTab('manage')" id="tab-manage" class="px-6 py-2 bg-transparent rounded-md font-bold text-gray-400 border border-transparent hover:text-white transition">Kelola Lirik</button>
-                </div>
-                <button onclick="logout()" class="text-rasta-red text-sm hover:underline"><i class="fas fa-sign-out-alt"></i> Logout</button>
+<body class="overflow-x-hidden pt-1">
+    <div class="rasta-stripe"></div>
+    <header class="fixed top-[3px] w-full z-50 glass" style="border-radius: 0;">
+        <div class="container mx-auto px-6 py-4 flex justify-between items-center">
+            <div class="text-3xl font-display uppercase tracking-wider">
+                <a href="/" class="flex items-center gap-3 hover:text-rasta-yellow transition-colors duration-300">
+                    <img src="https://upload.wikimedia.org/wikipedia/commons/0/03/SAI_Roots.jpg" alt="Logo SAI Roots" class="w-10 h-10 rounded-full object-cover border border-white/10">
+                    <span>SAI <span class="text-rasta-green">Roots</span></span>
+                </a>
             </div>
-
-            <div id="create-view" class="glass rounded-xl p-6 md:p-8">
-                <h2 id="form-title" class="text-2xl font-display mb-6 text-white border-b border-white/10 pb-4">Tulis Lirik Baru</h2>
-                
-                <input type="hidden" id="edit-sha" value="">
-
-                <div class="grid grid-cols-1 md:grid-cols-2 gap-6 mb-6">
-                    <div>
-                        <label class="block text-xs uppercase tracking-widest text-gray-400 mb-2">Judul Lagu</label>
-                        <input type="text" id="input-judul" class="w-full bg-black border border-white/20 rounded-md py-3 px-4 text-white focus:outline-none focus:border-rasta-yellow" placeholder="Contoh: Konsisten Kera Sakti">
-                    </div>
-                    <div>
-                        <label class="block text-xs uppercase tracking-widest text-gray-400 mb-2">Slug (URL)</label>
-                        <input type="text" id="input-slug" class="w-full bg-black border border-white/20 rounded-md py-3 px-4 text-white focus:outline-none focus:border-rasta-yellow" placeholder="contoh: konsisten-kera-sakti">
-                    </div>
-                    <div>
-                        <label class="block text-xs uppercase tracking-widest text-gray-400 mb-2">Nama Album</label>
-                        <input type="text" id="input-album" class="w-full bg-black border border-white/20 rounded-md py-3 px-4 text-white focus:outline-none focus:border-rasta-yellow" placeholder="Contoh: Sience 1980">
-                    </div>
-                    <div>
-                        <label class="block text-xs uppercase tracking-widest text-gray-400 mb-2">File Cover Art</label>
-                        <input type="text" id="input-cover" class="w-full bg-black border border-white/20 rounded-md py-3 px-4 text-white focus:outline-none focus:border-rasta-yellow" placeholder="Contoh: sairoots.jpg">
-                        <p class="text-[10px] text-gray-500 mt-1">Otomatis ditambah /asset_gambar/</p>
-                    </div>
-                </div>
-
-                <div class="mb-6">
-                    <label class="block text-xs uppercase tracking-widest text-gray-400 mb-2">Teks Lirik</label>
-                    <textarea id="input-lirik" rows="15" class="w-full bg-black border border-white/20 rounded-md py-3 px-4 text-white focus:outline-none focus:border-rasta-green leading-relaxed whitespace-pre-wrap" placeholder="Ketik lirik di sini... (Enter biasa akan terbaca otomatis)"></textarea>
-                </div>
-
-                <button id="btn-submit" onclick="generateAndPost()" class="w-full bg-rasta-green text-white font-bold py-4 px-4 rounded-md hover:bg-opacity-80 transition text-lg uppercase tracking-wider">Generate & Post ke GitHub</button>
-            </div>
-
-            <div id="manage-view" class="hidden glass rounded-xl p-6 md:p-8">
-                <h2 class="text-2xl font-display mb-6 text-white border-b border-white/10 pb-4">Kelola Lirik (/lyric)</h2>
-                <div class="flex justify-between items-center mb-4">
-                    <p class="text-sm text-gray-400">Daftar lirik yang ada di repository.</p>
-                    <button onclick="loadLyricsList()" class="text-xs bg-white/10 px-3 py-1 rounded hover:bg-white/20"><i class="fas fa-sync-alt"></i> Refresh</button>
-                </div>
-                <div id="lyrics-list" class="space-y-3">
-                    <div class="text-center text-gray-500 py-10"><i class="fas fa-spinner fa-spin text-2xl"></i> Memuat data...</div>
-                </div>
-            </div>
+            <button id="menu-btn" class="focus:outline-none z-50 p-2 rounded-full hover:bg-white/5 transition">
+                <svg id="hamburger-icon" class="w-7 h-7 text-white" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M4 6h16M4 12h16m-7 6h7"></path></svg>
+            </button>      
         </div>
+    </header>
+
+    <div id="mobile-menu" class="fixed inset-0 z-40 bg-neutral-950 translate-x-full flex flex-col items-center pt-28 pb-12 p-6 border-l border-white/5">
+        <div class="w-full max-w-md relative mb-8 shrink-0">
+            <input type="text" id="search-input" placeholder="Cari artikel, lirik, atau lagu..." class="w-full bg-white/5 border border-white/10 rounded-none py-4 px-6 focus:outline-none focus:border-rasta-yellow transition-all text-white text-lg">
+            <span class="absolute right-5 top-1/2 -translate-y-1/2 text-gray-500"> ⏎</span>
+        </div>
+        <div id="search-results" class="w-full max-w-md flex-1 overflow-y-auto hidden"></div>
+        <nav id="main-nav" class="flex flex-col space-y-5 text-center uppercase tracking-widest w-full max-w-md">
+            <a href="/" class="text-3xl font-display hover:text-rasta-green transition duration-300">Home</a>
+            <a href="/discography" class="text-3xl font-display hover:text-rasta-yellow transition duration-300">Discography</a>
+            <a href="/lyric" class="text-3xl font-display hover:text-rasta-red transition duration-300">Lyric</a>
+            <a href="/video_cover" class="text-3xl font-display hover:text-rasta-yellow transition duration-300">Covers</a>            
+            <div class="w-full border-t border-white/20 my-3"></div>
+            <a href="/about" class="text-base font-sans hover:text-rasta-green transition duration-300">About</a>
+            <a href="/privacy" class="text-base font-sans hover:text-rasta-yellow transition duration-300">Privacy Policy</a>
+            <a href="/contact" class="text-base font-sans hover:text-rasta-red transition duration-300">Contact Us</a>
+        </nav>
     </div>
+
+    <main class="pt-32 pb-20 container mx-auto px-6 min-h-[70vh] font-sans">
+        <div class="max-w-3xl mx-auto">
+            <div class="text-center mb-8">
+                <h1 class="text-4xl font-display uppercase tracking-widest mb-2"><span class="text-rasta-red">Generator</span> Lirik</h1>
+                <p class="text-gray-400 text-sm">GitHub API Content Manager - Repository: pembri/sairootsmusic.com</p>
+            </div>
+
+            <div id="notification" class="hidden mb-6 p-4 rounded-md text-white font-medium text-sm text-center transition-all"></div>
+
+            <div id="login-section" class="glass rounded-xl p-8 max-w-md mx-auto text-center">
+                <h2 class="text-2xl font-display mb-4 text-white uppercase tracking-wider">Login GitHub API</h2>
+                <p class="text-xs text-gray-400 mb-6">Masukkan Personal Access Token (PAT) dengan akses 'repo'</p>
+                <input type="password" id="gh-token" placeholder="ghp_xxxxxxxxxxxxxxxxxxxx" class="input-field mb-4 text-center">
+                <button onclick="login()" class="w-full bg-rasta-green text-black font-bold py-3 px-4 rounded-md hover:bg-opacity-80 transition uppercase tracking-widest">Masuk</button>
+            </div>
+
+            <div id="dashboard-section" class="hidden">
+                <div class="flex justify-center gap-4 mb-8">
+                    <button onclick="switchTab('create')" id="tab-create" class="px-6 py-2 bg-white/10 rounded-md font-bold text-white border border-white/20 uppercase tracking-widest text-xs">Tulis Lirik</button>
+                    <button onclick="switchTab('manage')" id="tab-manage" class="px-6 py-2 bg-transparent rounded-md font-bold text-gray-400 border border-transparent hover:text-white uppercase tracking-widest text-xs">Kelola Data</button>
+                    <button onclick="logout()" class="px-4 py-2 text-rasta-red hover:underline text-xs uppercase tracking-widest ml-auto"><i class="fas fa-sign-out-alt"></i> Keluar</button>
+                </div>
+
+                <div id="create-view" class="glass rounded-xl p-6 md:p-8">
+                    <h2 id="form-title" class="text-xl font-display mb-6 text-white border-b border-white/10 pb-4 uppercase">Input Data Lirik</h2>
+                    
+                    <input type="hidden" id="edit-sha" value="">
+
+                    <div class="grid grid-cols-1 md:grid-cols-2 gap-6 mb-6">
+                        <div>
+                            <label class="block text-xs uppercase tracking-widest text-gray-400 mb-2">Judul Lagu</label>
+                            <input type="text" id="input-judul" class="input-field" placeholder="Konsisten Kera Sakti">
+                        </div>
+                        <div>
+                            <label class="block text-xs uppercase tracking-widest text-gray-400 mb-2">Slug (URL Folder)</label>
+                            <input type="text" id="input-slug" class="input-field" placeholder="konsisten-kera-sakti">
+                        </div>
+                        <div>
+                            <label class="block text-xs uppercase tracking-widest text-gray-400 mb-2">Nama Album</label>
+                            <input type="text" id="input-album" class="input-field" placeholder="Sience 1980">
+                        </div>
+                        <div>
+                            <label class="block text-xs uppercase tracking-widest text-gray-400 mb-2">File Cover Art</label>
+                            <input type="text" id="input-cover" class="input-field" placeholder="art-sience-1980.jpg">
+                        </div>
+                    </div>
+
+                    <div class="mb-6">
+                        <label class="block text-xs uppercase tracking-widest text-gray-400 mb-2">Teks Lirik (Mendukung Enter)</label>
+                        <textarea id="input-lirik" rows="12" class="input-field leading-relaxed whitespace-pre-wrap font-light text-lg" placeholder="Ketik lirik di sini..."></textarea>
+                    </div>
+
+                    <button id="btn-submit" onclick="generateAndPost()" class="w-full bg-rasta-green text-black font-bold py-4 px-4 rounded-md hover:bg-opacity-80 transition text-lg uppercase tracking-wider">Generate & Post</button>
+                </div>
+
+                <div id="manage-view" class="hidden glass rounded-xl p-6 md:p-8">
+                    <h2 class="text-xl font-display mb-6 text-white border-b border-white/10 pb-4 uppercase flex justify-between items-center">
+                        Daftar Lirik
+                        <button onclick="loadLyricsList()" class="text-xs bg-white/10 px-3 py-2 rounded hover:bg-white/20"><i class="fas fa-sync-alt"></i> Refresh</button>
+                    </h2>
+                    <div id="lyrics-list" class="space-y-3">
+                        <div class="text-center text-gray-500 py-10"><i class="fas fa-spinner fa-spin text-2xl"></i> Memuat data...</div>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </main>
+
+    <footer id="footer" class="border-t border-white/5 py-12 bg-black">
+        <div class="container mx-auto px-6 text-center">
+            <p class="text-gray-600 text-[10px] tracking-[0.3em] uppercase mb-6">Stream Our Music</p>
+            <div class="flex flex-wrap justify-center gap-7 mb-10 text-gray-400">
+                <a href="https://www.youtube.com/@sairoots" target="_blank" class="hover:text-[#ff0000]"><i class="fab fa-youtube text-2xl"></i></a>
+                <a href="https://open.spotify.com/artist/0xOPCtZvhXVd9RTbU1aYTr" target="_blank" class="hover:text-[#1DB954]"><i class="fab fa-spotify text-2xl"></i></a>
+                <a href="https://music.apple.com/id/artist/1892187423" target="_blank" class="hover:text-white"><i class="fab fa-apple text-2xl"></i></a>
+                <a href="https://m.soundcloud.com/sairoots" target="_blank" class="hover:text-[#ff5500]"><i class="fab fa-soundcloud text-2xl"></i></a>
+                <a href="https://www.deezer.com/artist/384508281" target="_blank" class="hover:text-white"><i class="fab fa-deezer text-2xl"></i></a>
+                <a href="https://music.amazon.com/artists/B0GTFWNC32/sai-roots" target="_blank" class="hover:text-[#00a8e1]"><i class="fab fa-amazon text-2xl"></i></a>
+            </div>
+            <div class="flex justify-center space-x-8 mb-10 text-gray-500">
+                <a href="https://instagram.com/sairoots" target="_blank" class="hover:text-white"><i class="fab fa-instagram text-xl"></i></a>
+                <a href="https://tiktok.com/@sairoots" target="_blank" class="hover:text-white"><i class="fab fa-tiktok text-xl"></i></a>
+                <a href="https://facebook.com/sairoots" target="_blank" class="hover:text-[#1877F2]"><i class="fab fa-facebook-f text-xl"></i></a>
+            </div>
+            <div class="border-t border-white/5 pt-8">
+                <p class="text-gray-600 text-[11px] tracking-[0.2em] uppercase">© 2026 <span class="text-white font-medium">SAI Roots Music</span>. All Rights Reserved.</p>
+                <p class="text-gray-800 text-[9px] mt-2 tracking-[0.4em] uppercase italic">Roots • Reggae • Rap</p>
+            </div>
+        </div>
+    </footer>
+
+    <script src="/database.js"></script>
+    <script>
+        const menuBtn = document.getElementById('menu-btn');
+        const mobileMenu = document.getElementById('mobile-menu');
+        const hamburgerIcon = document.getElementById('hamburger-icon');
+        const searchInput = document.getElementById('search-input');
+        
+        function toggleMenu() {
+            const isOpen = mobileMenu.classList.toggle('menu-open');
+            if (isOpen) {
+                hamburgerIcon.innerHTML = '<path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M6 18L18 6M6 6l12 12"></path>';
+                hamburgerIcon.classList.add('text-rasta-yellow');
+                document.body.style.overflow = 'hidden';
+            } else {
+                hamburgerIcon.innerHTML = '<path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M4 6h16M4 12h16m-7 6h7"></path>';
+                hamburgerIcon.classList.remove('text-rasta-yellow');
+                document.body.style.overflow = 'auto';
+                searchInput.value = '';
+                document.getElementById('search-results').classList.add('hidden');
+                document.getElementById('main-nav').classList.remove('hidden');
+            }
+        }
+        menuBtn.addEventListener('click', toggleMenu);
+        
+        document.addEventListener("DOMContentLoaded", () => {
+            const currentPath = window.location.pathname;
+            const navLinks = document.querySelectorAll('#main-nav a');
+            navLinks.forEach(link => {
+                const linkPath = new URL(link.href).pathname;
+                if (currentPath === linkPath && linkPath !== '/') {
+                    link.classList.add('text-rasta-red');
+                }
+            });
+        });
+    </script>
 
     <script>
         const REPO = 'pembri/sairootsmusic.com';
         
-        // Cek Login Saat Muat Halaman
         window.onload = () => {
-            const token = localStorage.getItem('gh_token');
-            if (token) {
+            if (localStorage.getItem('gh_token')) {
                 document.getElementById('login-section').classList.add('hidden');
                 document.getElementById('dashboard-section').classList.remove('hidden');
             }
         };
 
-        // Fungsi Login
         function login() {
             const token = document.getElementById('gh-token').value.trim();
             if (!token) return alert('Token tidak boleh kosong!');
             localStorage.setItem('gh_token', token);
             document.getElementById('login-section').classList.add('hidden');
             document.getElementById('dashboard-section').classList.remove('hidden');
-            showNotif('Token tersimpan! Siap digunakan.', 'bg-rasta-green');
+            showNotif('Login Berhasil!', 'bg-rasta-green text-black');
         }
 
         function logout() {
@@ -122,66 +210,54 @@
             location.reload();
         }
 
-        // Tampilkan Notifikasi
         function showNotif(msg, colorClass) {
             const notif = document.getElementById('notification');
-            notif.className = `mb-6 p-4 rounded-md text-white font-medium text-sm text-center transition-all ${colorClass}`;
+            notif.className = `mb-6 p-4 rounded-md font-bold text-sm text-center transition-all ${colorClass}`;
             notif.innerHTML = msg;
             notif.classList.remove('hidden');
             setTimeout(() => notif.classList.add('hidden'), 5000);
         }
 
-        // Helper untuk memanggil API GitHub
         async function ghFetch(endpoint, method = 'GET', body = null) {
             const token = localStorage.getItem('gh_token');
-            const headers = {
-                'Authorization': `token ${token}`,
-                'Accept': 'application/vnd.github.v3+json',
-                'Content-Type': 'application/json'
-            };
+            const headers = { 'Authorization': `token ${token}`, 'Accept': 'application/vnd.github.v3+json', 'Content-Type': 'application/json' };
             const options = { method, headers };
             if (body) options.body = JSON.stringify(body);
-
             const res = await fetch(`https://api.github.com/repos/${REPO}${endpoint}`, options);
             if (!res.ok) throw new Error(await res.text());
             return res.json();
         }
 
-        // Switch Tab UI
         function switchTab(tab) {
             document.getElementById('create-view').classList.add('hidden');
             document.getElementById('manage-view').classList.add('hidden');
-            document.getElementById('tab-create').className = 'px-6 py-2 bg-transparent rounded-md font-bold text-gray-400 border border-transparent hover:text-white transition';
-            document.getElementById('tab-manage').className = 'px-6 py-2 bg-transparent rounded-md font-bold text-gray-400 border border-transparent hover:text-white transition';
+            document.getElementById('tab-create').className = 'px-6 py-2 bg-transparent rounded-md font-bold text-gray-400 border border-transparent uppercase tracking-widest text-xs';
+            document.getElementById('tab-manage').className = 'px-6 py-2 bg-transparent rounded-md font-bold text-gray-400 border border-transparent uppercase tracking-widest text-xs';
 
             if (tab === 'create') {
                 document.getElementById('create-view').classList.remove('hidden');
-                document.getElementById('tab-create').className = 'px-6 py-2 bg-white/10 rounded-md font-bold text-white border border-white/20 hover:bg-white/20 transition';
+                document.getElementById('tab-create').className = 'px-6 py-2 bg-white/10 rounded-md font-bold text-white border border-white/20 uppercase tracking-widest text-xs';
             } else {
                 document.getElementById('manage-view').classList.remove('hidden');
-                document.getElementById('tab-manage').className = 'px-6 py-2 bg-white/10 rounded-md font-bold text-white border border-white/20 hover:bg-white/20 transition';
+                document.getElementById('tab-manage').className = 'px-6 py-2 bg-white/10 rounded-md font-bold text-white border border-white/20 uppercase tracking-widest text-xs';
                 loadLyricsList();
             }
         }
 
-        // Auto-generate Slug dari Judul
         document.getElementById('input-judul').addEventListener('input', function(e) {
-            const slugInput = document.getElementById('input-slug');
-            if (document.getElementById('edit-sha').value === '') { // Hanya auto-isi jika bukan mode edit
-                slugInput.value = e.target.value.toLowerCase().replace(/[^a-z0-9]+/g, '-').replace(/(^-|-$)+/g, '');
+            if (!document.getElementById('edit-sha').value) {
+                document.getElementById('input-slug').value = e.target.value.toLowerCase().replace(/[^a-z0-9]+/g, '-').replace(/(^-|-$)+/g, '');
             }
         });
 
-        // -------------------------------------------------------------------
-        // TEMPLATE MESIN GENERATOR
-        // -------------------------------------------------------------------
+        // =========================================================================
+        // INI CONST FULLTEMPLATE SEPERTI YANG LU MINTA (SAMA PERSIS DGN TEMPLATE)
+        // =========================================================================
         function getTemplate(judul, slug, album, cover, lirik) {
-            // Menggunakan template utuh dari instruksi user.
-            // Tag dinamis diganti menggunakan replace
-            const rawTemplate = `<!DOCTYPE html>
+            const fullTemplate = `<!DOCTYPE html>
 <html lang="id">
 <head>
-  <link rel="canonical" href="https://sairootsmusic.com/lyric/{{SLUG}}/">
+  <link rel="canonical" href="https://sairootsmusic.com/lyric/${slug}/">
   <link rel="icon" type="image/x-icon" href="/favicon.ico">
   <link rel="shortcut icon" type="image/x-icon" href="/favicon.ico">
   <link rel="icon" type="image/png" sizes="32x32" href="/favicon-32x32.png">
@@ -190,28 +266,28 @@
   <link rel="icon" type="image/png" sizes="192x192" href="/android-chrome-192x192.png">
   <link rel="icon" type="image/png" sizes="512x512" href="/android-chrome-512x512.png">
   <link rel="manifest" href="/site.webmanifest">
-  <title>Lirik {{JUDUL}} | SAI Roots</title>
-  <meta name="description" content="Lirik lagu Lirik {{JUDUL}} | SAI Roots dari SAI Roots. Temukan lirik lengkap, makna mendalam, dan pesan perlawanan positif dalam balutan irama Roots Reggae murni dari Jombang. Mari merayakan musik independen bersama SAI Roots.">
-  <meta name="keywords" content="SAI Roots, Ahmad Supembri, Pembri, Roots Reggae, Reggae Rap, Jombang, Musik Independen Indonesia, Critical Fire, Musik Anywhere, Lirik, Lyrics, Lirik {{JUDUL}} | SAI Roots">
+  <title>Lirik ${judul} | SAI Roots</title>
+  <meta name="description" content="Lirik lagu Lirik ${judul} | SAI Roots dari SAI Roots. Temukan lirik lengkap, makna mendalam, dan pesan perlawanan positif dalam balutan irama Roots Reggae murni dari Jombang. Mari merayakan musik independen bersama SAI Roots.">
+  <meta name="keywords" content="SAI Roots, Ahmad Supembri, Pembri, Roots Reggae, Reggae Rap, Jombang, Musik Independen Indonesia, Critical Fire, Musik Anywhere, Lirik, Lyrics, Lirik ${judul} | SAI Roots">
   <meta name="author" content="Ahmad Supembri">
   <meta name="robots" content="index, follow">
   <meta property="og:site_name" content="SAI Roots Music">
-  <meta property="og:title" content="Lirik {{JUDUL}} | SAI Roots">
-  <meta property="og:description" content="Lirik lagu Lirik {{JUDUL}} | SAI Roots dari SAI Roots. Temukan lirik lengkap, makna mendalam, dan pesan perlawanan positif dalam balutan irama Roots Reggae murni dari Jombang. Mari merayakan musik independen bersama SAI Roots.">
-  <meta property="og:url" content="https://sairootsmusic.com/lyric/{{SLUG}}/">
+  <meta property="og:title" content="Lirik ${judul} | SAI Roots">
+  <meta property="og:description" content="Lirik lagu Lirik ${judul} | SAI Roots dari SAI Roots. Temukan lirik lengkap, makna mendalam, dan pesan perlawanan positif dalam balutan irama Roots Reggae murni dari Jombang. Mari merayakan musik independen bersama SAI Roots.">
+  <meta property="og:url" content="https://sairootsmusic.com/lyric/${slug}/">
   <meta property="og:type" content="website">
   <meta property="og:locale" content="id_ID">
   <meta property="og:image" content="https://sairootsmusic.com/assets/img/og-image.jpg">
   <meta name="twitter:card" content="summary_large_image">
   <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no">
-    <script src="../../tailwindcss.js"></script>
-    <script src="https://cdn.jsdelivr.net/npm/fuse.js@7.0.0/dist/fuse.min.js"></script>
+    <script src="../../tailwindcss.js"><\/script>
+    <script src="https://cdn.jsdelivr.net/npm/fuse.js@7.0.0/dist/fuse.min.js"><\/script>
     <link href="https://fonts.googleapis.com/css2?family=Anton&family=Inter:wght@300;400;600&display=swap" rel="stylesheet">
     <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.5.1/css/all.min.css">
     <script>
         tailwind.config = { theme: { extend: { colors: { rasta: { green: '#2D8659', yellow: '#FBBF24', red: '#DC2626' }, neutral: { 950: '#050505' } }, fontFamily: { sans: ['Inter', 'sans-serif'], display: ['Anton', 'sans-serif'] } } } }
-    </script>
+    <\/script>
     <style>
         body { background-color: #050505; color: #f0f0f0; }
         .glass { background: rgba(5, 5, 5, 0.85); backdrop-filter: blur(12px); border-bottom: 1px solid rgba(255,255,255,0.03); }
@@ -223,7 +299,7 @@
         .ql-editor blockquote { border-left: 4px solid #FBBF24; padding-left: 1.5rem; font-style: italic; color: #9ca3af; }
         .ql-editor a { color: #FBBF24; text-decoration: underline; }
     </style>
-<script id="sairoots-schema-loader" src="/schema/lyric-{{SLUG}}/schema.js"></script>
+<script id="sairoots-schema-loader" src="/schema/lyric-${slug}/schema.js"><\/script>
     <meta name="theme-color" content="#0d0d0d">
     <meta name="apple-mobile-web-app-capable" content="yes">
 </head>
@@ -263,11 +339,10 @@
     </div>
     <main class="pt-32 pb-20 container mx-auto px-6 min-h-[70vh]">
                         <article class="max-w-2xl mx-auto text-center">
-                            <img src="/asset_gambar/{{COVER}}" class="w-48 h-48 mx-auto object-cover brightness-100 mb-8 rounded-full border border-white/10">
-                            <span class="text-xs text-rasta-red font-bold uppercase tracking-widest border border-rasta-red/20 py-0.5 px-2 mb-4 inline-block">Album - {{ALBUM}}</span>
-                            <h1 class="font-display text-5xl md:text-7xl text-white mb-8 uppercase">Lirik {{JUDUL}}</h1>
-                            <div class="text-gray-300 leading-loose font-light text-lg ql-editor text-left px-0">{{LIRIK}}</div>
-
+                            <img src="/asset_gambar/${cover}" class="w-48 h-48 mx-auto object-cover brightness-100 mb-8 rounded-full border border-white/10">
+                            <span class="text-xs text-rasta-red font-bold uppercase tracking-widest border border-rasta-red/20 py-0.5 px-2 mb-4 inline-block">Album - ${album}</span>
+                            <h1 class="font-display text-5xl md:text-7xl text-white mb-8 uppercase">Lirik ${judul}</h1>
+                            <div class="text-gray-300 leading-loose font-light text-lg ql-editor text-left px-0">${lirik}</div>
                         </article>
     </main>
     <footer id="footer" class="border-t border-white/5 py-12 bg-black">
@@ -294,72 +369,31 @@
     </footer>
     <script src="/database.js"><\/script>
     <script>
-        const menuBtn = document.getElementById('menu-btn');
-        const mobileMenu = document.getElementById('mobile-menu');
-        const hamburgerIcon = document.getElementById('hamburger-icon');
-        const searchInput = document.getElementById('search-input');
-        function toggleMenu() {
-            const isOpen = mobileMenu.classList.toggle('menu-open');
-            if (isOpen) {
-                hamburgerIcon.innerHTML = '<path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M6 18L18 6M6 6l12 12"></path>';
-                hamburgerIcon.classList.add('text-rasta-yellow');
-                document.body.style.overflow = 'hidden';
-            } else {
-                hamburgerIcon.innerHTML = '<path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M4 6h16M4 12h16m-7 6h7"></path>';
-                hamburgerIcon.classList.remove('text-rasta-yellow');
-                document.body.style.overflow = 'auto';
-                searchInput.value = '';
-                document.getElementById('search-results').classList.add('hidden');
-                document.getElementById('main-nav').classList.remove('hidden');
-            }
-        }
-        menuBtn.addEventListener('click', toggleMenu);
-        searchInput.addEventListener('click', e => e.stopPropagation());
-                try {
+        // Copy dari script search bawaan template asli lu
+        try {
             var allSearchData = [];
             if (typeof sairootsDB !== 'undefined') {
-                var articles = sairootsDB.articles.map(function(a) {
-                    return { type: "Article", title: a.title, url: "/article/" + a.id, excerpt: a.excerpt, category: a.category };
-                });
-                var lyrics = sairootsDB.lyrics.map(function(l) {
-                    return { type: "Lyric", title: l.title + " (Lyrics)", url: "/lyric/" + l.id, excerpt: l.excerpt, category: l.category };
-                });
-                var disco = sairootsDB.discography.map(function(d) {
-                    return { type: "Discography", title: d.title, url: "/discography?track=" + d.id, excerpt: d.excerpt, category: d.category };
-                });
+                var articles = sairootsDB.articles.map(function(a) { return { type: "Article", title: a.title, url: "/article/" + a.id, excerpt: a.excerpt, category: a.category }; });
+                var lyrics = sairootsDB.lyrics.map(function(l) { return { type: "Lyric", title: l.title + " (Lyrics)", url: "/lyric/" + l.id, excerpt: l.excerpt, category: l.category }; });
+                var disco = sairootsDB.discography.map(function(d) { return { type: "Discography", title: d.title, url: "/discography?track=" + d.id, excerpt: d.excerpt, category: d.category }; });
                 allSearchData = allSearchData.concat(articles, lyrics, disco);
             }
             if (typeof coverVideos !== 'undefined' && coverVideos.length > 0) {
-                var formattedCovers = coverVideos.map(function(video) {
-                    return { type: 'Cover', title: video.title, url: '/video_cover.html?video=' + video.slug, excerpt: video.description, category: 'Playlist Cover' };
-                });
+                var formattedCovers = coverVideos.map(function(video) { return { type: 'Cover', title: video.title, url: '/video_cover.html?video=' + video.slug, excerpt: video.description, category: 'Playlist Cover' }; });
                 allSearchData = allSearchData.concat(formattedCovers);
             }
             var fuse = new Fuse(allSearchData, { keys: ['title', 'excerpt', 'category', 'type'], threshold: 0.3 });
             function showSearchResults(query) {
                 var container = document.getElementById('search-results');
                 var nav = document.getElementById('main-nav');
-                if (query.length < 2) {
-                    container.classList.add('hidden');
-                    nav.classList.remove('hidden');
-                    return;
-                }
+                if (query.length < 2) { container.classList.add('hidden'); nav.classList.remove('hidden'); return; }
                 var results = fuse.search(query);
-                nav.classList.add('hidden');
-                container.classList.remove('hidden');
-                container.innerHTML = '';
-                if (results.length === 0) {
-                    container.innerHTML = '<div class="text-center py-10"><p class="text-gray-400 text-lg">Tidak ada hasil untuk "<span class="text-white">' + query + '</span>"</p></div>';
-                    return;
-                }
+                nav.classList.add('hidden'); container.classList.remove('hidden'); container.innerHTML = '';
+                if (results.length === 0) { container.innerHTML = '<div class="text-center py-10"><p class="text-gray-400 text-lg">Tidak ada hasil untuk "<span class="text-white">' + query + '</span>"</p></div>'; return; }
                 var html = '<div class="flex flex-col space-y-3 w-full pb-6">';
                 results.forEach(function(result) {
                     var item = result.item;
-                    var colorClass = 'text-gray-400 border-gray-400';
-                    if (item.type === 'Article') colorClass = 'text-rasta-green border-rasta-green';
-                    else if (item.type === 'Discography') colorClass = 'text-rasta-yellow border-rasta-yellow';
-                    else if (item.type === 'Lyric') colorClass = 'text-rasta-red border-rasta-red';
-                    else if (item.type === 'Cover') colorClass = 'text-white border-white';
+                    var colorClass = item.type === 'Article' ? 'text-rasta-green border-rasta-green' : item.type === 'Discography' ? 'text-rasta-yellow border-rasta-yellow' : item.type === 'Lyric' ? 'text-rasta-red border-rasta-red' : 'text-white border-white';
                     html += '<a href="' + item.url + '" class="block bg-white/5 border border-white/10 p-4 hover:bg-white/10 hover:border-white/30 transition-all text-left">' +
                                 '<div class="flex justify-between items-start mb-2">' +
                                     '<span class="text-[10px] uppercase tracking-widest px-2 py-0.5 border ' + colorClass + '">' + item.type + '</span>' +
@@ -372,9 +406,10 @@
                 html += '</div>';
                 container.innerHTML = html;
             }
-            searchInput.addEventListener('input', function(e) { showSearchResults(e.target.value.trim()); });
+            const searchInput = document.getElementById('search-input');
+            if (searchInput) searchInput.addEventListener('input', function(e) { showSearchResults(e.target.value.trim()); });
         } catch (error) { console.warn("Menunggu database.js...", error); }
-        <\/script>
+    <\/script>
     <script>
         document.addEventListener("DOMContentLoaded", () => {
             let currentPath = window.location.pathname;
@@ -385,12 +420,7 @@
                 let linkPath = new URL(link.href).pathname;
                 linkPath = linkPath.replace('.html', '');
                 if (linkPath === '') linkPath = '/';
-                let isMatch = false;
-                if (linkPath === '/') {
-                    if (currentPath === '/' || currentPath === '/index') isMatch = true;
-                } else {
-                    if (currentPath === linkPath) isMatch = true;
-                }
+                let isMatch = (linkPath === '/') ? (currentPath === '/' || currentPath === '/index') : (currentPath === linkPath);
                 if (isMatch) {
                     if (link.classList.contains('hover:text-rasta-green')) link.classList.add('text-rasta-green');
                     if (link.classList.contains('hover:text-rasta-yellow')) link.classList.add('text-rasta-yellow');
@@ -401,17 +431,9 @@
     <\/script>
 </body>
 </html>`;
-            return rawTemplate
-                .replace(/{{JUDUL}}/g, judul)
-                .replace(/{{SLUG}}/g, slug)
-                .replace(/{{ALBUM}}/g, album)
-                .replace(/{{COVER}}/g, cover)
-                .replace(/{{LIRIK}}/g, lirik); // Lirik akan tetap punya formatting enter/newline karena raw text
+            return fullTemplate;
         }
 
-        // -------------------------------------------------------------------
-        // FUNGSI POST/UPDATE LIRIK KE GITHUB API
-        // -------------------------------------------------------------------
         async function generateAndPost() {
             const judul = document.getElementById('input-judul').value.trim();
             const slug = document.getElementById('input-slug').value.trim();
@@ -421,77 +443,51 @@
             const editSha = document.getElementById('edit-sha').value;
             const btn = document.getElementById('btn-submit');
 
-            if (!judul || !slug || !album || !cover || !lirik) {
-                return alert('Semua form wajib diisi mas!');
-            }
+            if (!judul || !slug || !album || !cover || !lirik) return alert('Semua form wajib diisi mas!');
 
             btn.disabled = true;
             btn.innerHTML = '<i class="fas fa-spinner fa-spin"></i> Memproses...';
 
             try {
-                // 1. Generate HTML
-                const finalHTML = getTemplate(judul, slug, album, cover, lirik);
-
-                // 2. Encode to Base64 (Aman untuk karakter UTF-8 / baris baru)
-                const base64Content = btoa(unescape(encodeURIComponent(finalHTML)));
-
-                // 3. Siapkan Body Request
-                const body = {
-                    message: editSha ? `Update Lirik: ${judul}` : `Post Lirik Baru: ${judul}`,
-                    content: base64Content,
-                    branch: "main" // Ganti kalau branch utama lu bukan 'main'
-                };
-                
-                // Tambahkan SHA jika sedang mode edit agar file tertimpa
+                // Panggil const fullTemplate
+                const generatedHTML = getTemplate(judul, slug, album, cover, lirik);
+                const base64Content = btoa(unescape(encodeURIComponent(generatedHTML)));
+                const body = { message: editSha ? `Update Lirik: ${judul}` : `Post Lirik Baru: ${judul}`, content: base64Content, branch: "main" };
                 if (editSha) body.sha = editSha;
 
-                // 4. PUT ke API GitHub
-                const path = `contents/lyric/${slug}/index.html`;
-                await ghFetch(`/${path}`, 'PUT', body);
+                await ghFetch(`/contents/lyric/${slug}/index.html`, 'PUT', body);
 
-                showNotif(`Berhasil! Lirik "${judul}" sudah di-publish.`, 'bg-rasta-green');
+                showNotif(`Sukses! Lirik "${judul}" sudah di-publish.`, 'bg-rasta-green text-black');
                 resetForm();
-                
             } catch (error) {
                 console.error(error);
-                showNotif(`Gagal Publish: ${error.message}`, 'bg-rasta-red');
+                showNotif(`Gagal: ${error.message}`, 'bg-rasta-red text-white');
             } finally {
                 btn.disabled = false;
-                btn.innerHTML = 'Generate & Post ke GitHub';
+                btn.innerHTML = 'Generate & Post';
             }
         }
 
-        // -------------------------------------------------------------------
-        // KELOLA (AMBIL, EDIT, DELETE)
-        // -------------------------------------------------------------------
         async function loadLyricsList() {
             const container = document.getElementById('lyrics-list');
             container.innerHTML = '<div class="text-center text-gray-500 py-10"><i class="fas fa-spinner fa-spin text-2xl"></i> Memuat data...</div>';
-            
             try {
                 const data = await ghFetch('/contents/lyric');
-                if (!Array.isArray(data)) throw new Error("Folder /lyric tidak ditemukan atau kosong.");
-
-                // Hanya ambil yang tipe 'dir' (folder slug lirik)
                 const folders = data.filter(item => item.type === 'dir');
-                
-                if (folders.length === 0) {
-                    container.innerHTML = '<div class="text-center text-gray-500 py-6">Belum ada lirik.</div>';
-                    return;
-                }
+                if (folders.length === 0) return container.innerHTML = '<div class="text-center text-gray-500 py-6">Belum ada lirik.</div>';
 
                 container.innerHTML = '';
                 for (const folder of folders) {
                     const slug = folder.name;
                     container.innerHTML += `
-                        <div class="bg-black border border-white/10 p-4 rounded-md flex justify-between items-center group hover:border-white/30 transition">
+                        <div class="bg-white/5 border border-white/10 p-4 rounded-md flex justify-between items-center group hover:border-white/30 transition">
                             <div>
-                                <h3 class="text-white font-display text-xl tracking-wide">${slug}</h3>
-                                <a href="https://sairootsmusic.com/lyric/${slug}/" target="_blank" class="text-xs text-rasta-yellow hover:underline">Lihat di web <i class="fas fa-external-link-alt text-[10px]"></i></a>
+                                <h3 class="text-white font-display text-lg tracking-wide">${slug}</h3>
+                                <a href="https://sairootsmusic.com/lyric/${slug}/" target="_blank" class="text-[10px] text-rasta-yellow hover:underline uppercase tracking-widest">Cek di Web <i class="fas fa-external-link-alt"></i></a>
                             </div>
-                            <div class="flex gap-2 opacity-0 group-hover:opacity-100 transition-opacity">
-                                <button onclick="editLyric('${slug}')" class="bg-white/10 text-white p-2 rounded hover:bg-white/20" title="Edit Data (Overwrite)"><i class="fas fa-edit"></i></button>
-                                <button onclick="deleteLyric('${slug}')" class="bg-rasta-red/80 text-white p-2 rounded hover:bg-rasta-red" title="Hapus Lirik"><i class="fas fa-trash"></i></button>
+                            <div class="flex gap-2">
+                                <button onclick="editLyric('${slug}')" class="bg-white/10 text-white p-2 rounded hover:bg-white/20"><i class="fas fa-edit"></i></button>
+                                <button onclick="deleteLyric('${slug}')" class="bg-rasta-red/80 text-white p-2 rounded hover:bg-rasta-red"><i class="fas fa-trash"></i></button>
                             </div>
                         </div>
                     `;
@@ -503,84 +499,50 @@
 
         async function editLyric(slug) {
             try {
-                // Ambil info file index.html dari dalam folder slug
                 const fileData = await ghFetch(`/contents/lyric/${slug}/index.html`);
-                
-                // Decode konten Base64 ke HTML String
                 const htmlContent = decodeURIComponent(escape(atob(fileData.content)));
-
-                // Ekstrak data menggunakan DOMParser (karena lu pengen edit lirik yg udah ada)
                 const parser = new DOMParser();
                 const doc = parser.parseFromString(htmlContent, 'text/html');
 
-                // Tarik Judul (dari H1)
                 const h1 = doc.querySelector('h1.font-display');
-                const judul = h1 ? h1.innerText.replace('LIRIK ', '').trim() : '';
-
-                // Tarik Album
                 const albumSpan = doc.querySelector('span.text-xs.text-rasta-red');
-                const album = albumSpan ? albumSpan.innerText.replace('Album - ', '').trim() : '';
-
-                // Tarik Cover
                 const img = doc.querySelector('article img');
-                const coverUrl = img ? img.getAttribute('src') : '';
-                const coverFile = coverUrl.replace('/asset_gambar/', '');
-
-                // Tarik Lirik
                 const qlEditor = doc.querySelector('.ql-editor');
-                const lirik = qlEditor ? qlEditor.innerHTML : '';
 
-                // Masukkan ke Form
-                document.getElementById('input-judul').value = judul;
+                document.getElementById('input-judul').value = h1 ? h1.innerText.replace('Lirik ', '').trim() : '';
                 document.getElementById('input-slug').value = slug;
-                document.getElementById('input-album').value = album;
-                document.getElementById('input-cover').value = coverFile;
-                document.getElementById('input-lirik').value = lirik;
-                document.getElementById('edit-sha').value = fileData.sha; // Simpan SHA untuk di-overwrite
+                document.getElementById('input-album').value = albumSpan ? albumSpan.innerText.replace('Album - ', '').trim() : '';
+                document.getElementById('input-cover').value = img ? img.getAttribute('src').replace('/asset_gambar/', '') : '';
+                document.getElementById('input-lirik').value = qlEditor ? qlEditor.innerHTML : '';
+                document.getElementById('edit-sha').value = fileData.sha; 
 
-                document.getElementById('form-title').innerHTML = `Edit Lirik: <span class="text-rasta-yellow">${judul}</span>`;
-                document.getElementById('btn-submit').innerText = 'Update & Post ke GitHub';
+                document.getElementById('form-title').innerHTML = `Edit Data Lirik`;
+                document.getElementById('btn-submit').innerText = 'Update & Post';
                 
                 switchTab('create');
                 window.scrollTo({ top: 0, behavior: 'smooth' });
-                showNotif('Data lirik berhasil dimuat ke form.', 'bg-rasta-green');
-                
             } catch (error) {
-                showNotif(`Gagal mengambil data lirik: ${error.message}`, 'bg-rasta-red');
+                showNotif(`Gagal mengambil data: ${error.message}`, 'bg-rasta-red text-white');
             }
         }
 
         async function deleteLyric(slug) {
-            if(!confirm(`Yakin mau menghapus permanen folder lirik: ${slug} ?\n(Tindakan ini menghapus index.html di dalamnya)`)) return;
-
+            if(!confirm(`Hapus permanen folder lirik: ${slug}?`)) return;
             try {
-                // Untuk menghapus, kita butuh SHA filenya dulu
                 const fileData = await ghFetch(`/contents/lyric/${slug}/index.html`);
-                
-                const body = {
-                    message: `Delete lirik: ${slug}`,
-                    sha: fileData.sha,
-                    branch: "main"
-                };
-
-                await ghFetch(`/contents/lyric/${slug}/index.html`, 'DELETE', body);
-                showNotif(`Lirik ${slug} berhasil dihapus dari repository!`, 'bg-rasta-red');
-                loadLyricsList(); // Refresh list
-
+                await ghFetch(`/contents/lyric/${slug}/index.html`, 'DELETE', { message: `Delete lirik: ${slug}`, sha: fileData.sha, branch: "main" });
+                showNotif(`Lirik ${slug} berhasil dihapus!`, 'bg-rasta-red text-white');
+                loadLyricsList();
             } catch (error) {
-                showNotif(`Gagal menghapus: ${error.message}`, 'bg-rasta-red');
+                showNotif(`Gagal: ${error.message}`, 'bg-rasta-red text-white');
             }
         }
 
         function resetForm() {
-            document.getElementById('input-judul').value = '';
-            document.getElementById('input-slug').value = '';
-            document.getElementById('input-album').value = '';
-            document.getElementById('input-cover').value = '';
-            document.getElementById('input-lirik').value = '';
+            document.querySelectorAll('.input-field').forEach(el => el.value = '');
             document.getElementById('edit-sha').value = '';
-            document.getElementById('form-title').innerText = 'Tulis Lirik Baru';
-            document.getElementById('btn-submit').innerText = 'Generate & Post ke GitHub';
+            document.getElementById('form-title').innerText = 'Input Data Lirik';
+            document.getElementById('btn-submit').innerText = 'Generate & Post';
         }
     </script>
 </body>
