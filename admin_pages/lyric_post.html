@@ -199,7 +199,7 @@
         function getHeaders() {
             const token = localStorage.getItem('sa_gh_token');
             return {
-                'Authorization': `token ${token}`,
+                'Authorization': \`token \${token}\`,
                 'Accept': 'application/vnd.github.v3+json',
                 'Content-Type': 'application/json'
             };
@@ -248,18 +248,18 @@
             if (!token) return;
 
             try {
-                const response = await fetch(`https://api.github.com/repos/${REPO_OWNER}/${REPO_NAME}/contents/lyric`, {
+                const response = await fetch(\`https://api.github.com/repos/\${REPO_OWNER}/\${REPO_NAME}/contents/lyric\`, {
                     headers: getHeaders()
                 });
 
-                if (!response.ok) throw new Error('Gagal mengambil daftar folder lirik.');
+                if (!response.ok) throw new Error('Gagal mengambil daftar folder lirik. Pastikan folder /lyric/ ada di repo.');
 
                 const data = await response.ok ? await response.json() : [];
                 // Filter only directories
                 rawLyricList = data.filter(item => item.type === 'dir');
                 renderList(rawLyricList);
             } catch (err) {
-                container.innerHTML = `<div class="text-center text-rasta-red py-12 text-xs"><i class="fas fa-exclamation-circle text-lg mb-2 block"></i> Gagal memuat repository. Cek validitas token Anda.</div>`;
+                container.innerHTML = \`<div class="text-center text-rasta-red py-12 text-xs"><i class="fas fa-exclamation-circle text-lg mb-2 block"></i> \${err.message}</div>\`;
             }
         }
 
@@ -270,25 +270,25 @@
                 return;
             }
 
-            container.innerHTML = items.map(item => `
+            container.innerHTML = items.map(item => \`
                 <div class="flex items-center justify-between bg-white/5 border border-white/5 p-3 rounded-xl hover:bg-white/10 transition group">
                     <div class="flex items-center gap-3 min-w-0">
                         <i class="fas fa-folder text-rasta-yellow text-lg shrink-0"></i>
                         <div class="min-w-0">
-                            <h5 class="text-sm font-semibold text-white truncate uppercase tracking-wide">${item.name.replace(/-/g, ' ')}</h5>
-                            <p class="text-[10px] text-gray-400 truncate font-mono">/lyric/${item.name}/</p>
+                            <h5 class="text-sm font-semibold text-white truncate uppercase tracking-wide">\${item.name.replace(/-/g, ' ')}</h5>
+                            <p class="text-[10px] text-gray-400 truncate font-mono">/lyric/\${item.name}/</p>
                         </div>
                     </div>
                     <div class="flex items-center gap-1 opacity-80 group-hover:opacity-100 transition shrink-0 ml-2">
-                        <button onclick="loadLyricForEdit('${item.name}')" title="Edit Lirik" class="p-2 text-rasta-yellow hover:bg-white/10 rounded transition text-xs">
+                        <button onclick="loadLyricForEdit('\${item.name}')" title="Edit Lirik" class="p-2 text-rasta-yellow hover:bg-white/10 rounded transition text-xs">
                             <i class="fas fa-edit"></i>
                         </button>
-                        <button onclick="deleteLyricPage('${item.name}')" title="Hapus Lirik" class="p-2 text-rasta-red hover:bg-rasta-red/20 rounded transition text-xs">
+                        <button onclick="deleteLyricPage('\${item.name}')" title="Hapus Lirik" class="p-2 text-rasta-red hover:bg-rasta-red/20 rounded transition text-xs">
                             <i class="fas fa-trash-alt"></i>
                         </button>
                     </div>
                 </div>
-            `).join('');
+            \`).join('');
         }
 
         function filterLocalList(query) {
@@ -298,16 +298,21 @@
 
         // Fetch index.html from a specific folder and decode it
         async function loadLyricForEdit(slug) {
-            showToast('warning', 'Loading...', `Mengunduh file index.html dari folder /lyric/${slug}...`);
+            showToast('warning', 'Loading...', \`Mengunduh file index.html dari folder /lyric/\${slug}...\`);
             try {
-                const response = await fetch(`https://api.github.com/repos/${REPO_OWNER}/${REPO_NAME}/contents/lyric/${slug}/index.html`, {
+                const response = await fetch(\`https://api.github.com/repos/\${REPO_OWNER}/\${REPO_NAME}/contents/lyric/\${slug}/index.html\`, {
                     headers: getHeaders()
                 });
 
                 if (!response.ok) throw new Error('File index.html tidak ditemukan di folder tersebut.');
 
                 const data = await response.json();
-                const htmlContent = decodeURIComponent(escape(atob(data.content)));
+                
+                // GitHub returns base64 which might contain newlines, we need to clean it up before decoding utf-8
+                const base64Cleaned = data.content.replace(/\n/g, '');
+                
+                // decode base64 -> utf-8 text
+                const htmlContent = decodeURIComponent(escape(atob(base64Cleaned)));
 
                 // Try to find injected base64 metadata comment
                 const metaMatch = htmlContent.match(/<!--SAI_ROOTS_METADATA:(.*?)-->/);
@@ -341,7 +346,7 @@
                 document.getElementById('btn-submit').classList.replace('bg-rasta-green', 'bg-rasta-yellow');
                 document.getElementById('btn-submit').classList.add('text-black');
                 
-                showToast('success', 'Mode Edit Aktif', `Data lirik "${slug}" berhasil dimuat ke dalam form.`);
+                showToast('success', 'Mode Edit Aktif', \`Data lirik "\${slug}" berhasil dimuat ke dalam form.\`);
                 window.scrollTo({ top: 0, behavior: 'smooth' });
             } catch (err) {
                 showToast('danger', 'Gagal Memuat File', err.message);
@@ -356,16 +361,22 @@
             document.getElementById('btn-submit').className = "bg-rasta-green hover:bg-opacity-95 text-white text-xs font-bold uppercase tracking-wider px-8 py-3 rounded-lg transition shadow-lg shadow-rasta-green/10 flex items-center gap-2";
         }
 
+        function utf8_to_b64(str) {
+            return window.btoa(unescape(encodeURIComponent(str)));
+        }
+
         // Compile and Build the entire static HTML based on user's exact template layout
         function buildHtmlTemplate(title, slug, album, cover, lyrics) {
             // Safe HTML escape for text injection inside ql-editor
             const escapedLyrics = lyrics.replace(/&/g, "&amp;").replace(/</g, "&lt;").replace(/>/g, "&gt;");
             
             // Build Base64 meta block for seamless data reloading/editing later
-            const metaPayload = btoa(unescape(encodeURIComponent(JSON.stringify({ title, slug, album, cover, lyrics }))));
-            const metaComment = `<!--SAI_ROOTS_METADATA:${metaPayload}-->`;
+            const metaPayload = utf8_to_b64(JSON.stringify({ title, slug, album, cover, lyrics }));
+            const metaComment = \`<!--SAI_ROOTS_METADATA:\${metaPayload}-->\`;
 
-            return `<!DOCTYPE html>
+            // Note: I am escaping backslashes and backticks inside the string template below
+            // to ensure it renders exactly as required.
+            return \`<!DOCTYPE html>
 <html lang="id">
 <head>
   <link rel="canonical" href="https://sairootsmusic.com/lyric/\${slug}/">
@@ -378,7 +389,7 @@
   <link rel="icon" type="image/png" sizes="512x512" href="/android-chrome-512x512.png">
   <link rel="manifest" href="/site.webmanifest">
   <title>Lirik \${title} | SAI Roots</title>
-  <meta name="description" content="Lirik lagu \Lirik \${title} | SAI Roots\ dari SAI Roots. Temukan lirik lengkap, makna mendalam, dan pesan perlawanan positif dalam balutan irama Roots Reggae murni dari Jombang. Mari merayakan musik independen bersama SAI Roots.">
+  <meta name="description" content="Lirik lagu Lirik \${title} | SAI Roots dari SAI Roots. Temukan lirik lengkap, makna mendalam, dan pesan perlawanan positif dalam balutan irama Roots Reggae murni dari Jombang. Mari merayakan musik independen bersama SAI Roots.">
   <meta name="keywords" content="SAI Roots, Ahmad Supembri, Pembri, Roots Reggae, Reggae Rap, Jombang, Musik Independen Indonesia, Critical Fire, Musik Anywhere, Lirik, Lyrics, Lirik \${title} | SAI Roots">
   <meta name="author" content="Ahmad Supembri">
   <meta name="robots" content="index, follow">
@@ -601,11 +612,11 @@
     </script>
     \${metaComment}
 </body>
-</html>`;
+</html>\`;
         }
 
         // POST/PUT Operation to GitHub REST API
-        async async function submitLyric() {
+        async function submitLyric() {
             const token = localStorage.getItem('sa_gh_token');
             if (!token) {
                 showToast('danger', 'Akses Ditolak', 'Masukkan GitHub PAT terlebih dahulu.');
@@ -629,16 +640,16 @@
             submitBtn.innerHTML = '<i class="fas fa-spinner fa-spin"></i> Memproses...';
 
             const generatedHtml = buildHtmlTemplate(title, slug, album, cover, lyrics);
-            const base64Content = btoa(unescape(encodeURIComponent(generatedHtml)));
+            const base64Content = utf8_to_b64(generatedHtml);
 
             const payload = {
-                message: currentSha ? `CMS Update lyric: ${title}` : `CMS Deploy lyric: ${title}`,
+                message: currentSha ? \`CMS Update lyric: \${title}\` : \`CMS Deploy lyric: \${title}\`,
                 content: base64Content
             };
             if (currentSha) payload.sha = currentSha;
 
             try {
-                const response = await fetch(`https://api.github.com/repos/${REPO_OWNER}/${REPO_NAME}/contents/lyric/${slug}/index.html`, {
+                const response = await fetch(\`https://api.github.com/repos/\${REPO_OWNER}/\${REPO_NAME}/contents/lyric/\${slug}/index.html\`, {
                     method: 'PUT',
                     headers: getHeaders(),
                     body: JSON.stringify(payload)
@@ -649,7 +660,7 @@
                     throw new Error(errData.message || 'Gagal push ke GitHub.');
                 }
 
-                showToast('success', currentSha ? 'Berhasil Diupdate!' : 'Berhasil Terdeploy!', `Halaman lirik "/lyric/${slug}/index.html" sukses dikirim ke repository.`);
+                showToast('success', currentSha ? 'Berhasil Diupdate!' : 'Berhasil Terdeploy!', \`Halaman lirik "/lyric/\${slug}/index.html" sukses dikirim ke repository.\`);
                 resetForm();
                 fetchLyricList();
             } catch (err) {
@@ -662,31 +673,31 @@
 
         // DELETE Operation from Repository
         async function deleteLyricPage(slug) {
-            if (!confirm(`Apakah Anda yakin ingin menghapus lirik "${slug}" beserta foldernya secara permanen dari GitHub?`)) return;
+            if (!confirm(\`Apakah Anda yakin ingin menghapus lirik "\${slug}" beserta foldernya secara permanen dari GitHub?\`)) return;
 
-            showToast('warning', 'Menghapus...', `Mengambil data SHA file /lyric/${slug}/index.html sebelum eksekusi...`);
+            showToast('warning', 'Menghapus...', \`Mengambil data SHA file /lyric/\${slug}/index.html sebelum eksekusi...\`);
             
             try {
                 // Get SHA first
-                const getRes = await fetch(`https://api.github.com/repos/${REPO_OWNER}/${REPO_NAME}/contents/lyric/${slug}/index.html`, {
+                const getRes = await fetch(\`https://api.github.com/repos/\${REPO_OWNER}/\${REPO_NAME}/contents/lyric/\${slug}/index.html\`, {
                     headers: getHeaders()
                 });
 
                 if (!getRes.ok) throw new Error('Gagal mendapatkan SHA file. File mungkin sudah tidak ada.');
                 const fileData = await getRes.json();
 
-                const delRes = await fetch(`https://api.github.com/repos/${REPO_OWNER}/${REPO_NAME}/contents/lyric/${slug}/index.html`, {
+                const delRes = await fetch(\`https://api.github.com/repos/\${REPO_OWNER}/\${REPO_NAME}/contents/lyric/\${slug}/index.html\`, {
                     method: 'DELETE',
                     headers: getHeaders(),
                     body: JSON.stringify({
-                        message: `CMS Delete lyric folder: ${slug}`,
+                        message: \`CMS Delete lyric folder: \${slug}\`,
                         sha: fileData.sha
                     })
                 });
 
                 if (!delRes.ok) throw new Error('Gagal menghapus file dari repository.');
 
-                showToast('success', 'Berhasil Dihapus', `Folder dan file lirik "${slug}" telah dibersihkan dari repository.`);
+                showToast('success', 'Berhasil Dihapus', \`Folder dan file lirik "\${slug}" telah dibersihkan dari repository.\`);
                 fetchLyricList();
                 if (document.getElementById('lyric-slug').value === slug) {
                     resetForm();
