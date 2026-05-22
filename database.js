@@ -253,7 +253,7 @@ const sairootsDB = {
             "id": "mantra-malam",
             "title": "Mantra Malam",
             "category": "Album Reborn Riddim",
-            "image": "/asset_gambar/art-reborn-ridim.jpg",
+            "image": "/asset_gambar/art-reborn-riddim.jpg",
             "excerpt": "",
             "audio": "/discography/mantra-malam.mp3"
         },
