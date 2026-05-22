@@ -293,7 +293,7 @@ const sairootsDB = {
             "id": "bbm-busuk",
             "title": "BBM Busuk",
             "category": "Album Reborn Riddim",
-            "image": "/asset_gambar/art-reborn-ridim.jpg",
+            "image": "/asset_gambar/art-reborn-riddim.jpg",
             "excerpt": "",
             "audio": "/discography/bbm-busuk.mp3"
         },
