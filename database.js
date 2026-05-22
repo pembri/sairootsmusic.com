@@ -226,6 +226,14 @@ const sairootsDB = {
     ],
     "discography": [
         {
+            "id": "kabur-saja-dulu",
+            "title": "Kabur Saja Dulu",
+            "category": "Album Reborn Riddim",
+            "image": "/asset_gambar/art-reborn-ridim.jpg",
+            "excerpt": "",
+            "audio": "/discography/kabur-saja-dulu.mp3"
+        },
+        {
             "id": "dari-kingston",
             "title": "Dari Kingston",
             "category": "Single",
