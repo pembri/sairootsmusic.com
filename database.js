@@ -226,6 +226,14 @@ const sairootsDB = {
     ],
     "discography": [
         {
+            "id": "bbm-busuk",
+            "title": "BBM Busuk",
+            "category": "Album - Reborn Riddim",
+            "image": "/asset_gambar/art-reborn-ridim.jpg",
+            "excerpt": "",
+            "audio": "/discography/bbm-busuk.mp3"
+        },
+        {
             "id": "kabur-saja-dulu",
             "title": "Kabur Saja Dulu",
             "category": "Album Reborn Riddim",
