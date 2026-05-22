@@ -226,6 +226,14 @@ const sairootsDB = {
     ],
     "discography": [
         {
+            "id": "rastaman",
+            "title": "Rastaman",
+            "category": "Album Reborn Riddim",
+            "image": "/asset_gambar/art-reborn-ridim.jpg",
+            "excerpt": "",
+            "audio": "/discography/rastaman.mp3"
+        },
+        {
             "id": "melayang-pelan",
             "title": "Melayang Pelan",
             "category": "Album Reborn Riddim",
