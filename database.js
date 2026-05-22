@@ -226,6 +226,14 @@ const sairootsDB = {
     ],
     "discography": [
         {
+            "id": "tanah-hijau",
+            "title": "Tanah Hijau",
+            "category": "Album Reborn Riddim",
+            "image": "/asset_gambar/art-reborn-ridim.jpg",
+            "excerpt": "",
+            "audio": "/discography/tanah-hijau.mp3"
+        },
+        {
             "id": "bbm-busuk",
             "title": "BBM Busuk",
             "category": "Album Reborn Riddim",
