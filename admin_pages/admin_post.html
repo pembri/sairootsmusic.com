@@ -693,13 +693,13 @@
                 let newHtmlPath = "";
                 let masterHtml = "";
 
-                // --- KONVERSI <p> QUILL JADI <br> BENERAN ---
+                // --- KONVERSI <p> QUILL JADI NEWLINE BENERAN ---
                 let contentMurni = quill.root.innerHTML;
-                contentMurni = contentMurni.replace(/<p><br><\/p>/g, '<br>');
-                contentMurni = contentMurni.replace(/<\/p>/g, '<br>');
+                contentMurni = contentMurni.replace(/<p><br><\/p>/g, '\n');
+                contentMurni = contentMurni.replace(/<\/p>/g, '\n');
                 contentMurni = contentMurni.replace(/<p>/g, '');
-                contentMurni = contentMurni.replace(/<br>$/, '');
-                // ---------------------------------------------
+                contentMurni = contentMurni.trim();
+                // ------------------------------------------------
 
                 const newDataObj = { id: cleanId, title: title, category: category, image: imgUrl, excerpt: excerpt };
 
@@ -723,7 +723,7 @@
                             <span class="text-xs text-rasta-${color} font-bold uppercase tracking-widest bg-rasta-${color}/10 py-1 px-3 mb-4 inline-block">${category}</span>
                             <h1 class="font-display text-4xl md:text-6xl text-white mb-4 uppercase">${title}</h1>
                             <div class="text-gray-400 text-sm mb-8">${date}</div>
-                            <div class="text-gray-300 leading-relaxed font-light ql-editor px-0">${contentMurni}</div>
+                            <div class="text-gray-300 leading-relaxed font-light" style="white-space:pre-line">${contentMurni}</div>
                         </article>
                     `;
                     masterHtml = generateHTMLTemplate(title, 'article', postContent);
@@ -742,7 +742,7 @@
                             <img src="${imgUrl}" class="w-48 h-48 mx-auto object-cover brightness-100 mb-8 rounded-full border border-white/10">
                             <span class="text-xs text-rasta-red font-bold uppercase tracking-widest border border-rasta-red/20 py-0.5 px-2 mb-4 inline-block">${category}</span>
                             <h1 class="font-display text-5xl md:text-7xl text-white mb-8 uppercase">${title}</h1>
-                            <div class="text-gray-300 leading-loose font-light text-lg ql-editor text-left px-0">${contentMurni}</div>
+                            <div class="text-gray-300 leading-loose font-light text-lg text-left" style="white-space:pre-line">${contentMurni}</div>
                         </article>
                     `;
                     masterHtml = generateHTMLTemplate(title, 'lyric', postContent);
