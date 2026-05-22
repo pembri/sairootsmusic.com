@@ -277,7 +277,7 @@ const sairootsDB = {
             "id": "melayang-pelan",
             "title": "Melayang Pelan",
             "category": "Album Reborn Riddim",
-            "image": "/asset_gambar/art-reborn-ridim.jpg",
+            "image": "/asset_gambar/art-reborn-riddim.jpg",
             "excerpt": "",
             "audio": "/discography/melayang-pelan.mp3"
         },
