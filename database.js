@@ -226,6 +226,14 @@ const sairootsDB = {
     ],
     "discography": [
         {
+            "id": "melayang-pelan",
+            "title": "Melayang Pelan",
+            "category": "Album Reborn Riddim",
+            "image": "/asset_gambar/art-reborn-ridim.jpg",
+            "excerpt": "",
+            "audio": "/discography/melayang-pelan.mp3"
+        },
+        {
             "id": "tanah-hijau",
             "title": "Tanah Hijau",
             "category": "Album Reborn Riddim",
