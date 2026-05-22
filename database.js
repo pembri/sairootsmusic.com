@@ -226,6 +226,14 @@ const sairootsDB = {
     ],
     "discography": [
         {
+            "id": "magic-mushroom",
+            "title": "Magic Mushroom",
+            "category": "Album Reborn Riddim",
+            "image": "/asset_gambar/art-reborn-ridim.jpg",
+            "excerpt": "",
+            "audio": "/discography/magic-mushroom.mp3"
+        },
+        {
             "id": "rastaman",
             "title": "Rastaman",
             "category": "Album Reborn Riddim",
