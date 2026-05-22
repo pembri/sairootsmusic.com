@@ -229,7 +229,7 @@ const sairootsDB = {
             "id": "reborn-riddim",
             "title": "Reborn Riddim",
             "category": "Album Reborn Riddim",
-            "image": "/asset_gambar/art-reborn-ridim.jpg",
+            "image": "/asset_gambar/art-reborn-riddim.jpg",
             "excerpt": "",
             "audio": "/discography/reborn-riddim.mp3"
         },
