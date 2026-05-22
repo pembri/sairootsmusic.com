@@ -245,7 +245,7 @@ const sairootsDB = {
             "id": "salam-dari-timur",
             "title": "Salam Dari Timur",
             "category": "Album Reborn Riddim",
-            "image": "/asset_gambar/art-reborn-ridim.jpg",
+            "image": "/asset_gambar/art-reborn-riddim.jpg",
             "excerpt": "",
             "audio": "/discography/salam-dari-timur.mp3"
         },
