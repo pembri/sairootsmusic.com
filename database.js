@@ -226,6 +226,14 @@ const sairootsDB = {
     ],
     "discography": [
         {
+            "id": "reborn-riddim",
+            "title": "Reborn Riddim",
+            "category": "Album Reborn Riddim",
+            "image": "/asset_gambar/art-reborn-ridim.jpg",
+            "excerpt": "",
+            "audio": "/discography/reborn-riddim.mp3"
+        },
+        {
             "id": "autopsi-mic",
             "title": "Autopsi Mic",
             "category": "Album Reborn Riddim",
