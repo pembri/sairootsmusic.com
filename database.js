@@ -301,7 +301,7 @@ const sairootsDB = {
             "id": "kabur-saja-dulu",
             "title": "Kabur Saja Dulu",
             "category": "Album Reborn Riddim",
-            "image": "/asset_gambar/art-reborn-ridim.jpg",
+            "image": "/asset_gambar/art-reborn-riddim.jpg",
             "excerpt": "",
             "audio": "/discography/kabur-saja-dulu.mp3"
         },
