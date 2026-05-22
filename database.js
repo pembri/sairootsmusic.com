@@ -226,6 +226,14 @@ const sairootsDB = {
     ],
     "discography": [
         {
+            "id": "salam-dari-timur",
+            "title": "Salam Dari Timur",
+            "category": "Album Reborn Riddim",
+            "image": "/asset_gambar/art-reborn-ridim.jpg",
+            "excerpt": "",
+            "audio": "/discography/salam-dari-timur.mp3"
+        },
+        {
             "id": "mantra-malam",
             "title": "Mantra Malam",
             "category": "Album Reborn Riddim",
