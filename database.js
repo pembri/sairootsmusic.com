@@ -285,7 +285,7 @@ const sairootsDB = {
             "id": "tanah-hijau",
             "title": "Tanah Hijau",
             "category": "Album Reborn Riddim",
-            "image": "/asset_gambar/art-reborn-ridim.jpg",
+            "image": "/asset_gambar/art-reborn-riddim.jpg",
             "excerpt": "",
             "audio": "/discography/tanah-hijau.mp3"
         },
