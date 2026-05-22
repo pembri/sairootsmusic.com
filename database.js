@@ -226,6 +226,14 @@ const sairootsDB = {
     ],
     "discography": [
         {
+            "id": "autopsi-mic",
+            "title": "Autopsi Mic",
+            "category": "Album Reborn Riddim",
+            "image": "/asset_gambar/art-reborn-ridim.jpg",
+            "excerpt": "",
+            "audio": "/discography/autopsi-mic.mp3"
+        },
+        {
             "id": "salam-dari-timur",
             "title": "Salam Dari Timur",
             "category": "Album Reborn Riddim",
