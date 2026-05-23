@@ -345,7 +345,6 @@
         }
 
         async function startEdit(type, id) {
-            isEditMode = true;
             editId = id;
             
             let arr = [];
@@ -358,6 +357,7 @@
 
             switchMainTab('create');
             switchSubTab(type);
+            isEditMode = true;
 
             document.getElementById('edit-alert').classList.remove('hidden');
             document.getElementById('input-title').value = editOriginalData.title;
