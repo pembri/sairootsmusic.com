@@ -40,6 +40,13 @@ const sairootsDB = {
     ],
     "lyrics": [
         {
+            "id": "lirik-bbm-busuk",
+            "title": "Lirik BBM Busuk",
+            "category": "Album - Reborn Riddim",
+            "image": "/asset_gambar/art-reborn-riddim.jpg",
+            "excerpt": ""
+        },
+        {
             "id": "lirik-kabur-saja-dulu",
             "title": "Lirik Kabur Saja Dulu",
             "category": "Album - Reborn Riddim",
