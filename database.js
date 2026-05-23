@@ -36,8 +36,6 @@ const sairootsDB = {
             "category": "Article",
             "image": "/asset_gambar/sairoots.jpg",
             "excerpt": ""
-            "color": "green",
-            "date": "22 Mei 2026"
         }
     ],
     "lyrics": [
