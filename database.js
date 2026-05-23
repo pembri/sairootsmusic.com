@@ -31,7 +31,7 @@ const sairootsDB = {
             "date": "3 Mei 2026"
         },
         {
-            "id": "profil-sai-roots",
+            "id": "profil-project-music-sai-roots",
             "title": "Profil Project Music SAI Roots",
             "category": "Article",
             "image": "/asset_gambar/sairoots.jpg",
