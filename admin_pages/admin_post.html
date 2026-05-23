@@ -370,18 +370,10 @@
                     
                     const parser = new DOMParser();
                     const doc = parser.parseFromString(rawHtml, 'text/html');
-                    const newDiv = doc.querySelector('[style*="pre-line"]');
-                    const oldDiv = doc.querySelector('.ql-editor');
-                    const editorContent = newDiv || oldDiv;
+                    const editorContent = doc.querySelector('.post-content') || doc.querySelector('.ql-editor');
                     
                     if(editorContent) {
-                        if(newDiv) {
-                            // Format baru: split \n lalu jadikan <p> untuk Quill
-                            const lines = editorContent.innerHTML.split('\n');
-                            quill.root.innerHTML = lines.map(l => l.trim() === '' ? '<p><br></p>' : '<p>' + l + '</p>').join('');
-                        } else {
-                            quill.root.innerHTML = editorContent.innerHTML;
-                        }
+                        quill.root.innerHTML = editorContent.innerHTML;
                     } else {
                         quill.root.innerHTML = "<p>Gagal mengekstrak isi konten HTML lama.</p>";
                     }
@@ -449,10 +441,14 @@
         .rasta-stripe { height: 3px; background: linear-gradient(90deg, #2D8659 0%, #FBBF24 50%, #DC2626 100%); width: 100%; position: fixed; top: 0; z-index: 60; }
         #mobile-menu { transition: transform 0.4s cubic-bezier(0.4, 0, 0.2, 1); overflow-y: auto; }
         .menu-open { transform: translateX(0) !important; }
-        .ql-editor { font-size: 1.125rem; line-height: 1.8; color: #d1d5db; white-space: pre-wrap; overflow-wrap: break-word; word-break: break-word; max-width: 100%; }
-        .ql-editor h1, .ql-editor h2 { font-family: 'Anton', sans-serif; text-transform: uppercase; color: white; margin-top: 2rem; margin-bottom: 1rem; }
-        .ql-editor blockquote { border-left: 4px solid #FBBF24; padding-left: 1.5rem; font-style: italic; color: #9ca3af; }
-        .ql-editor a { color: #FBBF24; text-decoration: underline; }
+        .post-content { font-size: 1.125rem; line-height: 1.8; color: #d1d5db; white-space: pre-line; overflow-wrap: break-word; word-break: break-word; max-width: 100%; }
+        .post-content h1, .post-content h2 { font-family: 'Anton', sans-serif; text-transform: uppercase; color: white; margin-top: 2rem; margin-bottom: 1rem; }
+        .post-content blockquote { border-left: 4px solid #FBBF24; padding-left: 1.5rem; font-style: italic; color: #9ca3af; }
+        .post-content a { color: #FBBF24; text-decoration: underline; }
+        .post-content ol { list-style: decimal; padding-left: 1.5rem; }
+        .post-content ul { list-style: disc; padding-left: 1.5rem; }
+        .post-content li { margin-bottom: 0.25rem; }
+        .post-content strong { color: white; font-weight: 700; }
     </style>
 </head>
 <body class="overflow-x-hidden pt-1">
@@ -698,10 +694,9 @@
 
                 // --- KONVERSI <p> QUILL JADI NEWLINE BENERAN ---
                 let contentMurni = quill.root.innerHTML;
-                // Hapus hanya tag <p> wrapper, tag formatting lain (bold, h2, dll) tetap
                 contentMurni = contentMurni.replace(/<p><br><\/p>/g, '\n');
                 contentMurni = contentMurni.replace(/<\/p>/g, '\n');
-                contentMurni = contentMurni.replace(/<p[^>]*>/g, '');
+                contentMurni = contentMurni.replace(/<p>/g, '');
                 contentMurni = contentMurni.trim();
                 // ------------------------------------------------
 
@@ -727,7 +722,7 @@
                             <span class="text-xs text-rasta-${color} font-bold uppercase tracking-widest bg-rasta-${color}/10 py-1 px-3 mb-4 inline-block">${category}</span>
                             <h1 class="font-display text-4xl md:text-6xl text-white mb-4 uppercase">${title}</h1>
                             <div class="text-gray-400 text-sm mb-8">${date}</div>
-                            <div class="text-gray-300 leading-relaxed font-light" style="white-space:pre-line">${contentMurni}</div>
+                            <div class="text-gray-300 leading-relaxed font-light post-content">${contentMurni}</div>
                         </article>
                     `;
                     masterHtml = generateHTMLTemplate(title, 'article', postContent);
@@ -746,7 +741,7 @@
                             <img src="${imgUrl}" class="w-48 h-48 mx-auto object-cover brightness-100 mb-8 rounded-full border border-white/10">
                             <span class="text-xs text-rasta-red font-bold uppercase tracking-widest border border-rasta-red/20 py-0.5 px-2 mb-4 inline-block">${category}</span>
                             <h1 class="font-display text-5xl md:text-7xl text-white mb-8 uppercase">${title}</h1>
-                            <div class="text-gray-300 leading-loose font-light text-lg text-left" style="white-space:pre-line">${contentMurni}</div>
+                            <div class="text-gray-300 leading-loose font-light text-lg text-left post-content">${contentMurni}</div>
                         </article>
                     `;
                     masterHtml = generateHTMLTemplate(title, 'lyric', postContent);
