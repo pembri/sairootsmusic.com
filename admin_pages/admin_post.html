@@ -370,10 +370,18 @@
                     
                     const parser = new DOMParser();
                     const doc = parser.parseFromString(rawHtml, 'text/html');
-                    const editorContent = doc.querySelector('.ql-editor');
+                    const newDiv = doc.querySelector('[style*="pre-line"]');
+                    const oldDiv = doc.querySelector('.ql-editor');
+                    const editorContent = newDiv || oldDiv;
                     
                     if(editorContent) {
-                        quill.root.innerHTML = editorContent.innerHTML;
+                        if(newDiv) {
+                            // Format baru: split \n lalu jadikan <p> untuk Quill
+                            const lines = editorContent.innerHTML.split('\n');
+                            quill.root.innerHTML = lines.map(l => l.trim() === '' ? '<p><br></p>' : '<p>' + l + '</p>').join('');
+                        } else {
+                            quill.root.innerHTML = editorContent.innerHTML;
+                        }
                     } else {
                         quill.root.innerHTML = "<p>Gagal mengekstrak isi konten HTML lama.</p>";
                     }
@@ -690,9 +698,10 @@
 
                 // --- KONVERSI <p> QUILL JADI NEWLINE BENERAN ---
                 let contentMurni = quill.root.innerHTML;
+                // Hapus hanya tag <p> wrapper, tag formatting lain (bold, h2, dll) tetap
                 contentMurni = contentMurni.replace(/<p><br><\/p>/g, '\n');
                 contentMurni = contentMurni.replace(/<\/p>/g, '\n');
-                contentMurni = contentMurni.replace(/<p>/g, '');
+                contentMurni = contentMurni.replace(/<p[^>]*>/g, '');
                 contentMurni = contentMurni.trim();
                 // ------------------------------------------------
 
