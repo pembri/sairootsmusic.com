@@ -32,7 +32,7 @@ const sairootsDB = {
         },
         {
             "id": "profil-sai-roots",
-            "title": "Profil SAI Roots",
+            "title": "Profil Project Music SAI Roots",
             "category": "Article",
             "image": "/asset_gambar/sairoots.jpg",
             "excerpt": "Proyek Musik Independen",
