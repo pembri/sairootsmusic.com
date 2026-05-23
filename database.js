@@ -35,9 +35,7 @@ const sairootsDB = {
             "title": "Profil Project Music SAI Roots",
             "category": "Article",
             "image": "/asset_gambar/sairoots.jpg",
-            "excerpt": "Proyek Musik Independen",
-            "color": "green",
-            "date": "28 April 2026"
+            "excerpt": ""
         }
     ],
     "lyrics": [
