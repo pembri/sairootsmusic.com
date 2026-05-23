@@ -40,6 +40,13 @@ const sairootsDB = {
     ],
     "lyrics": [
         {
+            "id": "lirik-kabur-saja-dulu",
+            "title": "Lirik Kabur Saja Dulu",
+            "category": "Album - Reborn Riddim",
+            "image": "/asset_gambar/art-reborn-riddim.jpg",
+            "excerpt": ""
+        },
+        {
             "id": "lirik-dari-kingston",
             "title": "Lirik Dari Kingston",
             "category": "Single",
