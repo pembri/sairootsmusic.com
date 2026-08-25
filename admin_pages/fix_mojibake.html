@@ -3,7 +3,7 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>SAI Roots | Fix Mojibake Tool</title>
+    <title>SAI Roots | Mojibake Fixer Tool</title>
     <style>
         :root {
             --bg-color: #0d0d0d;
@@ -12,7 +12,6 @@
             --accent-red: #ff4d4d;
             --accent-yellow: #ffcc00;
             --accent-green: #2ecc71;
-            --accent-blue: #4da6ff;
             --border-color: #333;
         }
 
@@ -26,7 +25,7 @@
         }
 
         .container {
-            max-width: 950px;
+            max-width: 900px;
             margin: 0 auto;
         }
 
@@ -39,8 +38,8 @@
 
         header h1 {
             margin: 0;
-            font-size: 2.2rem;
-            letter-spacing: 1px;
+            font-size: 2.3rem;
+            letter-spacing: 2px;
             text-transform: uppercase;
         }
 
@@ -77,7 +76,6 @@
             border-radius: 6px;
             color: #fff;
             box-sizing: border-box;
-            font-family: monospace;
         }
 
         input:focus {
@@ -85,88 +83,87 @@
             border-color: var(--accent-green);
         }
 
-        .checkbox-row {
-            display: flex;
-            align-items: center;
-            gap: 8px;
-            margin-bottom: 20px;
-        }
-        .checkbox-row input { width: auto; margin: 0; }
-        .checkbox-row label { margin: 0; color: var(--text-color); font-weight: normal; }
-
         .btn {
             background: var(--accent-green);
             color: #000;
-            padding: 12px 25px;
+            padding: 12px 22px;
             border: none;
             border-radius: 6px;
             cursor: pointer;
             font-weight: bold;
-            font-size: 1rem;
-            transition: transform 0.2s, opacity 0.2s;
+            font-size: 0.95rem;
+            transition: transform 0.15s, opacity 0.15s;
+            margin-right: 10px;
+            margin-bottom: 10px;
         }
 
         .btn:hover { opacity: 0.9; transform: translateY(-2px); }
         .btn:disabled { opacity: 0.4; cursor: not-allowed; transform: none; }
 
         .btn-scan { background: var(--accent-yellow); }
-
-        .btn-fix-all {
-            background: var(--accent-red);
-            color: #fff;
-            width: 100%;
-            margin-top: 20px;
-            padding: 16px;
-            font-size: 1.1rem;
-            display: none;
-        }
-
-        .btn-stop {
-            background: #555;
-            color: #fff;
-            display: none;
-        }
-
-        .scan-controls {
-            display: flex;
-            gap: 10px;
-            align-items: center;
-            flex-wrap: wrap;
-        }
-
-        #scan-status {
-            font-size: 0.85rem;
-            color: #999;
-            margin-top: 8px;
-        }
-
+        .btn-stop { background: var(--accent-red); color: #fff; }
+        .btn-reset { background: #444; color: #fff; }
         .btn-fix-one {
-            background: var(--accent-blue);
-            color: #fff;
-            padding: 8px 16px;
-            font-size: 0.85rem;
+            background: var(--accent-green);
+            padding: 8px 14px;
+            font-size: 0.8rem;
+            margin: 0;
             white-space: nowrap;
         }
 
-        #summary {
-            margin-top: 20px;
-            font-weight: bold;
+        .btn-push-all {
+            background: var(--accent-red);
+            color: #fff;
+            width: 100%;
+            margin-top: 10px;
+            padding: 16px;
+            font-size: 1.05rem;
             display: none;
         }
 
-        #file-list { margin-top: 30px; }
+        .progress-wrap {
+            background: #222;
+            border-radius: 8px;
+            height: 10px;
+            overflow: hidden;
+            margin: 10px 0 20px;
+            display: none;
+        }
+        .progress-bar {
+            height: 100%;
+            width: 0%;
+            background: linear-gradient(to right, var(--accent-red), var(--accent-yellow), var(--accent-green));
+            transition: width 0.2s;
+        }
+
+        .stats {
+            display: flex;
+            gap: 10px;
+            flex-wrap: wrap;
+            margin-bottom: 15px;
+            font-size: 0.85rem;
+        }
+        .stat-pill {
+            background: #222;
+            padding: 6px 12px;
+            border-radius: 20px;
+            border: 1px solid var(--border-color);
+        }
+
+        #file-list { margin-top: 20px; }
 
         .file-item {
-            background: #222;
-            padding: 15px;
+            background: #1c1c1c;
+            padding: 14px 16px;
             margin-bottom: 10px;
             border-radius: 8px;
             display: flex;
             align-items: center;
             justify-content: space-between;
-            border-bottom: 1px solid #333;
-            gap: 15px;
+            gap: 12px;
+            border-left: 3px solid var(--accent-red);
         }
+        .file-item.done { border-left-color: var(--accent-green); opacity: 0.5; }
 
         .file-info { flex-grow: 1; min-width: 0; }
 
@@ -178,31 +175,20 @@
         }
 
         .file-preview {
-            font-size: 0.8rem;
+            font-size: 0.78rem;
             color: #999;
-            margin-top: 6px;
-            font-style: italic;
-            overflow: hidden;
-            text-overflow: ellipsis;
-            white-space: nowrap;
+            margin-top: 4px;
+            word-break: break-all;
         }
+        .file-preview b { color: var(--accent-yellow); font-weight: normal; }
 
         .status-badge {
-            font-size: 0.75rem;
-            padding: 3px 10px;
+            font-size: 0.7rem;
+            padding: 3px 9px;
             border-radius: 10px;
-            background: #444;
+            background: var(--accent-red);
+            color: #fff;
             white-space: nowrap;
-        }
-        .status-badge.found { background: var(--accent-red); color: #fff; }
-        .status-badge.fixed { background: var(--accent-green); color: #000; }
-        .status-badge.clean { background: #555; color: #ccc; }
-        .status-badge.error { background: #822; color: #fff; }
-
-        .file-actions {
-            display: flex;
-            align-items: center;
-            gap: 10px;
         }
 
         .log-container {
@@ -211,12 +197,14 @@
             padding: 15px;
             border-radius: 8px;
             font-family: 'Courier New', Courier, monospace;
-            font-size: 0.85rem;
+            font-size: 0.8rem;
             height: 220px;
             overflow-y: auto;
             margin-top: 30px;
             border: 1px solid #333;
         }
+
+        .empty-msg { color: #666; font-style: italic; padding: 20px 0; text-align: center; }
 
         footer {
             text-align: center;
@@ -232,7 +220,7 @@
     <header>
         <h1>SAI ROOTS <span style="color: var(--accent-yellow)">FIX_MOJIBAKE</span></h1>
         <div class="accent-bar"></div>
-        <p>Scan & perbaiki huruf rusak (â€™, Â©, dll) di seluruh repository</p>
+        <p>Alat perbaikan otomatis huruf aneh (encoding rusak) di seluruh repository</p>
     </header>
 
     <div class="setup-box">
@@ -242,28 +230,27 @@
         <label>Repository Path</label>
         <input type="text" id="repo" value="pembri/sairootsmusic.com">
 
-        <label>Branch</label>
-        <input type="text" id="branch" value="main">
-
-        <div class="checkbox-row">
-            <input type="checkbox" id="scanAll" checked>
-            <label for="scanAll">Scan SEMUA file .html di repo (uncheck untuk pilih folder tertentu)</label>
-        </div>
-
-        <div class="scan-controls">
-            <button class="btn btn-scan" id="scan-btn" onclick="scanFiles()">1. Scan Repository</button>
-            <button class="btn btn-stop" id="stop-scan-btn" onclick="stopScan()">⏹ Stop Scan</button>
-        </div>
-        <div id="scan-status"></div>
+        <button class="btn btn-scan" id="scan-btn" onclick="startScan()">1. Mulai Scan</button>
+        <button class="btn btn-stop" id="stop-btn" onclick="stopScan()" style="display:none;">Stop Scan</button>
+        <button class="btn btn-reset" id="reset-btn" onclick="resetCache()">Reset Cache</button>
     </div>
 
-    <div id="summary"></div>
-    <div id="file-list"></div>
-
-    <div class="scan-controls" style="margin-top: 20px;">
-        <button id="fix-all-btn" class="btn btn-fix-all" style="margin-top:0; flex:1;" onclick="fixAll()">2. Perbaiki Semua Halaman</button>
-        <button id="stop-fix-btn" class="btn btn-stop" onclick="stopFixAll()">⏹ Stop</button>
+    <div class="progress-wrap" id="progress-wrap">
+        <div class="progress-bar" id="progress-bar"></div>
     </div>
+
+    <div class="stats" id="stats" style="display:none;">
+        <span class="stat-pill">Total file: <b id="stat-total">0</b></span>
+        <span class="stat-pill">Sudah dicek: <b id="stat-checked">0</b></span>
+        <span class="stat-pill">Bermasalah: <b id="stat-dirty">0</b></span>
+        <span class="stat-pill">Sudah diperbaiki (permanen): <b id="stat-fixed">0</b></span>
+    </div>
+
+    <div id="file-list">
+        <div class="empty-msg">Belum ada scan. Klik "Mulai Scan" untuk mulai, atau lanjutkan sesi sebelumnya jika ada.</div>
+    </div>
+
+    <button id="push-all-btn" class="btn btn-push-all" onclick="fixAll()">2. Perbaiki Semua Halaman</button>
 
     <div class="log-container" id="logs">
         > Tool initialized. Waiting for Scan...
@@ -277,64 +264,144 @@
 <script>
     const logs = document.getElementById('logs');
     const fileListDiv = document.getElementById('file-list');
-    const fixAllBtn = document.getElementById('fix-all-btn');
-    const summaryDiv = document.getElementById('summary');
+    const scanBtn = document.getElementById('scan-btn');
+    const stopBtn = document.getElementById('stop-btn');
+    const pushAllBtn = document.getElementById('push-all-btn');
+    const progressWrap = document.getElementById('progress-wrap');
+    const progressBar = document.getElementById('progress-bar');
+    const statsBox = document.getElementById('stats');
 
-    // Peta perbaikan mojibake: hasil salah baca UTF-8 sebagai Latin-1/Windows-1252 -> karakter asli
-    // Ini menangani kasus umum saat teks UTF-8 didecode ulang secara keliru (mis. via atob tanpa
-    // penanganan UTF-8), termasuk pola ganda (double-encoded) yang kadang muncul.
-    const MOJIBAKE_MAP = [
-        // Tanda baca pintar & simbol umum
-        ['â€™', '\u2019'], // ’
-        ['â€˜', '\u2018'], // ‘
-        ['â€œ', '\u201C'], // “
-        ['â€\u009d', '\u201D'], // ”
-        ['â€\x9d', '\u201D'],
-        ['â€', '\u201D'], // fallback tanda kutip tutup (ditangani lebih spesifik dulu di atas)
-        ['â€“', '\u2013'], // –
-        ['â€”', '\u2014'], // —
-        ['â€¦', '\u2026'], // …
-        ['â€¢', '\u2022'], // •
-        ['Â©', '\u00A9'],  // ©
-        ['Â®', '\u00AE'],  // ®
-        ['â„¢', '\u2122'], // ™
-        ['Â°', '\u00B0'],  // °
-        ['Â±', '\u00B1'],  // ±
-        ['Ã—', '\u00D7'],  // ×
-        ['Ã·', '\u00F7'],  // ÷
-        ['Â«', '\u00AB'],  // «
-        ['Â»', '\u00BB'],  // »
-        ['Â½', '\u00BD'],  // ½
-        ['Â¼', '\u00BC'],  // ¼
-        ['Â¾', '\u00BE'],  // ¾
-        ['Â ', '\u00A0'],  // non-breaking space rusak
-        ['Â', ''],         // sisa Â yang nempel sebelum simbol Latin-1 (dibersihkan terakhir)
-        // Huruf Latin dengan aksen (jaga-jaga jika ada nama/istilah asing)
-        ['Ã¡', 'á'], ['Ã©', 'é'], ['Ã­', 'í'], ['Ã³', 'ó'], ['Ãº', 'ú'],
-        ['Ã¤', 'ä'], ['Ã«', 'ë'], ['Ã¯', 'ï'], ['Ã¶', 'ö'], ['Ã¼', 'ü'],
-        ['Ã±', 'ñ'], ['Ã§', 'ç']
-    ];
+    // ---- Persistent state (localStorage) so scan can be stopped & resumed anytime ----
+    const LS_FIXED = 'mojibake_fixed_paths';      // permanently fixed, never rescan
+    const LS_CLEAN = 'mojibake_clean_paths';       // scanned & found clean this cycle
+    const LS_QUEUE = 'mojibake_pending_queue';     // paths not yet checked
+    const LS_ALLFILES = 'mojibake_all_files';      // full file list (path+url+sha) from last tree fetch
 
-    // Regex gabungan untuk deteksi cepat: apakah file ini "terinfeksi" mojibake?
-    const DETECT_REGEX = /â€™|â€˜|â€œ|â€\u009d|â€“|â€”|â€¦|â€¢|Â©|Â®|â„¢|Ã[\x80-\xBF]|Â[\x80-\xBF ]/;
+    let fixedPaths = new Set(JSON.parse(localStorage.getItem(LS_FIXED) || '[]'));
+    let cleanPaths = new Set(JSON.parse(localStorage.getItem(LS_CLEAN) || '[]'));
+    let queue = JSON.parse(localStorage.getItem(LS_QUEUE) || '[]'); // array of {path,url,sha}
+    let allFilesMeta = JSON.parse(localStorage.getItem(LS_ALLFILES) || '{}'); // path -> {url,sha}
 
-    let scannedFiles = []; // { path, sha, url, html, matchCount, status }
-    let scanStopRequested = false;
-    let isScanning = false;
-    let fixStopRequested = false;
-    let isFixingAll = false;
+    let dirtyFiles = {}; // path -> {url, sha, preview, fixedText, originalRaw}
+    let scanning = false;
+    let stopRequested = false;
+    let totalFilesCount = Object.keys(allFilesMeta).length;
+
+    function saveState() {
+        localStorage.setItem(LS_FIXED, JSON.stringify([...fixedPaths]));
+        localStorage.setItem(LS_CLEAN, JSON.stringify([...cleanPaths]));
+        localStorage.setItem(LS_QUEUE, JSON.stringify(queue));
+        localStorage.setItem(LS_ALLFILES, JSON.stringify(allFilesMeta));
+    }
 
     function addLog(msg, color = '#0f0') {
-        const div = document.createElement('div');
-        div.style.color = color;
-        div.textContent = `> ${msg}`;
-        logs.appendChild(div);
+        const span = document.createElement('div');
+        span.style.color = color;
+        span.textContent = `> ${msg}`;
+        logs.appendChild(span);
         logs.scrollTop = logs.scrollHeight;
     }
 
-    function decodeBase64Utf8(b64) {
-        // Decode base64 -> byte string -> UTF-8 yang benar
-        const binary = atob(b64);
+    function updateStats() {
+        statsBox.style.display = 'flex';
+        document.getElementById('stat-total').textContent = totalFilesCount || Object.keys(allFilesMeta).length;
+        document.getElementById('stat-checked').textContent = cleanPaths.size + fixedPaths.size + Object.keys(dirtyFiles).length;
+        document.getElementById('stat-dirty').textContent = Object.keys(dirtyFiles).length;
+        document.getElementById('stat-fixed').textContent = fixedPaths.size;
+    }
+
+    function updateProgress() {
+        const total = totalFilesCount || 1;
+        const done = total - queue.length;
+        progressWrap.style.display = 'block';
+        progressBar.style.width = Math.min(100, (done / total) * 100) + '%';
+    }
+
+    function resetCache() {
+        if (!confirm('Ini akan menghapus riwayat scan & daftar file yang sudah diperbaiki dari cache lokal. File yang SUDAH di-push ke GitHub tetap aman (tidak akan diubah lagi). Lanjut?')) return;
+        localStorage.removeItem(LS_FIXED);
+        localStorage.removeItem(LS_CLEAN);
+        localStorage.removeItem(LS_QUEUE);
+        localStorage.removeItem(LS_ALLFILES);
+        fixedPaths = new Set();
+        cleanPaths = new Set();
+        queue = [];
+        allFilesMeta = {};
+        dirtyFiles = {};
+        totalFilesCount = 0;
+        fileListDiv.innerHTML = '<div class="empty-msg">Cache direset. Klik "Mulai Scan" untuk mulai dari awal.</div>';
+        pushAllBtn.style.display = 'none';
+        progressWrap.style.display = 'none';
+        statsBox.style.display = 'none';
+        addLog('Cache lokal direset.', '#ffcc00');
+    }
+
+    // ---------------- Mojibake detection & repair ----------------
+
+    // Scores how "broken" a string looks (higher = more corrupted)
+    function mojibakeScore(s) {
+        let score = 0;
+        for (const ch of s) {
+            const cp = ch.codePointAt(0);
+            if (cp >= 0x80 && cp <= 0x9F) score += 3;   // raw C1 control chars -> render as boxes/tofu
+            if (cp === 0xFFFD) score += 3;               // replacement character
+        }
+        const markers = s.match(/â€.|Ã[\x80-\xBF].|Â[€™¦°¢£®©]|â\u0080./g);
+        if (markers) score += markers.length * 2;
+        return score;
+    }
+
+    // One pass of "undo the atob-without-utf8-decode bug": treat each char's
+    // code point as a raw byte, then decode those bytes as UTF-8.
+    function unmangleOnce(s) {
+        try {
+            const bytes = new Uint8Array(s.length);
+            for (let i = 0; i < s.length; i++) {
+                const cp = s.charCodeAt(i);
+                if (cp > 255) return null; // not representable as a single byte -> can't be this kind of mangling
+                bytes[i] = cp;
+            }
+            return new TextDecoder('utf-8', { fatal: true }).decode(bytes);
+        } catch (e) {
+            return null;
+        }
+    }
+
+    // Repeatedly unmangle (corruption may have been applied more than once)
+    // until it stops improving, capped at a safe number of passes.
+    function autoFix(s, maxPasses = 6) {
+        let current = s;
+        let currentScore = mojibakeScore(current);
+        for (let i = 0; i < maxPasses; i++) {
+            const next = unmangleOnce(current);
+            if (next === null) break;
+            const nextScore = mojibakeScore(next);
+            if (nextScore < currentScore) {
+                current = next;
+                currentScore = nextScore;
+            } else {
+                break;
+            }
+        }
+        return current;
+    }
+
+    function getPreviewSnippet(original, fixed) {
+        // find first differing region to show a helpful before/after preview
+        let idx = -1;
+        const len = Math.min(original.length, fixed.length);
+        for (let i = 0; i < len; i++) {
+            if (original[i] !== fixed[i]) { idx = i; break; }
+        }
+        if (idx === -1) idx = 0;
+        const start = Math.max(0, idx - 25);
+        const before = original.slice(start, idx + 35).replace(/\s+/g, ' ');
+        const after = fixed.slice(start, idx + 35).replace(/\s+/g, ' ');
+        return `...${before}...  &rarr;  ...${after}...`;
+    }
+
+    function decodeBase64Utf8(base64) {
+        const binary = atob(base64.replace(/\n/g, ''));
         const bytes = new Uint8Array(binary.length);
         for (let i = 0; i < binary.length; i++) bytes[i] = binary.charCodeAt(i);
         return new TextDecoder('utf-8').decode(bytes);
@@ -347,298 +414,234 @@
         return btoa(binary);
     }
 
-    function countMojibake(text) {
-        const matches = text.match(new RegExp(DETECT_REGEX, 'g'));
-        return matches ? matches.length : 0;
-    }
+    // ---------------- Scanning ----------------
 
-    function fixMojibakeText(text) {
-        let result = text;
-        for (const [bad, good] of MOJIBAKE_MAP) {
-            result = result.split(bad).join(good);
-        }
-        return result;
-    }
-
-    async function githubFetch(url, token, options = {}) {
-        const res = await fetch(url, {
-            ...options,
-            headers: {
-                'Authorization': `token ${token}`,
-                'Accept': 'application/vnd.github+json',
-                ...(options.headers || {})
-            }
-        });
-        return res;
-    }
-
-    function setScanningUI(active) {
-        isScanning = active;
-        document.getElementById('scan-btn').disabled = active;
-        document.getElementById('stop-scan-btn').style.display = active ? 'inline-block' : 'none';
-    }
-
-    function stopScan() {
-        if (!isScanning) return;
-        scanStopRequested = true;
-        addLog('Menghentikan scan atas permintaan user...', '#ffcc00');
-    }
-
-    async function scanFiles() {
-        const token = document.getElementById('token').value.trim();
-        const repo = document.getElementById('repo').value.trim();
-        const branch = document.getElementById('branch').value.trim() || 'main';
-
+    async function startScan() {
+        const token = document.getElementById('token').value;
+        const repo = document.getElementById('repo').value;
         if (!token) { alert('Input Token dulu, Bre!'); return; }
-        if (!repo) { alert('Input Repository Path dulu!'); return; }
 
-        scannedFiles = [];
-        scanStopRequested = false;
-        fileListDiv.innerHTML = '<p>Sedang mencari file .html...</p>';
-        summaryDiv.style.display = 'none';
-        fixAllBtn.style.display = 'none';
-        setScanningUI(true);
-        addLog('Memulai scanning repository...', '#ffcc00');
+        scanning = true;
+        stopRequested = false;
+        scanBtn.disabled = true;
+        stopBtn.style.display = 'inline-block';
 
         try {
-            const treeRes = await githubFetch(
-                `https://api.github.com/repos/${repo}/git/trees/${branch}?recursive=1`, token
-            );
-            const treeData = await treeRes.json();
+            if (queue.length === 0 && Object.keys(allFilesMeta).length === 0) {
+                addLog('Mengambil daftar file dari repository...', '#ffcc00');
+                const res = await fetch(`https://api.github.com/repos/${repo}/git/trees/main?recursive=1`, {
+                    headers: { 'Authorization': `token ${token}` }
+                });
+                const data = await res.json();
+                if (!data.tree) throw new Error('Gagal akses repo. Cek Token/Repo Name.');
 
-            if (!treeData.tree) {
-                throw new Error(treeData.message || 'Gagal akses repo. Cek Token/Repo Name/Branch.');
-            }
+                const htmlFiles = data.tree.filter(item => item.type === 'blob' && item.path.endsWith('.html'));
+                htmlFiles.forEach(f => { allFilesMeta[f.path] = { url: f.url, sha: f.sha }; });
+                totalFilesCount = htmlFiles.length;
 
-            const htmlFiles = treeData.tree.filter(item => item.type === 'blob' && item.path.endsWith('.html'));
+                queue = htmlFiles
+                    .filter(f => !fixedPaths.has(f.path) && !cleanPaths.has(f.path))
+                    .map(f => ({ path: f.path, url: f.url, sha: f.sha }));
 
-            addLog(`Ditemukan ${htmlFiles.length} file .html total. Mengecek isi masing-masing untuk huruf aneh...`, '#ffcc00');
-            fileListDiv.innerHTML = '<h3>File yang mengandung huruf aneh:</h3>';
-
-            let infectedCount = 0;
-            let checkedCount = 0;
-            let stoppedEarly = false;
-
-            for (const item of htmlFiles) {
-                if (scanStopRequested) {
-                    stoppedEarly = true;
-                    break;
-                }
-
-                checkedCount++;
-                document.getElementById('scan-status').textContent =
-                    `Mengecek ${checkedCount}/${htmlFiles.length}: ${item.path}`;
-
-                try {
-                    const blobRes = await githubFetch(item.url, token);
-                    const blobData = await blobRes.json();
-                    const html = decodeBase64Utf8(blobData.content);
-                    const matchCount = countMojibake(html);
-
-                    if (matchCount > 0) {
-                        infectedCount++;
-                        const fileObj = {
-                            path: item.path,
-                            sha: blobData.sha,
-                            url: item.url,
-                            html: html,
-                            matchCount: matchCount,
-                            status: 'found'
-                        };
-                        scannedFiles.push(fileObj);
-                        renderFileItem(fileObj, scannedFiles.length - 1); // render langsung, live
-                        fixAllBtn.style.display = 'block';
-                        addLog(`Terdeteksi: ${item.path} (${matchCount} huruf aneh)`, '#ff4d4d');
-                    }
-                } catch (innerErr) {
-                    addLog(`Gagal cek ${item.path}: ${innerErr.message}`, '#ff4d4d');
-                }
-            }
-
-            document.getElementById('scan-status').textContent = '';
-
-            if (stoppedEarly) {
-                addLog(`Scan DIHENTIKAN oleh user. Baru cek ${checkedCount}/${htmlFiles.length} file. Ditemukan ${infectedCount} file bermasalah sejauh ini.`, '#ffcc00');
+                addLog(`Ditemukan ${htmlFiles.length} file .html total. ${queue.length} akan discan (sisanya sudah pernah dicek).`, '#2ecc71');
+                saveState();
             } else {
-                addLog(`Scan selesai. ${infectedCount} dari ${htmlFiles.length} file mengandung huruf aneh.`, infectedCount > 0 ? '#ff4d4d' : '#2ecc71');
+                addLog(`Melanjutkan scan sebelumnya. Sisa antrian: ${queue.length} file.`, '#ffcc00');
+                totalFilesCount = Object.keys(allFilesMeta).length;
             }
 
-            if (scannedFiles.length === 0) {
-                fileListDiv.innerHTML = '<p style="color:var(--accent-green)">Tidak ada file dengan huruf aneh (dari yang sudah dicek). Aman! 🎉</p>';
+            renderFileList();
+            updateStats();
+            updateProgress();
+
+            while (queue.length > 0 && !stopRequested) {
+                const item = queue[0];
+
+                if (fixedPaths.has(item.path)) { queue.shift(); saveState(); continue; }
+
+                addLog(`Scanning: ${item.path}`);
+                try {
+                    const contentRes = await fetch(item.url, { headers: { 'Authorization': `token ${token}` } });
+                    const contentData = await contentRes.json();
+                    const rawText = decodeBase64Utf8(contentData.content);
+                    const sha = contentData.sha || item.sha;
+
+                    const score = mojibakeScore(rawText);
+                    if (score > 0) {
+                        const fixedText = autoFix(rawText);
+                        dirtyFiles[item.path] = {
+                            path: item.path,
+                            url: item.url,
+                            sha: sha,
+                            original: rawText,
+                            fixed: fixedText,
+                            preview: getPreviewSnippet(rawText, fixedText)
+                        };
+                        addLog(`Ditemukan huruf aneh di: ${item.path}`, '#ff4d4d');
+                        renderFileList();
+                    } else {
+                        cleanPaths.add(item.path);
+                        addLog(`Bersih: ${item.path}`, '#666');
+                    }
+                } catch (err) {
+                    addLog(`Gagal scan ${item.path}: ${err.message}`, '#ff4d4d');
+                }
+
+                queue.shift();
+                saveState();
+                updateStats();
+                updateProgress();
+
+                await new Promise(r => setTimeout(r, 150)); // be nice to the API
             }
 
-            summaryDiv.style.display = 'block';
-            summaryDiv.textContent = stoppedEarly
-                ? `Scan dihentikan. Ditemukan ${infectedCount} file bermasalah dari ${checkedCount}/${htmlFiles.length} file yang sempat dicek. Kamu bisa scan lagi nanti untuk lanjutkan sisanya.`
-                : `Ditemukan ${infectedCount} file bermasalah dari total ${htmlFiles.length} file HTML.`;
-            summaryDiv.style.color = infectedCount > 0 ? 'var(--accent-red)' : 'var(--accent-green)';
+            if (stopRequested) {
+                addLog('Scan dihentikan. Progress tersimpan — klik "Mulai Scan" lagi kapan saja untuk lanjut.', '#ffcc00');
+            } else {
+                addLog('Scan selesai untuk semua file yang tersedia.', '#2ecc71');
+            }
 
         } catch (err) {
             addLog('Error: ' + err.message, '#ff4d4d');
-            if (scannedFiles.length === 0) {
-                fileListDiv.innerHTML = '<p style="color:var(--accent-red)">Scan gagal. Cek log di bawah.</p>';
-            }
         } finally {
-            setScanningUI(false);
+            scanning = false;
+            scanBtn.disabled = false;
+            scanBtn.textContent = queue.length > 0 ? '1. Lanjutkan Scan' : '1. Mulai Scan';
+            stopBtn.style.display = 'none';
+            pushAllBtn.style.display = Object.keys(dirtyFiles).length > 0 ? 'block' : 'none';
         }
     }
 
-    function renderFileItem(file, idx) {
-        const div = document.createElement('div');
-        div.className = 'file-item';
-        div.id = `file-${idx}`;
-
-        const previewMatch = file.html.match(new RegExp(DETECT_REGEX.source));
-        const previewSnippet = previewMatch ? escapeHtml(getSnippetAround(file.html, previewMatch.index)) : '';
-
-        div.innerHTML = `
-            <div class="file-info">
-                <span class="file-path">${escapeHtml(file.path)}</span>
-                <span class="file-preview">${previewSnippet}</span>
-            </div>
-            <div class="file-actions">
-                <span class="status-badge found" id="badge-${idx}">${file.matchCount} ditemukan</span>
-                <button class="btn btn-fix-one" id="btn-${idx}" onclick="fixOne(${idx})">Perbaiki</button>
-            </div>
-        `;
-        fileListDiv.appendChild(div);
+    function stopScan() {
+        stopRequested = true;
+        addLog('Menghentikan scan setelah file saat ini selesai...', '#ffcc00');
     }
 
-    function getSnippetAround(text, index) {
-        const start = Math.max(0, index - 30);
-        const end = Math.min(text.length, index + 40);
-        return (start > 0 ? '...' : '') + text.slice(start, end) + (end < text.length ? '...' : '');
+    function renderFileList() {
+        const paths = Object.keys(dirtyFiles);
+        if (paths.length === 0) {
+            fileListDiv.innerHTML = '<div class="empty-msg">Belum ada file bermasalah ditemukan (dari yang sudah discan sejauh ini).</div>';
+            pushAllBtn.style.display = 'none';
+            return;
+        }
+        fileListDiv.innerHTML = '<h3>File dengan huruf aneh:</h3>';
+        paths.forEach(path => {
+            const f = dirtyFiles[path];
+            const div = document.createElement('div');
+            div.className = 'file-item';
+            div.id = 'row-' + cssSafe(path);
+            div.innerHTML = `
+                <div class="file-info">
+                    <span class="file-path">${path}</span>
+                    <div class="file-preview">${f.preview}</div>
+                </div>
+                <button class="btn btn-fix-one" onclick="fixOne('${path.replace(/'/g, "\\'")}')">Perbaiki</button>
+            `;
+            fileListDiv.appendChild(div);
+        });
+        pushAllBtn.style.display = 'block';
     }
 
-    function escapeHtml(str) {
-        const div = document.createElement('div');
-        div.textContent = str;
-        return div.innerHTML;
+    function cssSafe(path) {
+        return path.replace(/[^a-zA-Z0-9]/g, '_');
     }
 
-    async function fixOne(idx) {
-        const token = document.getElementById('token').value.trim();
-        const repo = document.getElementById('repo').value.trim();
-        const branch = document.getElementById('branch').value.trim() || 'main';
-        const file = scannedFiles[idx];
-        const btn = document.getElementById(`btn-${idx}`);
-        const badge = document.getElementById(`badge-${idx}`);
+    async function pushFix(token, repo, item) {
+        const res = await fetch(`https://api.github.com/repos/${repo}/contents/${item.path}`, {
+            method: 'PUT',
+            headers: {
+                'Authorization': `token ${token}`,
+                'Content-Type': 'application/json'
+            },
+            body: JSON.stringify({
+                message: `Fix: Perbaiki encoding huruf aneh di ${item.path}`,
+                content: encodeUtf8Base64(item.fixed),
+                sha: item.sha
+            })
+        });
+        return res.ok;
+    }
 
-        btn.disabled = true;
-        btn.textContent = 'Memproses...';
+    async function fixOne(path) {
+        const token = document.getElementById('token').value;
+        const repo = document.getElementById('repo').value;
+        if (!token) { alert('Input Token dulu, Bre!'); return; }
 
+        const item = dirtyFiles[path];
+        if (!item) return;
+
+        addLog(`Memperbaiki: ${path}`, '#ffcc00');
         try {
-            const fixedHtml = fixMojibakeText(file.html);
-            const remaining = countMojibake(fixedHtml);
-
-            const pushRes = await githubFetch(
-                `https://api.github.com/repos/${repo}/contents/${file.path}`, token,
-                {
-                    method: 'PUT',
-                    headers: { 'Content-Type': 'application/json' },
-                    body: JSON.stringify({
-                        message: `Fix: Perbaiki mojibake/huruf aneh di ${file.path}`,
-                        content: encodeUtf8Base64(fixedHtml),
-                        sha: file.sha,
-                        branch: branch
-                    })
-                }
-            );
-
-            const pushData = await pushRes.json();
-
-            if (pushRes.ok) {
-                file.status = 'fixed';
-                file.html = fixedHtml;
-                if (pushData.content && pushData.content.sha) file.sha = pushData.content.sha;
-                addLog(`Sukses perbaiki: ${file.path}`, '#2ecc71');
-
-                // Hilangkan dari daftar biar nggak bingung kalau mau lanjut nanti
-                const itemDiv = document.getElementById(`file-${idx}`);
-                if (itemDiv) itemDiv.remove();
-
-                updateRemainingCount();
+            const ok = await pushFix(token, repo, item);
+            if (ok) {
+                addLog(`Sukses diperbaiki: ${path}`, '#2ecc71');
+                fixedPaths.add(path);
+                delete dirtyFiles[path];
+                saveState();
+                renderFileList();
+                updateStats();
             } else {
-                throw new Error(pushData.message || 'Push gagal');
+                addLog(`Gagal push: ${path} (kemungkinan sha berubah, coba scan ulang file ini)`, '#ff4d4d');
             }
         } catch (err) {
-            badge.textContent = 'Gagal';
-            badge.className = 'status-badge error';
-            btn.disabled = false;
-            btn.textContent = 'Coba Lagi';
-            addLog(`Gagal perbaiki ${file.path}: ${err.message}`, '#ff4d4d');
+            addLog(`Error saat perbaiki ${path}: ${err.message}`, '#ff4d4d');
         }
-    }
-
-    function updateRemainingCount() {
-        const remaining = scannedFiles.filter(f => f.status !== 'fixed').length;
-        const fixedTotal = scannedFiles.filter(f => f.status === 'fixed').length;
-
-        summaryDiv.style.display = 'block';
-        if (remaining === 0) {
-            summaryDiv.textContent = `Semua ${fixedTotal} file yang ditemukan sudah diperbaiki. 🎉`;
-            summaryDiv.style.color = 'var(--accent-green)';
-            fixAllBtn.style.display = 'none';
-            document.getElementById('stop-fix-btn').style.display = 'none';
-        } else {
-            summaryDiv.textContent = `${fixedTotal} file sudah diperbaiki, ${remaining} file masih tersisa.`;
-            summaryDiv.style.color = 'var(--accent-yellow)';
-            if (!isFixingAll) {
-                fixAllBtn.style.display = 'block';
-                fixAllBtn.disabled = false;
-                fixAllBtn.textContent = `2. Perbaiki Semua Halaman (${remaining} tersisa)`;
-            }
-        }
-
-        if (fileListDiv.children.length === 0 || (fileListDiv.children.length === 1 && fileListDiv.querySelector('h3'))) {
-            fileListDiv.innerHTML = '<p style="color:var(--accent-green)">Tidak ada file tersisa di daftar. Semua yang ditemukan sudah beres! 🎉</p>';
-        }
-    }
-
-    function stopFixAll() {
-        if (!isFixingAll) return;
-        fixStopRequested = true;
-        addLog('Menghentikan proses "Perbaiki Semua" atas permintaan user...', '#ffcc00');
     }
 
     async function fixAll() {
-        const remaining = scannedFiles.filter(f => f.status !== 'fixed').length;
-        if (remaining === 0) { addLog('Tidak ada file tersisa untuk diperbaiki.', '#ffcc00'); return; }
-        if (!confirm(`Yakin mau perbaiki ${remaining} halaman yang belum diperbaiki?`)) return;
+        const token = document.getElementById('token').value;
+        const repo = document.getElementById('repo').value;
+        if (!token) { alert('Input Token dulu, Bre!'); return; }
 
-        fixStopRequested = false;
-        isFixingAll = true;
-        fixAllBtn.disabled = true;
-        document.getElementById('stop-fix-btn').style.display = 'inline-block';
-        fixAllBtn.textContent = 'Sedang memperbaiki halaman...';
-        addLog('Memulai perbaikan massal. Klik Stop kapan saja untuk berhenti.', '#ffcc00');
+        const paths = Object.keys(dirtyFiles);
+        if (paths.length === 0) return;
+        if (!confirm(`Yakin mau perbaiki ${paths.length} halaman sekaligus?`)) return;
 
-        let doneCount = 0;
-        let stoppedEarly = false;
+        stopRequested = false;
+        pushAllBtn.disabled = true;
+        stopBtn.style.display = 'inline-block';
+        addLog(`Mulai perbaikan massal untuk ${paths.length} file...`, '#ffcc00');
 
-        for (let idx = 0; idx < scannedFiles.length; idx++) {
-            if (fixStopRequested) { stoppedEarly = true; break; }
-            if (scannedFiles[idx].status === 'fixed') continue;
-            fixAllBtn.textContent = `Memperbaiki ${doneCount + 1}/${remaining}: ${scannedFiles[idx].path}`;
-            await fixOne(idx);
-            doneCount++;
+        for (const path of paths) {
+            if (stopRequested) { addLog('Perbaikan massal dihentikan.', '#ffcc00'); break; }
+            const item = dirtyFiles[path];
+            addLog(`Memperbaiki: ${path}`);
+            try {
+                const ok = await pushFix(token, repo, item);
+                if (ok) {
+                    addLog(`Sukses: ${path}`, '#2ecc71');
+                    fixedPaths.add(path);
+                    delete dirtyFiles[path];
+                    saveState();
+                    renderFileList();
+                    updateStats();
+                } else {
+                    addLog(`Gagal: ${path} (sha mungkin berubah)`, '#ff4d4d');
+                }
+            } catch (err) {
+                addLog(`Error di ${path}: ${err.message}`, '#ff4d4d');
+            }
+            await new Promise(r => setTimeout(r, 250));
         }
 
-        isFixingAll = false;
-        document.getElementById('stop-fix-btn').style.display = 'none';
-
-        const stillLeft = scannedFiles.filter(f => f.status !== 'fixed').length;
-
-        if (stoppedEarly) {
-            addLog(`Perbaikan DIHENTIKAN oleh user. ${doneCount} halaman selesai, ${stillLeft} halaman belum diperbaiki. Klik "Perbaiki Semua Halaman" lagi kapan saja untuk lanjut.`, '#ffcc00');
-            fixAllBtn.disabled = false;
-            fixAllBtn.textContent = `Lanjutkan Perbaiki Sisa (${stillLeft} halaman)`;
-        } else {
-            addLog('SELESAI! Semua halaman telah diproses.', '#2ecc71');
-            fixAllBtn.textContent = 'Semua Halaman Selesai Diperbaiki ✓';
-            fixAllBtn.disabled = true;
-        }
+        stopBtn.style.display = 'none';
+        pushAllBtn.disabled = false;
+        addLog('SELESAI! Perbaikan massal selesai.', '#2ecc71');
     }
+
+    // On load, reflect any resumable state
+    window.addEventListener('DOMContentLoaded', () => {
+        totalFilesCount = Object.keys(allFilesMeta).length;
+        if (queue.length > 0) {
+            scanBtn.textContent = '1. Lanjutkan Scan';
+            addLog(`Sesi sebelumnya ditemukan: ${queue.length} file belum discan. Klik "Lanjutkan Scan" untuk melanjutkan.`, '#ffcc00');
+            updateStats();
+            updateProgress();
+        }
+        if (fixedPaths.size > 0) {
+            addLog(`${fixedPaths.size} file sudah pernah diperbaiki sebelumnya dan tidak akan discan ulang.`, '#666');
+        }
+    });
 </script>
 
 </body>
