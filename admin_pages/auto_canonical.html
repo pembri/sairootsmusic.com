@@ -235,7 +235,7 @@
                 const fileSha = fileData.sha;
 
                 const targetCanonical = generateCanonicalUrl(file.path);
-                const newLinkTag = `<link rel="canonical" href="https://sairootsmusic.com/admin_pages/auto_canonical">`;
+                const newLinkTag = `<link rel="canonical" href="${targetCanonical}">`;
                 
                 // Regex untuk nyari tag canonical lama (kalau ada)
                 const canonicalRegex = /<link\s+rel=["']canonical["']\s+href=["']([^"']*)["'][^>]*>/i;
