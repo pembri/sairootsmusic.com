@@ -95,26 +95,40 @@
     const MOJIBAKE_MAP = [
         ["â€œ", "\u201C"], // “
         ["â€\u009D", "\u201D"], // ” (kadang muncul sbg byte 0x9D mentah)
-        ["â€", "\u201D"], // ” varian umum: â€ diikuti spasi/tanda baca
         ["â€™", "\u2019"], // ’
         ["â€˜", "\u2018"], // ‘
         ["â€“", "\u2013"], // –
         ["â€”", "\u2014"], // —
         ["â€¦", "\u2026"], // …
         ["â€¢", "\u2022"], // •
+        ["â¢", "\u2022"],  // • (varian: bullet ter-mojibake dua kali)
+        ["â€", "\u201D"], // ” varian umum sisa (paling generik, taruh paling akhir dari grup â€*)
         ["Ã©", "é"],
         ["Ã¨", "è"],
         ["Ã¡", "á"],
         ["Ã­", "í"],
         ["Ã³", "ó"],
         ["Ã±", "ñ"],
+        ["Â©", "©"],       // copyright
+        ["Â®", "®"],       // registered trademark
+        ["Â°", "°"],       // derajat
+        ["Â·", "·"],       // middle dot
+        ["Â™", "™"],       // trademark
         ["Â ", " "],       // non-breaking space rusak
-        ["Â", ""]          // sisa Â liar sebelum simbol (°,·, dll)
+        ["Â", ""]          // sisa Â liar sebelum simbol lain yang belum tercakup di atas
     ];
+
+    // "â" polos (tanpa €, tanpa Â) = kutip pintar rusak, arahnya tergantung konteks:
+    // sebelum huruf/spasi -> kutip buka “, sesudah huruf -> kutip tutup ”
+    function fixLoneQuoteMark(text) {
+        return text
+            .replace(/(\w)â(?=\s|[.,!?;:]|$)/g, '$1\u201D')  // akhir kata -> ”
+            .replace(/â(?=\w)/g, '\u201C');                    // awal kata -> “
+    }
 
     // Deteksi cepat: apakah teks mengandung tanda-tanda mojibake?
     function looksLikeMojibake(text) {
-        return /â€|Ã[\x80-\xBF]|Â[^\w]/.test(text);
+        return /â€|â¢|Ã[\x80-\xBF]|Â[^\w]/.test(text);
     }
 
     function fixMojibake(text) {
@@ -122,6 +136,7 @@
         for (const [bad, good] of MOJIBAKE_MAP) {
             out = out.split(bad).join(good);
         }
+        out = fixLoneQuoteMark(out);
         return out;
     }
 
@@ -200,9 +215,12 @@
             if (filesWithIssues.length === 0) {
                 log("SELESAI. Tidak ada mojibake ditemukan — repo bersih.", "#4caf50");
                 document.getElementById('findings').innerHTML = 'Tidak ada masalah ditemukan.';
+                document.getElementById('results-panel').style.display = 'block';
             } else {
-                log(`SELESAI SCAN. ${filesWithIssues.length} file mengandung mojibake dan siap diperbaiki.`, "#ffcc00");
-                document.getElementById('btn-push').style.display = 'inline-block';
+                log(`SELESAI SCAN. ${filesWithIssues.length} file mengandung mojibake. Centang beberapa dulu buat dites, baru perbaiki sisanya.`, "#ffcc00");
+                document.getElementById('total-count').textContent = filesWithIssues.length;
+                document.getElementById('results-panel').style.display = 'block';
+                updateSelectedCount();
             }
 
         } catch (err) {
@@ -212,20 +230,33 @@
         }
     }
 
-    async function fixAll() {
-        const token = getToken();
-        if (!token) return;
-        if (filesWithIssues.length === 0) return;
+    function toggleAll(source) {
+        document.querySelectorAll('.finding-checkbox').forEach(cb => cb.checked = source.checked);
+        updateSelectedCount();
+    }
 
-        document.getElementById('btn-push').disabled = true;
-        log(`Memulai perbaikan ${filesWithIssues.length} file...`, "#ffcc00");
+    function getCheckedIndexes() {
+        return Array.from(document.querySelectorAll('.finding-checkbox'))
+            .filter(cb => cb.checked)
+            .map(cb => parseInt(cb.dataset.idx, 10));
+    }
+
+    function updateSelectedCount() {
+        document.getElementById('selected-count').textContent = getCheckedIndexes().length;
+    }
+
+    async function runFix(items, token) {
+        document.getElementById('btn-fix-selected').disabled = true;
+        document.getElementById('btn-fix-all').disabled = true;
+        log(`Memulai perbaikan ${items.length} file...`, "#ffcc00");
 
         let success = 0, failed = 0;
+        const fixedPaths = [];
 
-        for (let i = 0; i < filesWithIssues.length; i++) {
-            const f = filesWithIssues[i];
+        for (let i = 0; i < items.length; i++) {
+            const f = items[i];
             try {
-                log(`[${i + 1}/${filesWithIssues.length}] Memperbaiki: ${f.path}...`, "#aaa");
+                log(`[${i + 1}/${items.length}] Memperbaiki: ${f.path}...`, "#aaa");
                 await apiRequest(`/repos/${OWNER}/${REPO}/contents/${f.path}`, 'PUT', {
                     message: `Fix: repair mojibake/encoding di ${f.path}`,
                     content: b64EncodeUnicode(f.after),
@@ -233,6 +264,7 @@
                 }, token);
                 log(`--> Tersimpan: ${f.path}`, "#4caf50");
                 success++;
+                fixedPaths.push(f.path);
             } catch (err) {
                 log(`--> GAGAL: ${f.path} - ${err.message}`, "#f44336");
                 failed++;
@@ -241,9 +273,60 @@
         }
 
         log(`SELESAI. Berhasil: ${success}, Gagal: ${failed}.`, "#4caf50");
-        filesWithIssues = [];
-        document.getElementById('btn-push').style.display = 'none';
-        document.getElementById('btn-push').disabled = false;
+
+        // Buang item yang sudah sukses dari daftar, sisanya (belum dicentang / gagal) tetap tampil
+        filesWithIssues = filesWithIssues.filter(f => !fixedPaths.includes(f.path));
+        renderFindings();
+
+        document.getElementById('btn-fix-selected').disabled = false;
+        document.getElementById('btn-fix-all').disabled = false;
+
+        if (filesWithIssues.length === 0) {
+            log("Semua temuan sudah beres. Jalankan SCAN lagi kapan-kapan buat mastiin bersih.", "#4caf50");
+        }
+    }
+
+    function renderFindings() {
+        const container = document.getElementById('findings');
+        container.innerHTML = '';
+        filesWithIssues.forEach((f, idx) => {
+            const snippet = extractSnippet(f.before, f.after);
+            const div = document.createElement('div');
+            div.className = 'finding-item';
+            div.innerHTML = `<label style="font-weight:normal; color:#e0e0e0; cursor:pointer;">` +
+                `<input type="checkbox" class="finding-checkbox" data-idx="${idx}" onclick="updateSelectedCount()"> ` +
+                `<b>${f.path}</b></label><br><span class="snippet">${snippet.replace(/</g, '&lt;')}</span>`;
+            container.appendChild(div);
+        });
+        document.getElementById('total-count').textContent = filesWithIssues.length;
+        document.getElementById('select-all').checked = false;
+        updateSelectedCount();
+    }
+
+    async function fixSelected() {
+        const token = getToken();
+        if (!token) return;
+
+        const idxs = getCheckedIndexes();
+        if (idxs.length === 0) {
+            log("Belum ada file yang dicentang.", "#f44336");
+            return;
+        }
+
+        const items = idxs.map(i => filesWithIssues[i]);
+        if (!confirm(`Perbaiki ${items.length} file yang dicentang? Ini akan langsung commit ke GitHub.`)) return;
+
+        await runFix(items, token);
+    }
+
+    async function fixAllConfirmed() {
+        const token = getToken();
+        if (!token) return;
+        if (filesWithIssues.length === 0) return;
+
+        if (!confirm(`Perbaiki SEMUA ${filesWithIssues.length} file yang ditemukan? Ini akan langsung commit ke GitHub. Disarankan sudah tes beberapa file dulu sebelum ini.`)) return;
+
+        await runFix(filesWithIssues.slice(), token);
     }
 </script>
 
