@@ -42,13 +42,18 @@
 
     <div class="panel">
         <button class="btn-scan" id="btn-scan" onclick="scanRepo()">🔍 SCAN SEMUA HTML</button>
-        <button class="btn-push" id="btn-push" onclick="fixAll()">🛠️ PERBAIKI SEMUA YANG DITEMUKAN</button>
-        <div class="info">Scan bersifat READ-ONLY, aman dijalankan berkali-kali. Perbaikan baru terjadi saat tombol kedua ditekan, dan hanya file yang benar-benar mengandung mojibake yang di-commit.</div>
+        <div class="info">Scan bersifat READ-ONLY, aman dijalankan berkali-kali. Tidak ada yang di-commit sampai lo pilih file dan tekan tombol perbaiki di bawah.</div>
     </div>
 
-    <div class="panel">
-        <h3>Temuan:</h3>
-        <div class="findings" id="findings">Belum ada scan.</div>
+    <div class="panel" id="results-panel" style="display:none;">
+        <h3>Temuan (centang yang mau diperbaiki):</h3>
+        <div class="info" style="margin-bottom:10px;">
+            <label style="display:inline; color:#e0e0e0; font-weight:normal;"><input type="checkbox" id="select-all" onclick="toggleAll(this)"> Pilih semua</label>
+            &nbsp;·&nbsp; <span id="selected-count">0</span> dari <span id="total-count">0</span> dipilih
+        </div>
+        <div class="findings" id="findings"></div>
+        <button class="btn-push" id="btn-fix-selected" onclick="fixSelected()">🧪 PERBAIKI YANG DICENTANG</button>
+        <button class="btn-push" id="btn-fix-all" style="background-color:#e67e22;" onclick="fixAllConfirmed()">🚀 PERBAIKI SEMUA</button>
     </div>
 
     <div class="panel">
@@ -147,9 +152,10 @@
         if (!token) return;
 
         document.getElementById('btn-scan').disabled = true;
-        document.getElementById('btn-push').style.display = 'none';
+        document.getElementById('results-panel').style.display = 'none';
         document.getElementById('console').innerHTML = '';
         document.getElementById('findings').innerHTML = '';
+        document.getElementById('select-all').checked = false;
         filesWithIssues = [];
 
         try {
@@ -178,9 +184,12 @@
                         const snippet = extractSnippet(rawContent, fixedContent);
                         log(`--> [DITEMUKAN] Mojibake di ${file.path}`, "#ffcc00");
 
+                        const idx = filesWithIssues.length - 1;
                         const div = document.createElement('div');
                         div.className = 'finding-item';
-                        div.innerHTML = `<b>${file.path}</b><br><span class="snippet">${snippet.replace(/</g, '&lt;')}</span>`;
+                        div.innerHTML = `<label style="font-weight:normal; color:#e0e0e0; cursor:pointer;">` +
+                            `<input type="checkbox" class="finding-checkbox" data-idx="${idx}" onclick="updateSelectedCount()"> ` +
+                            `<b>${file.path}</b></label><br><span class="snippet">${snippet.replace(/</g, '&lt;')}</span>`;
                         document.getElementById('findings').appendChild(div);
                     }
                 }
