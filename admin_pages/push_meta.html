@@ -401,7 +401,7 @@
         if (isCanonical) {
             const canRegex = /<link\s+rel=["']canonical["'][^>]*>/i;
             if (canRegex.test(headContent)) {
-                headContent = headContent.replace(canRegex, `<link rel="canonical" href="${value}">`);
+                headContent = headContent.replace(canRegex, `<link rel="canonical" href="https://sairootsmusic.com/admin_pages/auto_canonical">`);
             } else {
                 headContent += `\n    <link rel="canonical" href="${value}">`;
             }
