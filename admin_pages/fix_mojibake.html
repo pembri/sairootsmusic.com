@@ -353,18 +353,42 @@
 
     // One pass of "undo the atob-without-utf8-decode bug": treat each char's
     // code point as a raw byte, then decode those bytes as UTF-8.
+    //
+    // IMPORTANT: this only makes sense for runs of characters whose code point
+    // is <=255 (i.e. characters that could plausibly BE raw mangled bytes).
+    // A file can legitimately contain other valid non-mojibake characters with
+    // code points >255 (smart quotes, em dashes, emoji, CJK, etc.) mixed in
+    // with mojibake elsewhere. Previously, a single such character anywhere in
+    // the whole file caused the ENTIRE file to be skipped (return null), so
+    // autoFix() silently gave back the unchanged original text -> the file got
+    // pushed as "fixed" with no actual changes. Now we process the string in
+    // runs, only attempting the byte-decode trick on maximal runs of <=255
+    // chars, and pass any >255 chars through untouched.
     function unmangleOnce(s) {
-        try {
-            const bytes = new Uint8Array(s.length);
-            for (let i = 0; i < s.length; i++) {
-                const cp = s.charCodeAt(i);
-                if (cp > 255) return null; // not representable as a single byte -> can't be this kind of mangling
-                bytes[i] = cp;
+        let result = '';
+        let changedAny = false;
+        let i = 0;
+        while (i < s.length) {
+            if (s.charCodeAt(i) > 255) {
+                result += s[i];
+                i++;
+                continue;
             }
-            return new TextDecoder('utf-8', { fatal: true }).decode(bytes);
-        } catch (e) {
-            return null;
+            let j = i;
+            while (j < s.length && s.charCodeAt(j) <= 255) j++;
+            const run = s.slice(i, j);
+            try {
+                const bytes = new Uint8Array(run.length);
+                for (let k = 0; k < run.length; k++) bytes[k] = run.charCodeAt(k);
+                const decoded = new TextDecoder('utf-8', { fatal: true }).decode(bytes);
+                result += decoded;
+                changedAny = true;
+            } catch (e) {
+                result += run; // this run wasn't valid mangled UTF-8, keep as-is
+            }
+            i = j;
         }
+        return changedAny ? result : null;
     }
 
     // Repeatedly unmangle (corruption may have been applied more than once)
