@@ -337,58 +337,103 @@
     }
 
     // ---------------- Mojibake detection & repair ----------------
+    //
+    // NOTE: file HTML campuran (teks biasa + emoji/simbol Unicode valid +
+    // segelintir karakter mojibake lokal) TIDAK BISA diperbaiki dengan
+    // "decode ulang seluruh string sebagai satu blok byte" (pendekatan lama),
+    // karena satu karakter Unicode valid (mis. emoji, cp > 255) langsung
+    // membatalkan seluruh proses fix untuk file itu. Solusinya: cari & ganti
+    // pola mojibake secara lokal (regex per-match), sisanya dibiarkan utuh.
 
-    // Scores how "broken" a string looks (higher = more corrupted)
+    // Peta byte-sequence UTF-8 hasil "CP1252 byte disalahartikan sebagai
+    // Latin-1 lalu di-UTF-8-encode ulang" -> karakter aslinya.
+    // Ini pola paling umum penyebab mojibake di file HTML/CMS.
+    const CP1252_MOJIBAKE_MAP = {
+        '\u00c2\u0080': '\u20ac', // €
+        '\u00c2\u0082': '\u201a', // ‚
+        '\u00c2\u0083': '\u0192', // ƒ
+        '\u00c2\u0084': '\u201e', // „
+        '\u00c2\u0085': '\u2026', // …
+        '\u00c2\u0086': '\u2020', // †
+        '\u00c2\u0087': '\u2021', // ‡
+        '\u00c2\u0088': '\u02c6', // ˆ
+        '\u00c2\u0089': '\u2030', // ‰
+        '\u00c2\u008a': '\u0160', // Š
+        '\u00c2\u008b': '\u2039', // ‹
+        '\u00c2\u008c': '\u0152', // Œ
+        '\u00c2\u008e': '\u017d', // Ž
+        '\u00c2\u0091': '\u2018', // '
+        '\u00c2\u0092': '\u2019', // '
+        '\u00c2\u0093': '\u201c', // "
+        '\u00c2\u0094': '\u201d', // "
+        '\u00c2\u0095': '\u2022', // •
+        '\u00c2\u0096': '\u2013', // –
+        '\u00c2\u0097': '\u2014', // —
+        '\u00c2\u0098': '\u02dc', // ˜
+        '\u00c2\u0099': '\u2122', // ™
+        '\u00c2\u009a': '\u0161', // š
+        '\u00c2\u009b': '\u203a', // ›
+        '\u00c2\u009c': '\u0153', // œ
+        '\u00c2\u009e': '\u017e', // ž
+        '\u00c2\u009f': '\u0178', // Ÿ
+        '\u00c3\u0082': '\u00c2', // Â (double-encoded copyright etc. prefix)
+        '\u00c2\u00a9': '\u00a9', // ©  (Â©)
+        '\u00c2\u00ae': '\u00ae', // ®  (Â®)
+        '\u00c2\u00b0': '\u00b0', // °  (Â°)
+        '\u00c2\u00a2': '\u00a2', // ¢  (Â¢)
+        '\u00c2\u00a3': '\u00a3', // £  (Â£)
+        '\u00e2\u0080\u0098': '\u2018', // â€˜  '
+        '\u00e2\u0080\u0099': '\u2019', // â€™  '
+        '\u00e2\u0080\u009c': '\u201c', // â€œ  "
+        '\u00e2\u0080\u009d': '\u201d', // â€  "
+        '\u00e2\u0080\u0093': '\u2013', // â€“  –
+        '\u00e2\u0080\u0094': '\u2014', // â€”  —
+        '\u00e2\u0080\u00a2': '\u2022', // â€¢  •
+        '\u00e2\u0080\u00a6': '\u2026', // â€¦  …
+    };
+
+    // Sort keys by length desc so multi-char sequences (â€¦) match before
+    // shorter overlapping ones.
+    const MOJIBAKE_KEYS = Object.keys(CP1252_MOJIBAKE_MAP).sort((a, b) => b.length - a.length);
+
+    // Scores how "broken" a string looks (higher = more corrupted).
+    // Only counts real corruption markers -- does NOT penalize valid
+    // multi-byte Unicode (emoji, accented letters typed correctly, etc).
     function mojibakeScore(s) {
         let score = 0;
+        for (const key of MOJIBAKE_KEYS) {
+            let idx = 0;
+            while ((idx = s.indexOf(key, idx)) !== -1) {
+                score += 2;
+                idx += key.length;
+            }
+        }
         for (const ch of s) {
             const cp = ch.codePointAt(0);
             if (cp >= 0x80 && cp <= 0x9F) score += 3;   // raw C1 control chars -> render as boxes/tofu
             if (cp === 0xFFFD) score += 3;               // replacement character
         }
-        const markers = s.match(/â€.|Ã[\x80-\xBF].|Â[€™¦°¢£®©]|â\u0080./g);
-        if (markers) score += markers.length * 2;
         return score;
     }
 
-    // One pass of "undo the atob-without-utf8-decode bug": treat each char's
-    // code point as a raw byte, then decode those bytes as UTF-8.
-    //
-    // IMPORTANT: this only makes sense for runs of characters whose code point
-    // is <=255 (i.e. characters that could plausibly BE raw mangled bytes).
-    // A file can legitimately contain other valid non-mojibake characters with
-    // code points >255 (smart quotes, em dashes, emoji, CJK, etc.) mixed in
-    // with mojibake elsewhere. Previously, a single such character anywhere in
-    // the whole file caused the ENTIRE file to be skipped (return null), so
-    // autoFix() silently gave back the unchanged original text -> the file got
-    // pushed as "fixed" with no actual changes. Now we process the string in
-    // runs, only attempting the byte-decode trick on maximal runs of <=255
-    // chars, and pass any >255 chars through untouched.
+    // Replace every known mojibake byte-sequence with its correct character.
+    // Leaves all other characters (including valid emoji/Unicode) untouched.
     function unmangleOnce(s) {
-        let result = '';
-        let changedAny = false;
-        let i = 0;
-        while (i < s.length) {
-            if (s.charCodeAt(i) > 255) {
-                result += s[i];
-                i++;
-                continue;
+        let changed = false;
+        let result = s;
+        for (const key of MOJIBAKE_KEYS) {
+            if (result.indexOf(key) !== -1) {
+                result = result.split(key).join(CP1252_MOJIBAKE_MAP[key]);
+                changed = true;
             }
-            let j = i;
-            while (j < s.length && s.charCodeAt(j) <= 255) j++;
-            const run = s.slice(i, j);
-            try {
-                const bytes = new Uint8Array(run.length);
-                for (let k = 0; k < run.length; k++) bytes[k] = run.charCodeAt(k);
-                const decoded = new TextDecoder('utf-8', { fatal: true }).decode(bytes);
-                result += decoded;
-                changedAny = true;
-            } catch (e) {
-                result += run; // this run wasn't valid mangled UTF-8, keep as-is
-            }
-            i = j;
         }
-        return changedAny ? result : null;
+        // Also strip stray raw C1 control chars (0x80-0x9F) that sometimes
+        // appear alone (not part of a recognized 2-byte sequence) --
+        // these render as boxes/tofu and have no safe "correct" character,
+        // so we drop them rather than guess.
+        const stripped = result.replace(/[\u0080-\u009F]/g, '');
+        if (stripped !== result) { result = stripped; changed = true; }
+        return changed ? result : null;
     }
 
     // Repeatedly unmangle (corruption may have been applied more than once)
