@@ -1,241 +1,242 @@
 <!DOCTYPE html>
 <html lang="id">
 <head>
-    <link rel="canonical" href="https://sairootsmusic.com/admin_pages/auto_canonical">
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>SAI Roots | Alien Character Cleaner PRO</title>
-    <script src="https://cdn.tailwindcss.com"></script>
-    <link href="https://fonts.googleapis.com/css2?family=Anton&family=Inter:wght@400;700&display=swap" rel="stylesheet">
-    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.5.1/css/all.min.css">
-    <script>
-        tailwind.config = {
-            theme: {
-                extend: {
-                    colors: {
-                        rasta: { green: '#2D8659', yellow: '#FBBF24', red: '#DC2626' }
-                    }
-                }
-            }
-        }
-    </script>
+    <title>SAI Roots - Mojibake Fixer</title>
     <style>
-        body { background-color: #080808; color: #e5e7eb; font-family: 'Inter', sans-serif; }
-        .font-display { font-family: 'Anton', sans-serif; }
-        .glass { background: rgba(255, 255, 255, 0.03); border: 1px solid rgba(255, 255, 255, 0.08); backdrop-filter: blur(12px); }
-        .custom-scroll::-webkit-scrollbar { width: 5px; }
-        .custom-scroll::-webkit-scrollbar-thumb { background: #333; border-radius: 10px; }
+        body { background-color: #121212; color: #e0e0e0; font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif; margin: 0; padding: 20px; }
+        .container { max-width: 900px; margin: 0 auto; }
+        .header { border-bottom: 3px solid #ffcc00; padding-bottom: 10px; margin-bottom: 20px; display: flex; justify-content: space-between; align-items: center; }
+        .header h1 { margin: 0; color: #4caf50; }
+        .header h1 span { color: #f44336; }
+        .panel { background: #1e1e1e; padding: 20px; border-radius: 8px; margin-bottom: 20px; border: 1px solid #333; }
+        input[type="password"] { width: 100%; padding: 10px; margin-top: 10px; background: #2c2c2c; border: 1px solid #555; color: #fff; border-radius: 4px; box-sizing: border-box; }
+        button { padding: 10px 20px; border: none; border-radius: 4px; font-weight: bold; cursor: pointer; margin-right: 10px; margin-top: 10px; transition: opacity 0.2s; }
+        button:hover { opacity: 0.8; }
+        button:disabled { background-color: #555 !important; cursor: not-allowed; opacity: 0.5; }
+        .btn-scan { background-color: #ffcc00; color: #000; }
+        .btn-push { background-color: #4caf50; color: #fff; display: none; }
+        #console { background: #000; color: #0f0; padding: 15px; border-radius: 5px; height: 320px; overflow-y: auto; font-family: monospace; font-size: 13px; white-space: pre-wrap; }
+        .info { font-size: 12px; color: #aaa; margin-top: 5px; }
+        .findings { max-height: 260px; overflow-y: auto; margin-top: 15px; }
+        .finding-item { background: #2a2a2a; border: 1px solid #444; border-left: 4px solid #ffcc00; border-radius: 4px; padding: 10px; margin-bottom: 8px; font-size: 13px; }
+        .finding-item b { color: #4caf50; }
+        .finding-item .snippet { font-family: monospace; color: #ff9d9d; word-break: break-all; }
+        label { display: block; font-weight: 600; color: #ffcc00; margin-bottom: 4px; }
     </style>
 </head>
-<body class="p-4 md:p-10">
-    <div class="max-w-4xl mx-auto">
-        <div class="flex items-center justify-between mb-8">
-            <div>
-                <h1 class="font-display text-4xl text-white tracking-wider uppercase">Alien <span class="text-rasta-red">Cleaner PRO</span></h1>
-                <p class="text-xs text-gray-500 tracking-[0.2em]">MEMBASMI MOJIBAKE + BACKUP SYSTEM</p>
-            </div>
-            <div class="text-right">
-                <span id="backup-status" class="text-[10px] bg-white/5 px-2 py-1 rounded border border-white/10 text-gray-400 italic">No Backup Found</span>
-            </div>
-        </div>
+<body>
 
-        <div class="glass p-6 rounded-2xl mb-6">
-            <div class="mb-4">
-                <label class="block text-[10px] font-bold text-rasta-green uppercase mb-2 tracking-widest">GitHub Access Token</label>
-                <input type="password" id="gh-token" placeholder="Paste ghp_token di sini..." 
-                       class="w-full bg-black/40 border border-white/10 rounded-xl py-3 px-4 focus:outline-none focus:border-rasta-red transition-all text-sm">
-            </div>
-            <div class="flex gap-3">
-                <button onclick="scanRepo()" class="flex-1 bg-white text-black font-bold py-3 rounded-xl hover:bg-rasta-red hover:text-white transition-all flex items-center justify-center gap-2 text-sm">
-                    <i class="fas fa-search"></i> SCAN FILE
-                </button>
-                <button onclick="restoreBackup()" id="btn-restore" class="hidden flex-1 border border-rasta-yellow text-rasta-yellow font-bold py-3 rounded-xl hover:bg-rasta-yellow hover:text-black transition-all flex items-center justify-center gap-2 text-sm">
-                    <i class="fas fa-history"></i> RESTORE BACKUP
-                </button>
-            </div>
-        </div>
-
-        <div id="console-box" class="hidden glass rounded-2xl overflow-hidden border-t-2 border-rasta-red">
-            <div class="bg-white/5 px-4 py-2 flex items-center justify-between border-b border-white/5">
-                <span class="text-[10px] font-bold uppercase tracking-widest text-gray-400">Process Console</span>
-                <div class="flex gap-1.5">
-                    <div class="w-2 h-2 rounded-full bg-rasta-red"></div>
-                    <div class="w-2 h-2 rounded-full bg-rasta-yellow"></div>
-                    <div class="w-2 h-2 rounded-full bg-rasta-green"></div>
-                </div>
-            </div>
-            <div id="log" class="h-80 overflow-y-auto p-4 font-mono text-[11px] space-y-1 custom-scroll bg-black/20">
-                <p class="text-gray-500 italic">Menunggu perintah scan...</p>
-            </div>
-            <div id="action-area" class="p-4 bg-white/5 border-t border-white/5 hidden">
-                <button onclick="executeClean()" class="w-full bg-rasta-red text-white font-black py-4 rounded-xl hover:scale-[1.01] active:scale-95 transition-all uppercase tracking-tighter text-lg">
-                    MULAI BASMI ALIEN SEKARANG
-                </button>
-            </div>
-        </div>
+<div class="container">
+    <div class="header">
+        <h1>SAI <span>Roots</span> Mojibake Fixer</h1>
+        <small>v1.0 - Scan &amp; Repair UTF-8</small>
     </div>
 
-    <script>
-        let fileList = [];
-        const REPO = "pembri/sairootsmusic.com";
+    <div class="panel" id="login-panel">
+        <label>GitHub Personal Access Token (PAT)</label>
+        <input type="password" id="gh-token" placeholder="ghp_xxxxxxxxxxxxxxxxxxxx">
+        <div class="info">Dibutuhkan akses 'repo' untuk membaca dan menulis ke pembri/sairootsmusic.com. Token tidak dikirim ke mana pun selain api.github.com.</div>
+    </div>
 
-        window.onload = () => { checkBackup(); };
+    <div class="panel">
+        <button class="btn-scan" id="btn-scan" onclick="scanRepo()">🔍 SCAN SEMUA HTML</button>
+        <button class="btn-push" id="btn-push" onclick="fixAll()">🛠️ PERBAIKI SEMUA YANG DITEMUKAN</button>
+        <div class="info">Scan bersifat READ-ONLY, aman dijalankan berkali-kali. Perbaikan baru terjadi saat tombol kedua ditekan, dan hanya file yang benar-benar mengandung mojibake yang di-commit.</div>
+    </div>
 
-        function checkBackup() {
-            if (localStorage.getItem('alien_backup')) {
-                document.getElementById('backup-status').innerHTML = "🟢 Backup Ready (Aman)";
-                document.getElementById('backup-status').classList.add('text-rasta-green');
-                document.getElementById('btn-restore').classList.remove('hidden');
+    <div class="panel">
+        <h3>Temuan:</h3>
+        <div class="findings" id="findings">Belum ada scan.</div>
+    </div>
+
+    <div class="panel">
+        <h3>Terminal Log:</h3>
+        <div id="console">Menunggu instruksi...</div>
+    </div>
+</div>
+
+<script>
+    const OWNER = "pembri";
+    const REPO = "sairootsmusic.com";
+    const BRANCH = "main";
+
+    let filesWithIssues = []; // { path, sha, before, after }
+
+    function log(msg, color = "#0f0") {
+        const c = document.getElementById('console');
+        c.innerHTML += `<span style="color:${color}">[${new Date().toLocaleTimeString()}] ${msg}</span>\n`;
+        c.scrollTop = c.scrollHeight;
+    }
+
+    function getToken() {
+        const t = document.getElementById('gh-token').value.trim();
+        if (!t) log("Token GitHub tidak boleh kosong!", "#f44336");
+        return t;
+    }
+
+    // Decode base64 -> UTF-8 dengan BENAR (ini akar masalah yang kita perbaiki)
+    function b64DecodeUnicode(str) {
+        return decodeURIComponent(escape(atob(str)));
+    }
+
+    function b64EncodeUnicode(str) {
+        return btoa(unescape(encodeURIComponent(str)));
+    }
+
+    // Peta mojibake umum (UTF-8 di-mis-decode sebagai Latin-1/Windows-1252) -> karakter aslinya.
+    // Diurutkan dari pola terpanjang ke terpendek supaya tidak ada tabrakan substring.
+    const MOJIBAKE_MAP = [
+        ["â€œ", "\u201C"], // “
+        ["â€\u009D", "\u201D"], // ” (kadang muncul sbg byte 0x9D mentah)
+        ["â€", "\u201D"], // ” varian umum: â€ diikuti spasi/tanda baca
+        ["â€™", "\u2019"], // ’
+        ["â€˜", "\u2018"], // ‘
+        ["â€“", "\u2013"], // –
+        ["â€”", "\u2014"], // —
+        ["â€¦", "\u2026"], // …
+        ["â€¢", "\u2022"], // •
+        ["Ã©", "é"],
+        ["Ã¨", "è"],
+        ["Ã¡", "á"],
+        ["Ã­", "í"],
+        ["Ã³", "ó"],
+        ["Ã±", "ñ"],
+        ["Â ", " "],       // non-breaking space rusak
+        ["Â", ""]          // sisa Â liar sebelum simbol (°,·, dll)
+    ];
+
+    // Deteksi cepat: apakah teks mengandung tanda-tanda mojibake?
+    function looksLikeMojibake(text) {
+        return /â€|Ã[\x80-\xBF]|Â[^\w]/.test(text);
+    }
+
+    function fixMojibake(text) {
+        let out = text;
+        for (const [bad, good] of MOJIBAKE_MAP) {
+            out = out.split(bad).join(good);
+        }
+        return out;
+    }
+
+    function extractSnippet(original, fixed) {
+        // ambil potongan pertama yang beda, buat preview di UI
+        const idx = original.indexOf("â€");
+        if (idx === -1) return original.slice(0, 80);
+        const start = Math.max(0, idx - 25);
+        return "..." + original.slice(start, idx + 25) + "...";
+    }
+
+    async function apiRequest(endpoint, method, body, token) {
+        const options = {
+            method,
+            headers: {
+                'Authorization': `token ${token}`,
+                'Accept': 'application/vnd.github.v3+json'
             }
-        }
+        };
+        if (body) options.body = JSON.stringify(body);
+        const res = await fetch(`https://api.github.com${endpoint}`, options);
+        if (!res.ok) throw new Error(`API Error: ${res.status} ${res.statusText}`);
+        return res.json();
+    }
 
-        function addLog(msg, type = 'info') {
-            const log = document.getElementById('log');
-            const colors = { info: 'text-gray-400', success: 'text-rasta-green', warn: 'text-rasta-yellow', error: 'text-rasta-red' };
-            log.innerHTML += `<div class="${colors[type]}"><span class="opacity-30">[${new Date().toLocaleTimeString()}]</span> ${msg}</div>`;
-            log.scrollTop = log.scrollHeight;
-        }
+    async function scanRepo() {
+        const token = getToken();
+        if (!token) return;
 
-        // Engine Encode/Decode Aman (UTF-8)
-        function decodeUTF8Base64(base64) {
-            const binString = atob(base64);
-            const bytes = new Uint8Array(binString.length);
-            for (let i = 0; i < binString.length; i++) bytes[i] = binString.charCodeAt(i);
-            return new TextDecoder('utf-8').decode(bytes);
-        }
+        document.getElementById('btn-scan').disabled = true;
+        document.getElementById('btn-push').style.display = 'none';
+        document.getElementById('console').innerHTML = '';
+        document.getElementById('findings').innerHTML = '';
+        filesWithIssues = [];
 
-        function encodeUTF8Base64(str) {
-            const bytes = new TextEncoder().encode(str);
-            let binary = '';
-            for (let i = 0; i < bytes.byteLength; i++) binary += String.fromCharCode(bytes[i]);
-            return btoa(binary);
-        }
+        try {
+            log("Mengambil daftar file dari repo...", "#aaa");
+            const treeRes = await apiRequest(`/repos/${OWNER}/${REPO}/git/trees/${BRANCH}?recursive=1`, 'GET', null, token);
+            const htmlFiles = treeRes.tree.filter(f => f.type === "blob" && f.path.endsWith(".html"));
+            log(`Ditemukan ${htmlFiles.length} file HTML. Memindai satu per satu...`, "#0f0");
 
-        // KAMUS PEMBERSIH ALIEN
-        function cleanAlienCharacters(text) {
-            return text
-                .replace(/Ã‚Â©/g, '©')        
-                .replace(/Ã¢Â€Â¦/g, '...')       
-                .replace(/Ã¢Â€Â™/g, "'")         
-                .replace(/Ã¢Â€Âœ/g, '"')         
-                .replace(/Ã¢Â€Â/g, '"')         
-                .replace(/Ã¢Â€Â“|Ã¢Â€Â”/g, '-')   
-                .replace(/Ã/g, '')
-                .replace(/Â/g, '')
-                .replace(/¦/g, '')
-                .replace(//g, '')
-                .replace(/¢/g, '')
-                .replace(/\uFFFD/g, ''); // Simbol diamond tanda tanya hitam
-        }
+            for (let i = 0; i < htmlFiles.length; i++) {
+                const file = htmlFiles[i];
+                log(`[${i + 1}/${htmlFiles.length}] Cek: ${file.path}`, "#aaa");
 
-        async function scanRepo() {
-            const token = document.getElementById('gh-token').value;
-            if (!token) return alert("Isi tokennya dulu cok!");
+                const fileData = await apiRequest(`/repos/${OWNER}/${REPO}/contents/${file.path}`, 'GET', null, token);
+                const rawContent = b64DecodeUnicode(fileData.content);
 
-            document.getElementById('console-box').classList.remove('hidden');
-            addLog("Mencari file target...", "warn");
-
-            try {
-                const res = await fetch(`https://api.github.com/repos/${REPO}/git/trees/main?recursive=1`, {
-                    headers: { 'Authorization': `token ${token}` }
-                });
-                const data = await res.json();
-                
-                fileList = data.tree.filter(item => {
-                    // FILTER FOLDER HARAM
-                    return item.path.endsWith('.html') && 
-                           !item.path.startsWith('admin_pages/') && 
-                           !item.path.startsWith('cover/') &&
-                           !item.path.includes('pembersih_alien.html') &&
-                           !item.path.includes('rapihkan_kode.html');
-                });
-
-                addLog(`Scan Selesai. ${fileList.length} file HTML siap dicek. Folder haram aman.`, "success");
-                document.getElementById('action-area').classList.remove('hidden');
-            } catch (err) {
-                addLog("Error Koneksi: " + err.message, "error");
-            }
-        }
-
-        async function executeClean() {
-            const token = document.getElementById('gh-token').value;
-            let backupData = JSON.parse(localStorage.getItem('alien_backup') || '{}');
-            let filesFixed = 0;
-
-            addLog("Mulai proses pembersihan alien...", "warn");
-
-            for (let file of fileList) {
-                try {
-                    const fileRes = await fetch(file.url, { headers: { 'Authorization': `token ${token}` } });
-                    const fileData = await fileRes.json();
-                    
-                    const originalContent = decodeUTF8Base64(fileData.content);
-                    const cleanedContent = cleanAlienCharacters(originalContent);
-
-                    // CUMA DI-PUSH & BACKUP KALAU BENERAN ADA ALIENNYA
-                    if (originalContent !== cleanedContent) {
-                        addLog(`⚠️ Alien terdeteksi di: ${file.path} -> Membersihkan...`, "warn");
-                        
-                        // Save Backup dulu sebelum eksekusi
-                        backupData[file.path] = { sha: fileData.sha, content: originalContent };
-                        localStorage.setItem('alien_backup', JSON.stringify(backupData));
-
-                        await fetch(`https://api.github.com/repos/${REPO}/contents/${file.path}`, {
-                            method: 'PUT',
-                            headers: { 'Authorization': `token ${token}`, 'Content-Type': 'application/json' },
-                            body: JSON.stringify({
-                                message: `🧹 SAI Roots Toolkit: Cleaned Mojibake Characters`,
-                                content: encodeUTF8Base64(cleanedContent),
-                                sha: fileData.sha
-                            })
+                if (looksLikeMojibake(rawContent)) {
+                    const fixedContent = fixMojibake(rawContent);
+                    if (fixedContent !== rawContent) {
+                        filesWithIssues.push({
+                            path: file.path,
+                            sha: fileData.sha,
+                            before: rawContent,
+                            after: fixedContent
                         });
-                        addLog(`✅ Bersih: ${file.path}`, "success");
-                        filesFixed++;
+
+                        const snippet = extractSnippet(rawContent, fixedContent);
+                        log(`--> [DITEMUKAN] Mojibake di ${file.path}`, "#ffcc00");
+
+                        const div = document.createElement('div');
+                        div.className = 'finding-item';
+                        div.innerHTML = `<b>${file.path}</b><br><span class="snippet">${snippet.replace(/</g, '&lt;')}</span>`;
+                        document.getElementById('findings').appendChild(div);
                     }
-                } catch (e) {
-                    addLog(`Gagal proses ${file.path} | ${e.message}`, "error");
                 }
+
+                await new Promise(r => setTimeout(r, 300));
             }
-            
-            addLog(`PROSES SELESAI! ${filesFixed} file berhasil dibersihkan.`, "success");
-            checkBackup();
+
+            if (filesWithIssues.length === 0) {
+                log("SELESAI. Tidak ada mojibake ditemukan — repo bersih.", "#4caf50");
+                document.getElementById('findings').innerHTML = 'Tidak ada masalah ditemukan.';
+            } else {
+                log(`SELESAI SCAN. ${filesWithIssues.length} file mengandung mojibake dan siap diperbaiki.`, "#ffcc00");
+                document.getElementById('btn-push').style.display = 'inline-block';
+            }
+
+        } catch (err) {
+            log(err.message, "#f44336");
+        } finally {
+            document.getElementById('btn-scan').disabled = false;
+        }
+    }
+
+    async function fixAll() {
+        const token = getToken();
+        if (!token) return;
+        if (filesWithIssues.length === 0) return;
+
+        document.getElementById('btn-push').disabled = true;
+        log(`Memulai perbaikan ${filesWithIssues.length} file...`, "#ffcc00");
+
+        let success = 0, failed = 0;
+
+        for (let i = 0; i < filesWithIssues.length; i++) {
+            const f = filesWithIssues[i];
+            try {
+                log(`[${i + 1}/${filesWithIssues.length}] Memperbaiki: ${f.path}...`, "#aaa");
+                await apiRequest(`/repos/${OWNER}/${REPO}/contents/${f.path}`, 'PUT', {
+                    message: `Fix: repair mojibake/encoding di ${f.path}`,
+                    content: b64EncodeUnicode(f.after),
+                    sha: f.sha
+                }, token);
+                log(`--> Tersimpan: ${f.path}`, "#4caf50");
+                success++;
+            } catch (err) {
+                log(`--> GAGAL: ${f.path} - ${err.message}`, "#f44336");
+                failed++;
+            }
+            await new Promise(r => setTimeout(r, 1000));
         }
 
-        async function restoreBackup() {
-            const token = document.getElementById('gh-token').value;
-            const backupData = JSON.parse(localStorage.getItem('alien_backup'));
-            
-            if (!token) return alert("Masukkan token untuk restore!");
-            if (!confirm("Yakin mau balikin file yang kena bersih tadi ke aslinya?")) return;
+        log(`SELESAI. Berhasil: ${success}, Gagal: ${failed}.`, "#4caf50");
+        filesWithIssues = [];
+        document.getElementById('btn-push').style.display = 'none';
+        document.getElementById('btn-push').disabled = false;
+    }
+</script>
 
-            addLog("Memulai Restore...", "warn");
-
-            for (let path in backupData) {
-                try {
-                    const currentFile = await fetch(`https://api.github.com/repos/${REPO}/contents/${path}`, {
-                        headers: { 'Authorization': `token ${token}` }
-                    });
-                    const currentData = await currentFile.json();
-
-                    await fetch(`https://api.github.com/repos/${REPO}/contents/${path}`, {
-                        method: 'PUT',
-                        headers: { 'Authorization': `token ${token}`, 'Content-Type': 'application/json' },
-                        body: JSON.stringify({
-                            message: `⏪ Restore: Reverted ${path} to pre-clean state`,
-                            content: encodeUTF8Base64(backupData[path].content),
-                            sha: currentData.sha
-                        })
-                    });
-                    addLog(`Restored: ${path}`, "info");
-                } catch (e) {
-                    addLog(`Gagal Restore ${path}`, "error");
-                }
-            }
-            
-            addLog("RESTORE TOTAL SELESAI!", "success");
-            localStorage.removeItem('alien_backup');
-            location.reload();
-        }
-    </script>
 </body>
 </html>
