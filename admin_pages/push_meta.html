@@ -298,7 +298,7 @@
                     headers: { 'Authorization': `token ${token}` }
                 });
                 const contentData = await contentRes.json();
-                let originalHTML = atob(contentData.content);
+                let originalHTML = decodeURIComponent(escape(atob(contentData.content)));
 
                 // 2. Generate New Meta Tags
                 const metaTags = generateMetaTags(file.path, originalHTML);
