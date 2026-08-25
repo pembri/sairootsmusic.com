@@ -1,0 +1,645 @@
+<!DOCTYPE html>
+<html lang="id">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>SAI Roots | Fix Mojibake Tool</title>
+    <style>
+        :root {
+            --bg-color: #0d0d0d;
+            --card-bg: #1a1a1a;
+            --text-color: #e0e0e0;
+            --accent-red: #ff4d4d;
+            --accent-yellow: #ffcc00;
+            --accent-green: #2ecc71;
+            --accent-blue: #4da6ff;
+            --border-color: #333;
+        }
+
+        body {
+            font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+            background-color: var(--bg-color);
+            color: var(--text-color);
+            margin: 0;
+            padding: 20px;
+            line-height: 1.6;
+        }
+
+        .container {
+            max-width: 950px;
+            margin: 0 auto;
+        }
+
+        header {
+            text-align: center;
+            padding: 40px 0;
+            border-bottom: 2px solid var(--border-color);
+            margin-bottom: 30px;
+        }
+
+        header h1 {
+            margin: 0;
+            font-size: 2.2rem;
+            letter-spacing: 1px;
+            text-transform: uppercase;
+        }
+
+        .accent-bar {
+            height: 4px;
+            width: 150px;
+            margin: 10px auto;
+            background: linear-gradient(to right, var(--accent-red), var(--accent-yellow), var(--accent-green));
+            border-radius: 2px;
+        }
+
+        .setup-box {
+            background: var(--card-bg);
+            padding: 25px;
+            border-radius: 12px;
+            border-left: 5px solid var(--accent-yellow);
+            margin-bottom: 30px;
+            box-shadow: 0 10px 30px rgba(0,0,0,0.5);
+        }
+
+        label {
+            display: block;
+            margin-bottom: 8px;
+            font-weight: bold;
+            color: var(--accent-yellow);
+        }
+
+        input[type="text"], input[type="password"] {
+            width: 100%;
+            padding: 12px;
+            margin-bottom: 20px;
+            background: #252525;
+            border: 1px solid var(--border-color);
+            border-radius: 6px;
+            color: #fff;
+            box-sizing: border-box;
+            font-family: monospace;
+        }
+
+        input:focus {
+            outline: none;
+            border-color: var(--accent-green);
+        }
+
+        .checkbox-row {
+            display: flex;
+            align-items: center;
+            gap: 8px;
+            margin-bottom: 20px;
+        }
+        .checkbox-row input { width: auto; margin: 0; }
+        .checkbox-row label { margin: 0; color: var(--text-color); font-weight: normal; }
+
+        .btn {
+            background: var(--accent-green);
+            color: #000;
+            padding: 12px 25px;
+            border: none;
+            border-radius: 6px;
+            cursor: pointer;
+            font-weight: bold;
+            font-size: 1rem;
+            transition: transform 0.2s, opacity 0.2s;
+        }
+
+        .btn:hover { opacity: 0.9; transform: translateY(-2px); }
+        .btn:disabled { opacity: 0.4; cursor: not-allowed; transform: none; }
+
+        .btn-scan { background: var(--accent-yellow); }
+
+        .btn-fix-all {
+            background: var(--accent-red);
+            color: #fff;
+            width: 100%;
+            margin-top: 20px;
+            padding: 16px;
+            font-size: 1.1rem;
+            display: none;
+        }
+
+        .btn-stop {
+            background: #555;
+            color: #fff;
+            display: none;
+        }
+
+        .scan-controls {
+            display: flex;
+            gap: 10px;
+            align-items: center;
+            flex-wrap: wrap;
+        }
+
+        #scan-status {
+            font-size: 0.85rem;
+            color: #999;
+            margin-top: 8px;
+        }
+
+        .btn-fix-one {
+            background: var(--accent-blue);
+            color: #fff;
+            padding: 8px 16px;
+            font-size: 0.85rem;
+            white-space: nowrap;
+        }
+
+        #summary {
+            margin-top: 20px;
+            font-weight: bold;
+            display: none;
+        }
+
+        #file-list { margin-top: 30px; }
+
+        .file-item {
+            background: #222;
+            padding: 15px;
+            margin-bottom: 10px;
+            border-radius: 8px;
+            display: flex;
+            align-items: center;
+            justify-content: space-between;
+            border-bottom: 1px solid #333;
+            gap: 15px;
+        }
+
+        .file-info { flex-grow: 1; min-width: 0; }
+
+        .file-path {
+            font-family: monospace;
+            color: var(--accent-green);
+            display: block;
+            word-break: break-all;
+        }
+
+        .file-preview {
+            font-size: 0.8rem;
+            color: #999;
+            margin-top: 6px;
+            font-style: italic;
+            overflow: hidden;
+            text-overflow: ellipsis;
+            white-space: nowrap;
+        }
+
+        .status-badge {
+            font-size: 0.75rem;
+            padding: 3px 10px;
+            border-radius: 10px;
+            background: #444;
+            white-space: nowrap;
+        }
+        .status-badge.found { background: var(--accent-red); color: #fff; }
+        .status-badge.fixed { background: var(--accent-green); color: #000; }
+        .status-badge.clean { background: #555; color: #ccc; }
+        .status-badge.error { background: #822; color: #fff; }
+
+        .file-actions {
+            display: flex;
+            align-items: center;
+            gap: 10px;
+        }
+
+        .log-container {
+            background: #000;
+            color: #0f0;
+            padding: 15px;
+            border-radius: 8px;
+            font-family: 'Courier New', Courier, monospace;
+            font-size: 0.85rem;
+            height: 220px;
+            overflow-y: auto;
+            margin-top: 30px;
+            border: 1px solid #333;
+        }
+
+        footer {
+            text-align: center;
+            margin-top: 50px;
+            font-size: 0.8rem;
+            color: #666;
+        }
+    </style>
+</head>
+<body>
+
+<div class="container">
+    <header>
+        <h1>SAI ROOTS <span style="color: var(--accent-yellow)">FIX_MOJIBAKE</span></h1>
+        <div class="accent-bar"></div>
+        <p>Scan & perbaiki huruf rusak (â€™, Â©, dll) di seluruh repository</p>
+    </header>
+
+    <div class="setup-box">
+        <label>GitHub Personal Access Token (PAT)</label>
+        <input type="password" id="token" placeholder="ghp_xxxxxxxxxxxx">
+
+        <label>Repository Path</label>
+        <input type="text" id="repo" value="pembri/sairootsmusic.com">
+
+        <label>Branch</label>
+        <input type="text" id="branch" value="main">
+
+        <div class="checkbox-row">
+            <input type="checkbox" id="scanAll" checked>
+            <label for="scanAll">Scan SEMUA file .html di repo (uncheck untuk pilih folder tertentu)</label>
+        </div>
+
+        <div class="scan-controls">
+            <button class="btn btn-scan" id="scan-btn" onclick="scanFiles()">1. Scan Repository</button>
+            <button class="btn btn-stop" id="stop-scan-btn" onclick="stopScan()">⏹ Stop Scan</button>
+        </div>
+        <div id="scan-status"></div>
+    </div>
+
+    <div id="summary"></div>
+    <div id="file-list"></div>
+
+    <div class="scan-controls" style="margin-top: 20px;">
+        <button id="fix-all-btn" class="btn btn-fix-all" style="margin-top:0; flex:1;" onclick="fixAll()">2. Perbaiki Semua Halaman</button>
+        <button id="stop-fix-btn" class="btn btn-stop" onclick="stopFixAll()">⏹ Stop</button>
+    </div>
+
+    <div class="log-container" id="logs">
+        > Tool initialized. Waiting for Scan...
+    </div>
+
+    <footer>
+        &copy; 2026 SAI Roots | Ahmad Supembri | Independent Music Movement
+    </footer>
+</div>
+
+<script>
+    const logs = document.getElementById('logs');
+    const fileListDiv = document.getElementById('file-list');
+    const fixAllBtn = document.getElementById('fix-all-btn');
+    const summaryDiv = document.getElementById('summary');
+
+    // Peta perbaikan mojibake: hasil salah baca UTF-8 sebagai Latin-1/Windows-1252 -> karakter asli
+    // Ini menangani kasus umum saat teks UTF-8 didecode ulang secara keliru (mis. via atob tanpa
+    // penanganan UTF-8), termasuk pola ganda (double-encoded) yang kadang muncul.
+    const MOJIBAKE_MAP = [
+        // Tanda baca pintar & simbol umum
+        ['â€™', '\u2019'], // ’
+        ['â€˜', '\u2018'], // ‘
+        ['â€œ', '\u201C'], // “
+        ['â€\u009d', '\u201D'], // ”
+        ['â€\x9d', '\u201D'],
+        ['â€', '\u201D'], // fallback tanda kutip tutup (ditangani lebih spesifik dulu di atas)
+        ['â€“', '\u2013'], // –
+        ['â€”', '\u2014'], // —
+        ['â€¦', '\u2026'], // …
+        ['â€¢', '\u2022'], // •
+        ['Â©', '\u00A9'],  // ©
+        ['Â®', '\u00AE'],  // ®
+        ['â„¢', '\u2122'], // ™
+        ['Â°', '\u00B0'],  // °
+        ['Â±', '\u00B1'],  // ±
+        ['Ã—', '\u00D7'],  // ×
+        ['Ã·', '\u00F7'],  // ÷
+        ['Â«', '\u00AB'],  // «
+        ['Â»', '\u00BB'],  // »
+        ['Â½', '\u00BD'],  // ½
+        ['Â¼', '\u00BC'],  // ¼
+        ['Â¾', '\u00BE'],  // ¾
+        ['Â ', '\u00A0'],  // non-breaking space rusak
+        ['Â', ''],         // sisa Â yang nempel sebelum simbol Latin-1 (dibersihkan terakhir)
+        // Huruf Latin dengan aksen (jaga-jaga jika ada nama/istilah asing)
+        ['Ã¡', 'á'], ['Ã©', 'é'], ['Ã­', 'í'], ['Ã³', 'ó'], ['Ãº', 'ú'],
+        ['Ã¤', 'ä'], ['Ã«', 'ë'], ['Ã¯', 'ï'], ['Ã¶', 'ö'], ['Ã¼', 'ü'],
+        ['Ã±', 'ñ'], ['Ã§', 'ç']
+    ];
+
+    // Regex gabungan untuk deteksi cepat: apakah file ini "terinfeksi" mojibake?
+    const DETECT_REGEX = /â€™|â€˜|â€œ|â€\u009d|â€“|â€”|â€¦|â€¢|Â©|Â®|â„¢|Ã[\x80-\xBF]|Â[\x80-\xBF ]/;
+
+    let scannedFiles = []; // { path, sha, url, html, matchCount, status }
+    let scanStopRequested = false;
+    let isScanning = false;
+    let fixStopRequested = false;
+    let isFixingAll = false;
+
+    function addLog(msg, color = '#0f0') {
+        const div = document.createElement('div');
+        div.style.color = color;
+        div.textContent = `> ${msg}`;
+        logs.appendChild(div);
+        logs.scrollTop = logs.scrollHeight;
+    }
+
+    function decodeBase64Utf8(b64) {
+        // Decode base64 -> byte string -> UTF-8 yang benar
+        const binary = atob(b64);
+        const bytes = new Uint8Array(binary.length);
+        for (let i = 0; i < binary.length; i++) bytes[i] = binary.charCodeAt(i);
+        return new TextDecoder('utf-8').decode(bytes);
+    }
+
+    function encodeUtf8Base64(str) {
+        const bytes = new TextEncoder().encode(str);
+        let binary = '';
+        for (let i = 0; i < bytes.length; i++) binary += String.fromCharCode(bytes[i]);
+        return btoa(binary);
+    }
+
+    function countMojibake(text) {
+        const matches = text.match(new RegExp(DETECT_REGEX, 'g'));
+        return matches ? matches.length : 0;
+    }
+
+    function fixMojibakeText(text) {
+        let result = text;
+        for (const [bad, good] of MOJIBAKE_MAP) {
+            result = result.split(bad).join(good);
+        }
+        return result;
+    }
+
+    async function githubFetch(url, token, options = {}) {
+        const res = await fetch(url, {
+            ...options,
+            headers: {
+                'Authorization': `token ${token}`,
+                'Accept': 'application/vnd.github+json',
+                ...(options.headers || {})
+            }
+        });
+        return res;
+    }
+
+    function setScanningUI(active) {
+        isScanning = active;
+        document.getElementById('scan-btn').disabled = active;
+        document.getElementById('stop-scan-btn').style.display = active ? 'inline-block' : 'none';
+    }
+
+    function stopScan() {
+        if (!isScanning) return;
+        scanStopRequested = true;
+        addLog('Menghentikan scan atas permintaan user...', '#ffcc00');
+    }
+
+    async function scanFiles() {
+        const token = document.getElementById('token').value.trim();
+        const repo = document.getElementById('repo').value.trim();
+        const branch = document.getElementById('branch').value.trim() || 'main';
+
+        if (!token) { alert('Input Token dulu, Bre!'); return; }
+        if (!repo) { alert('Input Repository Path dulu!'); return; }
+
+        scannedFiles = [];
+        scanStopRequested = false;
+        fileListDiv.innerHTML = '<p>Sedang mencari file .html...</p>';
+        summaryDiv.style.display = 'none';
+        fixAllBtn.style.display = 'none';
+        setScanningUI(true);
+        addLog('Memulai scanning repository...', '#ffcc00');
+
+        try {
+            const treeRes = await githubFetch(
+                `https://api.github.com/repos/${repo}/git/trees/${branch}?recursive=1`, token
+            );
+            const treeData = await treeRes.json();
+
+            if (!treeData.tree) {
+                throw new Error(treeData.message || 'Gagal akses repo. Cek Token/Repo Name/Branch.');
+            }
+
+            const htmlFiles = treeData.tree.filter(item => item.type === 'blob' && item.path.endsWith('.html'));
+
+            addLog(`Ditemukan ${htmlFiles.length} file .html total. Mengecek isi masing-masing untuk huruf aneh...`, '#ffcc00');
+            fileListDiv.innerHTML = '<h3>File yang mengandung huruf aneh:</h3>';
+
+            let infectedCount = 0;
+            let checkedCount = 0;
+            let stoppedEarly = false;
+
+            for (const item of htmlFiles) {
+                if (scanStopRequested) {
+                    stoppedEarly = true;
+                    break;
+                }
+
+                checkedCount++;
+                document.getElementById('scan-status').textContent =
+                    `Mengecek ${checkedCount}/${htmlFiles.length}: ${item.path}`;
+
+                try {
+                    const blobRes = await githubFetch(item.url, token);
+                    const blobData = await blobRes.json();
+                    const html = decodeBase64Utf8(blobData.content);
+                    const matchCount = countMojibake(html);
+
+                    if (matchCount > 0) {
+                        infectedCount++;
+                        const fileObj = {
+                            path: item.path,
+                            sha: blobData.sha,
+                            url: item.url,
+                            html: html,
+                            matchCount: matchCount,
+                            status: 'found'
+                        };
+                        scannedFiles.push(fileObj);
+                        renderFileItem(fileObj, scannedFiles.length - 1); // render langsung, live
+                        fixAllBtn.style.display = 'block';
+                        addLog(`Terdeteksi: ${item.path} (${matchCount} huruf aneh)`, '#ff4d4d');
+                    }
+                } catch (innerErr) {
+                    addLog(`Gagal cek ${item.path}: ${innerErr.message}`, '#ff4d4d');
+                }
+            }
+
+            document.getElementById('scan-status').textContent = '';
+
+            if (stoppedEarly) {
+                addLog(`Scan DIHENTIKAN oleh user. Baru cek ${checkedCount}/${htmlFiles.length} file. Ditemukan ${infectedCount} file bermasalah sejauh ini.`, '#ffcc00');
+            } else {
+                addLog(`Scan selesai. ${infectedCount} dari ${htmlFiles.length} file mengandung huruf aneh.`, infectedCount > 0 ? '#ff4d4d' : '#2ecc71');
+            }
+
+            if (scannedFiles.length === 0) {
+                fileListDiv.innerHTML = '<p style="color:var(--accent-green)">Tidak ada file dengan huruf aneh (dari yang sudah dicek). Aman! 🎉</p>';
+            }
+
+            summaryDiv.style.display = 'block';
+            summaryDiv.textContent = stoppedEarly
+                ? `Scan dihentikan. Ditemukan ${infectedCount} file bermasalah dari ${checkedCount}/${htmlFiles.length} file yang sempat dicek. Kamu bisa scan lagi nanti untuk lanjutkan sisanya.`
+                : `Ditemukan ${infectedCount} file bermasalah dari total ${htmlFiles.length} file HTML.`;
+            summaryDiv.style.color = infectedCount > 0 ? 'var(--accent-red)' : 'var(--accent-green)';
+
+        } catch (err) {
+            addLog('Error: ' + err.message, '#ff4d4d');
+            if (scannedFiles.length === 0) {
+                fileListDiv.innerHTML = '<p style="color:var(--accent-red)">Scan gagal. Cek log di bawah.</p>';
+            }
+        } finally {
+            setScanningUI(false);
+        }
+    }
+
+    function renderFileItem(file, idx) {
+        const div = document.createElement('div');
+        div.className = 'file-item';
+        div.id = `file-${idx}`;
+
+        const previewMatch = file.html.match(new RegExp(DETECT_REGEX.source));
+        const previewSnippet = previewMatch ? escapeHtml(getSnippetAround(file.html, previewMatch.index)) : '';
+
+        div.innerHTML = `
+            <div class="file-info">
+                <span class="file-path">${escapeHtml(file.path)}</span>
+                <span class="file-preview">${previewSnippet}</span>
+            </div>
+            <div class="file-actions">
+                <span class="status-badge found" id="badge-${idx}">${file.matchCount} ditemukan</span>
+                <button class="btn btn-fix-one" id="btn-${idx}" onclick="fixOne(${idx})">Perbaiki</button>
+            </div>
+        `;
+        fileListDiv.appendChild(div);
+    }
+
+    function getSnippetAround(text, index) {
+        const start = Math.max(0, index - 30);
+        const end = Math.min(text.length, index + 40);
+        return (start > 0 ? '...' : '') + text.slice(start, end) + (end < text.length ? '...' : '');
+    }
+
+    function escapeHtml(str) {
+        const div = document.createElement('div');
+        div.textContent = str;
+        return div.innerHTML;
+    }
+
+    async function fixOne(idx) {
+        const token = document.getElementById('token').value.trim();
+        const repo = document.getElementById('repo').value.trim();
+        const branch = document.getElementById('branch').value.trim() || 'main';
+        const file = scannedFiles[idx];
+        const btn = document.getElementById(`btn-${idx}`);
+        const badge = document.getElementById(`badge-${idx}`);
+
+        btn.disabled = true;
+        btn.textContent = 'Memproses...';
+
+        try {
+            const fixedHtml = fixMojibakeText(file.html);
+            const remaining = countMojibake(fixedHtml);
+
+            const pushRes = await githubFetch(
+                `https://api.github.com/repos/${repo}/contents/${file.path}`, token,
+                {
+                    method: 'PUT',
+                    headers: { 'Content-Type': 'application/json' },
+                    body: JSON.stringify({
+                        message: `Fix: Perbaiki mojibake/huruf aneh di ${file.path}`,
+                        content: encodeUtf8Base64(fixedHtml),
+                        sha: file.sha,
+                        branch: branch
+                    })
+                }
+            );
+
+            const pushData = await pushRes.json();
+
+            if (pushRes.ok) {
+                file.status = 'fixed';
+                file.html = fixedHtml;
+                if (pushData.content && pushData.content.sha) file.sha = pushData.content.sha;
+                addLog(`Sukses perbaiki: ${file.path}`, '#2ecc71');
+
+                // Hilangkan dari daftar biar nggak bingung kalau mau lanjut nanti
+                const itemDiv = document.getElementById(`file-${idx}`);
+                if (itemDiv) itemDiv.remove();
+
+                updateRemainingCount();
+            } else {
+                throw new Error(pushData.message || 'Push gagal');
+            }
+        } catch (err) {
+            badge.textContent = 'Gagal';
+            badge.className = 'status-badge error';
+            btn.disabled = false;
+            btn.textContent = 'Coba Lagi';
+            addLog(`Gagal perbaiki ${file.path}: ${err.message}`, '#ff4d4d');
+        }
+    }
+
+    function updateRemainingCount() {
+        const remaining = scannedFiles.filter(f => f.status !== 'fixed').length;
+        const fixedTotal = scannedFiles.filter(f => f.status === 'fixed').length;
+
+        summaryDiv.style.display = 'block';
+        if (remaining === 0) {
+            summaryDiv.textContent = `Semua ${fixedTotal} file yang ditemukan sudah diperbaiki. 🎉`;
+            summaryDiv.style.color = 'var(--accent-green)';
+            fixAllBtn.style.display = 'none';
+            document.getElementById('stop-fix-btn').style.display = 'none';
+        } else {
+            summaryDiv.textContent = `${fixedTotal} file sudah diperbaiki, ${remaining} file masih tersisa.`;
+            summaryDiv.style.color = 'var(--accent-yellow)';
+            if (!isFixingAll) {
+                fixAllBtn.style.display = 'block';
+                fixAllBtn.disabled = false;
+                fixAllBtn.textContent = `2. Perbaiki Semua Halaman (${remaining} tersisa)`;
+            }
+        }
+
+        if (fileListDiv.children.length === 0 || (fileListDiv.children.length === 1 && fileListDiv.querySelector('h3'))) {
+            fileListDiv.innerHTML = '<p style="color:var(--accent-green)">Tidak ada file tersisa di daftar. Semua yang ditemukan sudah beres! 🎉</p>';
+        }
+    }
+
+    function stopFixAll() {
+        if (!isFixingAll) return;
+        fixStopRequested = true;
+        addLog('Menghentikan proses "Perbaiki Semua" atas permintaan user...', '#ffcc00');
+    }
+
+    async function fixAll() {
+        const remaining = scannedFiles.filter(f => f.status !== 'fixed').length;
+        if (remaining === 0) { addLog('Tidak ada file tersisa untuk diperbaiki.', '#ffcc00'); return; }
+        if (!confirm(`Yakin mau perbaiki ${remaining} halaman yang belum diperbaiki?`)) return;
+
+        fixStopRequested = false;
+        isFixingAll = true;
+        fixAllBtn.disabled = true;
+        document.getElementById('stop-fix-btn').style.display = 'inline-block';
+        fixAllBtn.textContent = 'Sedang memperbaiki halaman...';
+        addLog('Memulai perbaikan massal. Klik Stop kapan saja untuk berhenti.', '#ffcc00');
+
+        let doneCount = 0;
+        let stoppedEarly = false;
+
+        for (let idx = 0; idx < scannedFiles.length; idx++) {
+            if (fixStopRequested) { stoppedEarly = true; break; }
+            if (scannedFiles[idx].status === 'fixed') continue;
+            fixAllBtn.textContent = `Memperbaiki ${doneCount + 1}/${remaining}: ${scannedFiles[idx].path}`;
+            await fixOne(idx);
+            doneCount++;
+        }
+
+        isFixingAll = false;
+        document.getElementById('stop-fix-btn').style.display = 'none';
+
+        const stillLeft = scannedFiles.filter(f => f.status !== 'fixed').length;
+
+        if (stoppedEarly) {
+            addLog(`Perbaikan DIHENTIKAN oleh user. ${doneCount} halaman selesai, ${stillLeft} halaman belum diperbaiki. Klik "Perbaiki Semua Halaman" lagi kapan saja untuk lanjut.`, '#ffcc00');
+            fixAllBtn.disabled = false;
+            fixAllBtn.textContent = `Lanjutkan Perbaiki Sisa (${stillLeft} halaman)`;
+        } else {
+            addLog('SELESAI! Semua halaman telah diproses.', '#2ecc71');
+            fixAllBtn.textContent = 'Semua Halaman Selesai Diperbaiki ✓';
+            fixAllBtn.disabled = true;
+        }
+    }
+</script>
+
+</body>
+</html>
