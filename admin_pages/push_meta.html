@@ -200,6 +200,13 @@
 </div>
 
 <script>
+    // Fungsi handle UTF-8 Base64 (biar karakter aneh/emoji ga jadi mojibake)
+    function b64DecodeUnicode(str) {
+        return decodeURIComponent(atob(str).split('').map(function(c) {
+            return '%' + ('00' + c.charCodeAt(0).toString(16)).slice(-2);
+        }).join(''));
+    }
+
     const logs = document.getElementById('logs');
     const fileListDiv = document.getElementById('file-list');
     const pushBtn = document.getElementById('push-btn');
@@ -298,7 +305,7 @@
                     headers: { 'Authorization': `token ${token}` }
                 });
                 const contentData = await contentRes.json();
-                let originalHTML = decodeURIComponent(escape(atob(contentData.content)));
+                let originalHTML = b64DecodeUnicode(contentData.content);
 
                 // 2. Generate New Meta Tags
                 const metaTags = generateMetaTags(file.path, originalHTML);
@@ -401,7 +408,7 @@
         if (isCanonical) {
             const canRegex = /<link\s+rel=["']canonical["'][^>]*>/i;
             if (canRegex.test(headContent)) {
-                headContent = headContent.replace(canRegex, `<link rel="canonical" href="https://sairootsmusic.com/admin_pages/auto_canonical">`);
+                headContent = headContent.replace(canRegex, `<link rel="canonical" href="${value}">`);
             } else {
                 headContent += `\n    <link rel="canonical" href="${value}">`;
             }
